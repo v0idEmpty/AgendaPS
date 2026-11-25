@@ -345,6 +345,21 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .dsub{font-size:12.5px;color:var(--mut);margin-top:2px}
 .holbar{margin:0 20px 8px;padding:7px 12px;border-radius:8px;background:color-mix(in srgb,var(--bad) 10%,var(--surf));font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .holbar button{padding:4px 12px;font-size:12.5px;border-color:var(--bad);color:var(--bad)}
+.dtype{display:flex;gap:6px;padding:4px 20px 8px}.dtype button{flex:1;padding:9px 4px;border-radius:10px;font-size:13.5px;min-width:0}
+.dtype button.on{background:var(--accSoft);color:var(--acc);border-color:var(--acc);font-weight:600}
+.absgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 20px 8px}
+.absgrid button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 2px;border-radius:10px;min-width:0;border-left:4px solid var(--c)}
+.absgrid button b{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.absgrid small{font-size:10.5px;color:var(--mut)}
+.absgrid button.on{background:var(--c);color:#fff;border-color:var(--c)}.absgrid button.on small{color:#fff;opacity:.85}
+.durrow{display:flex;gap:8px;align-items:center;padding:0 20px 4px}.durrow input{flex:1;width:auto;min-width:0}.durrow button{flex:none}
+.pcard{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
+.pcard.on{border-left-color:var(--c);background:color-mix(in srgb,var(--c) 7%,var(--surf))}
+.pch b{font-weight:500;color:var(--tx2)}
+.pseg{display:flex;margin-top:8px}.pseg button{flex:1;min-width:0;padding:7px 4px;font-size:12.5px}
+.pbody{margin-top:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}.pbody .possel{width:100%}
+.addbox{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px}
+button.wide{width:100%;border-radius:10px}
+.tabs button{flex:1}
 .stbar{display:flex;gap:6px;overflow-x:auto;padding:2px 20px 8px;scrollbar-width:none;align-items:center}
 .stbar .chip{flex:none;padding:5px 11px;font-size:12.5px}
 .stbar .chip.on{background:var(--c);color:#fff;border-color:transparent}
@@ -963,7 +978,7 @@ function cellEvents(x){
  }else if(x.status==='riposo')ev.push({ghost:1,t:isHol(x.date)?holName(x.date):''});
  else ev.push({c:col(STCOL[x.status]),lt:LIGHT.has(STCOL[x.status]),t:x.status==='festivo'&&isHol(x.date)?holName(x.date):SHORT[x.status]});
  if(!isWork(x))(x.acts||[]).forEach(a=>ln.push([actCol(a.t),(a.from?a.from+' ':'')+ico(a.t)+' '+a.t+(a.txt?': '+a.txt:'')]));
- if(!isWork(x)&&x.note)ln.push([C.tag,x.note]);
+ if(!isWork(x)&&x.note)ln.push([C.tag,'📝 '+x.note]);
  return{ev,ln};
 }
 const isoWeek=dt=>{const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));const n=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-n);const y0=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil(((d-y0)/864e5+1)/7)};
@@ -1022,9 +1037,9 @@ function renderDayView(keepScroll){
   return `<div class="dvBlk ${B.k==='se'?'se':''} ${B.k==='perm'?'perm':''} ${B.lt?'lt':''}" data-k="${B.k}" ${B.i!=null?`data-i="${B.i}"`:''} style="--c:${B.c};${B.k==='se'?'':'background:'+B.c};${style};top:${a/60*hp+1}px;height:${Math.max(20,(b-a)/60*hp-2)}px"><b>${esc(B.t)}</b><small>${fmtT(B.a)} – ${fmtT(B.b)}</small>${B.det?.length?`<div class="bdet">${B.det.map(z=>`<span>${esc(z)}</span>`).join('')}</div>`:''}</div>`};
  const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span>${hp>=90?`<i class="half" style="top:${hp/2}px"></i>`:''}</div>`).join('');
  const plan=showPlan?parseR(pr).map(([a,b])=>`<div class="dvPlan" title="Turno previsto ${fmtT(a)}-${fmtT(b)}" style="top:${a/60*hp}px;height:${(Math.min(b,1440)-a)/60*hp}px"></div>`).join(''):'';
- const nowM=new Date().getHours()*60+new Date().getMinutes(), note=x.note?`<span class="ln" style="--c:${C.tag}">📝 ${esc(x.note.length>60?x.note.slice(0,60)+'…':x.note)}</span>`:'';
+ const nowM=new Date().getHours()*60+new Date().getMinutes(), note='';
  $('#dayView').innerHTML=`<div class="dvHead"><div class="dvDate"><span>${dt.toLocaleDateString('it-IT',{weekday:'short'})}</span><b class="${ds===today?'t':''}">${dt.getDate()}</b></div>
-  <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}">${esc(t)}</span>`).join('')}${note}${!ev.length&&!allLn.length&&!note?'<span class="mut s">Tocca per aprire la giornata</span>':''}</div>
+  <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}">${esc(t.length>70?t.slice(0,70)+'…':t)}</span>`).join('')}${note}${!ev.length&&!allLn.length&&!note?'<span class="mut s">Tocca per aprire la giornata</span>':''}</div>
   <button class="ico" data-open title="Apri la giornata">✎</button></div>
   <div class="dvMeta"><span class="zm"><button class="ico" data-zoom="-1" title="Mostra più ore">－</button><button class="ico" data-zoom="1" title="Più dettaglio">＋</button></span>Ordine di Servizio n. ${odsTxt(ds)} · settimana ${isoWeek(dt)}${isHol(ds)?' · 🎉 '+esc(holName(ds)):''}${isWork(x)?` · ${fmtH(rangesH(x.ranges))} ordinarie${x.stra?' + '+fmtH(x.stra)+' straord.':''}${nightH(x)?' · 🌙 '+fmtH(nightH(x)):''}`:''}${showPlan?' · <span style="border-bottom:2px dashed var(--mut)">previsto '+esc(pr)+'</span>':''}</div>
   <div class="dvGrid" id="dvGrid" style="--hp:${hp}px"><div class="inner">${grid}
@@ -1113,9 +1128,9 @@ document.addEventListener('click',e=>{
  if(k==='abs')return openRange(ds);
  openDay(ds);
  if(k==='ora'){showTab('ora');setTimeout(()=>$('#eRanges').focus(),80)}
- if(k==='se'){if(!isWork(E))$('#eSt [data-v=lavoro]').click();showTab('ora');const st=h??(parseR(E.ranges).length?Math.max(...parseR(E.ranges).map(x=>x[1]))/60:14);const a=Math.floor(st*60),r=fmtT(a)+'-'+fmtT(a+60);
+ if(k==='se'){if(!isWork(E))setStatus('lavoro');showTab('ora');const st=h??(parseR(E.ranges).length?Math.max(...parseR(E.ranges).map(x=>x[1]))/60:14);const a=Math.floor(st*60),r=fmtT(a)+'-'+fmtT(a+60);
   E.seRanges=[E.seRanges,r].filter(Boolean).join(', ');$('#eSE').value=E.seRanges;syncModal();dayChanged();setTimeout(()=>$('#eSE').focus(),80)}
- if(k==='perq'){if(!isWork(E))$('#eSt [data-v=lavoro]').click();showTab('att');const c=[...$$('#eTags .chip')].find(c=>/perquisiz/i.test(c.dataset.v||''));if(c&&!c.classList.contains('on'))c.click();else perqAsk(true);if(h!=null&&$('#perqStart')){$('#perqStart').value=pad(h)+':00';perqPrev()}}
+ if(k==='perq'){if(!isWork(E))setStatus('lavoro');showTab('att');const c=[...$$('#eTags .chip')].find(c=>/perquisiz/i.test(c.dataset.v||''));if(c&&!c.classList.contains('on'))c.click();else perqAsk(true);if(h!=null&&$('#perqStart')){$('#perqStart').value=pad(h)+':00';perqPrev()}}
  if(k==='act'){showTab('att');setTimeout(()=>{$('#eActTxt').value=h!=null?pad(h)+':00 – ':'';$('#eActTxt').focus()},80)}
  if(k==='note'){showTab('att');setTimeout(()=>$('#eNote').focus(),80)}
 });
@@ -1264,10 +1279,11 @@ function openDay(ds){
    <div class="dsub">Ordine di Servizio n. ${odsTxt(ds)} · Previsto: <b>${ps?esc(ps.name):hol&&rs?esc(rs.name)+' (festivo)':'Riposo'}</b>${E.auto?' · compilato in automatico':''}</div></div>
   <button class="ico" data-x title="Chiudi (Esc)">✕</button></div>
  ${hol?`<div class="holbar" id="eHol"></div>`:''}
- <div class="stbar" id="eSt">${stKeys.map(k=>`<span class="chip ${E.status===k||(k==='riposo'&&E.status==='festivo')?'on':''}" data-v="${k}" style="--c:${k==='lavoro'?'var(--acc)':col(STCOL[k]||'graphite')}">${k==='lavoro'?'Servizio':SHORT[k]||STATI[k]}</span>`).join('')}<a href="#" data-range class="stlink">Periodo…</a></div>
+ <div class="dtype" id="eType"><button data-ty="lavoro">🏢 Servizio</button><button data-ty="riposo">😴 Riposo</button><button data-ty="abs">🌴 Assenza</button></div>
+ <div id="eAbs"></div>
  <div id="ePrev" class="dprev wkonly"></div>
  <div class="tabs" id="eTabs">
-  <button data-tab="ora" class="wkonly">⏱ Orario</button><button data-tab="att">📝 Attività</button><button data-tab="voci" class="wkonly">💶 Ore e indennità</button><button data-tab="eti">🏷 Etichetta</button></div>
+  <button data-tab="ora" class="wkonly">⏱ Orario</button><button data-tab="perm">🕐 Permessi</button><button data-tab="att">📝 Attività</button><button data-tab="eti">⋯ Altro</button></div>
  <div class="panes">
  <div class="pane" data-pane="ora">
   <div class="g2">
@@ -1276,6 +1292,7 @@ function openDay(ds){
    <label><span class="mut s">Straordinario emergente (SE)</span><input id="eSE" placeholder="12:00-19:00" value="${esc(E.seRanges||'')}"></label>
    <label><span class="mut s">Buono pasto <span id="eBAuto"></span></span><div class="seg" id="eBuono" style="display:flex">${[0,1,2].map(n=>`<button data-v="${n}" class="${E.buono===n?'on':''}" style="flex:1">${['No','1','Doppio'][n]}</button>`).join('')}</div></label>
   </div>
+  <div class="steps" style="margin-top:10px">${stepper('stra','Straordinario (ore)',24,'oppure scrivi la fascia SE qui sopra')}</div>
   <p class="mut s" id="eOre" style="margin-top:6px"></p>
   <div id="eReq"></div>
   <div class="ctbox">
@@ -1290,27 +1307,23 @@ function openDay(ds){
    <div id="ePerq"></div>
   </div>
   <textarea id="eNote" style="margin-top:10px;min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
-  <div class="sect"><span>📌 Attività registrate</span><a href="#" data-bulk="act">su più giorni…</a></div>
+  <div class="sect"><span>📌 Attività registrate</span></div>
   <div id="eActs"></div>
-  <div class="row" style="margin-top:6px"><select id="eActT" style="width:auto">${S.actTypes.map(t=>`<option value="${esc(t)}">${ico(t)} ${esc(t)}</option>`).join('')}</select><input id="eActTxt" style="flex:1;width:auto;min-width:120px" placeholder="RGNR, nominativo, reperto…"><button id="eActAdd">+</button></div>
+  <div class="addbox">
+   <div class="row" style="flex-wrap:nowrap"><select id="eActT" style="width:auto;flex:none;max-width:48%">${S.actTypes.map(t=>`<option value="${esc(t)}">${ico(t)} ${esc(t)}</option>`).join('')}</select><input id="eActTxt" style="flex:1;width:auto;min-width:0" placeholder="RGNR, nominativo…"></div>
+   <div class="row" style="margin-top:8px;flex-wrap:nowrap"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eActTo" value="${ds}" min="${ds}" style="flex:1;width:auto;min-width:0"><button class="pri" id="eActAdd" style="flex:none">＋ Aggiungi</button></div>
+   <div class="mut s" id="eActInfo" style="margin-top:4px">Solo questo giorno</div></div>
   ${S.trainings.length?`<div class="wkonly"><div class="sect"><span>🎯 Giornata di aggiornamento</span></div>
   <div class="chips" id="eTrn">${trnTree(TD).map(G=>G.members.map(m=>{const n=m.ds.filter(x=>x!==ds).length,gn=G.members.reduce((a,x)=>a+x.ds.filter(z=>z!==ds).length,0);
    return `<span class="chip col ${E.trn.includes(m.t.id)?'on':''}" style="--c:${col(m.t.color)}" data-v="${m.t.id}" title="${esc(m.t.name)}">${esc(m.t.short||m.t.name)} <span class="mut s">${m.t.quota?n+'/'+m.t.quota:gn+'/'+G.q}</span></span>`}).join('')).join('')}</div></div>`:''}
  </div>
- <div class="pane" data-pane="voci">
-  <div class="steps">
-   ${stepper('stra','Straordinario',24,'o compila la fascia SE in Orario')}
-   ${stepper('pb','Permesso breve (max 3h)',3,`Anno ${fmtH(u.pb)} / ${fmtH(a.pb)}${L.tot?` · da recuperare ${fmtH(L.tot)}`:''}`,'pbPos')}
-   ${stepper('p104h','Permesso L.104 a ore',9,`Mese ${fmtH(p104MonthH(ds.slice(0,7)))} / ${fmtH(p104QuotaH(y))} · giornata intera: stato "104"`,'p104Pos')}
-   ${stepper('sind','Permesso sindacale',10,`Anno ${fmtH(u.sind)}`,'sindPos')}
-   ${stepper('rec','Recupero ore permesso',12,L.tot?`Da recuperare ${fmtH(L.tot)} entro ${itD(L.open[0].due)}`:'Nessun debito orario')}
-  </div>
-  ${dayInd.length?`<div class="sect"><span>💶 Indennità</span><a href="#" data-bulk="ind">su più giorni…</a></div><div class="indgrid">`+dayInd.map(i=>{const v=indVal({...E,status:'lavoro'},i),tag=i.rec==='day'?' <span class="mut s">(ricorrente)</span>':'';
+ <div class="pane" data-pane="perm"><div id="ePerm"></div></div>
+ <div class="pane" data-pane="eti">
+  ${dayInd.length?`<div class="sect" style="margin-top:0"><span>💶 Indennità</span></div><div class="indgrid">`+dayInd.map(i=>{const v=indVal({...E,status:'lavoro'},i),tag=i.rec==='day'?' <span class="mut s">(ricorrente)</span>':'';
     return i.type==='check'
     ?`<label class="tgl"><input type="checkbox" data-ind="${i.id}" ${v?'checked':''}> ${esc(i.name)}${tag}</label>`
-    :`<label><span class="mut s">${esc(i.name)}${tag}</span><input data-ind="${i.id}" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal"':''} value="${esc(v??'')}"></label>`}).join('')+'</div>':''}
- </div>
- <div class="pane" data-pane="eti">
+    :`<label><span class="mut s">${esc(i.name)}${tag}</span><input data-ind="${i.id}" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal"':''} value="${esc(v??'')}"></label>`}).join('')+'</div><button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica un\'indennità a più giorni</button>':''}
+  <div class="sect"><span>🏷 Etichetta nel calendario</span></div>
   <span class="mut s">Nota breve visibile nella casella</span>
   <input id="eCalNote" placeholder="Es. Udienza Tribunale CA" value="${esc(E.calNote||'')}">
   <div class="mut s" style="margin-top:12px">Colore della casella</div>
@@ -1318,9 +1331,58 @@ function openDay(ds){
  </div>
  </div>
  <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Fatto</button></div>`;
- dayTab=isWork(E)?'ora':'att'; renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato automaticamente':'Le modifiche si salvano da sole';
+ dayTab=isWork(E)?'ora':ABS.includes(E.status)?'perm':'att'; absOpen=ABS.includes(E.status); renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato automaticamente':'Le modifiche si salvano da sole';
 }
-let dayTab='ora';
+let dayTab='ora', absOpen=false;
+const PERM=[
+ {k:'p104',ic:'♿',lab:'Permesso L.104',h:'p104h',pos:'p104Pos',st:'p104',max:9,hint:()=>`Mese: ${fmtH(p104MonthH(E.date.slice(0,7),new Map([[E.date,E]])))} su ${fmtH(p104QuotaH(+E.date.slice(0,4)))} (3 giornate × ${fmtH(+S.rules.p104hDay||6)})`},
+ {k:'pb',ic:'⏳',lab:'Permesso',h:'pb',pos:'pbPos',st:'permesso',max:3,hl:'Breve (ore)',hint:()=>{const y=+E.date.slice(0,4),u=usage(y,new Map([[E.date,E]])),L=pbLedger();return `Brevi ${y}: ${fmtH(u.pb)} su ${fmtH(allowFor(y).pb)} · max 3h al giorno${L.tot?` · da recuperare ${fmtH(L.tot)}`:''}`}},
+ {k:'sind',ic:'🤝',lab:'Permesso sindacale',h:'sind',pos:'sindPos',st:'psind',max:12,hint:()=>`Anno: ${fmtH(usage(+E.date.slice(0,4),new Map([[E.date,E]])).sind)} · nessun limite`},
+ {k:'rec',ic:'↺',lab:'Recupero',h:'rec',st:'recupero',max:12,hl:'Ore di recupero',hint:()=>{const L=pbLedger();return L.tot?`Da recuperare ${fmtH(L.tot)} entro ${itD(L.open[0].due)}`:'Nessun debito orario'}}];
+const pMode=P=>E.status===P.st?'d':isWork(E)&&+E[P.h]>0?'h':'0';
+function renderPerm(){const box=$('#ePerm');if(!box)return;
+ box.innerHTML=`<p class="mut s" style="margin:0 0 10px">Per ogni permesso scegli <b>a ore</b> (dentro il turno) o <b>giornata intera</b> (non lavori).</p>`+PERM.map(P=>{const m=pMode(P);
+  return `<div class="pcard ${m!=='0'?'on':''}" style="--c:${col(STCOL[P.st]||'lavender')}"><div class="pch"><b>${P.ic} ${P.lab}</b></div>
+  <div class="seg pseg" data-pk="${P.k}"><button data-pmo="0" class="${m==='0'?'on':''}">No</button><button data-pmo="h" class="${m==='h'?'on':''}">${P.hl||'A ore'}</button><button data-pmo="d" class="${m==='d'?'on':''}">Giornata intera</button></div>
+  ${m==='h'?`<div class="pbody"><div class="stepper" data-f="${P.h}" data-max="${P.max}"><button data-s="-1">−</button><output>${fmtH(E[P.h])}</output><button data-s="1">+</button></div>${P.pos?posSel(P.pos):''}</div>`:''}
+  ${m==='d'?`<div class="pbody mut s">Tutta la giornata: ${esc(STATI[P.st])}</div>`:''}
+  <div class="mut s" style="margin-top:6px">${P.hint()}</div></div>`}).join('');
+}
+function restoreShift(){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh&&!E.ranges){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;$('#eRanges').value=sh.ranges}}
+function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(dayTab!=='perm')dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
+function renderType(){
+ const k=absOpen||ABS.includes(E.status)?'abs':isWork(E)?'lavoro':'riposo';
+ $$('#eType [data-ty]').forEach(b=>b.classList.toggle('on',b.dataset.ty===k));
+ const box=$('#eAbs');if(k!=='abs'){box.innerHTML='';return}
+ const y=+E.date.slice(0,4),u=usage(y,new Map([[E.date,E]])),a=allowFor(y),on=ABS.includes(E.status);
+ const cnt=x=>x in ALLBL?`<small>${num(u[x])}/${num(a[x])}</small>`:x==='p104'?`<small>${fmtH(p104MonthH(E.date.slice(0,7),new Map([[E.date,E]])))}/${fmtH(p104QuotaH(y))} mese</small>`:'';
+ box.innerHTML=`<div class="absgrid">${ABS.map(x=>`<button data-ab="${x}" class="${E.status===x?'on':''}" style="--c:${col(STCOL[x])}"><b>${esc(SHORT[x])}</b>${cnt(x)}</button>`).join('')}</div>
+ ${on?`<div class="durrow"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eAbsTo" value="${E._to||E.date}" min="${E.date}"><button class="pri" id="eAbsApply" ${(E._to||E.date)>E.date?'':'hidden'}>Applica</button></div><div class="mut s" id="eAbsInfo" style="margin:2px 20px 6px"></div>`:'<div class="mut s" style="margin:0 20px 8px">Scegli il tipo di assenza</div>'}`;
+ absInfo();
+}
+function absDays(a,b,t){const out=[];eachDay(a,b,ds=>{if(t==='cs'||plannedShift(ds))out.push(ds)});return out}
+function absInfo(){const el=$('#eAbsInfo');if(!el)return;const to=$('#eAbsTo').value;
+ if(!to||to<=E.date){el.textContent='Solo questo giorno · per un periodo scegli la data di fine';$('#eAbsApply').hidden=true;return}
+ const n=absDays(E.date,to,E.status).length;$('#eAbsApply').hidden=false;$('#eAbsApply').textContent=`Applica a ${n} giorni`;
+ el.textContent=`Dal ${itD(E.date)} al ${itD(to)} · ${E.status==='cs'?'tutti i giorni, riposi compresi':'esclusi riposi e festivi'}`}
+async function absApply(){const to=$('#eAbsTo').value,t=E.status;await flushDay();
+ const ov=new Map(absDays(E.date,to,t).filter(d=>d!==E.date).map(ds=>[ds,{...blank(ds,t),updated:new Date().toISOString()}]));
+ const w=limitWarnings(ov);if(w.length&&!confirm('⚠ Sforamento:\n'+w.join('\n')+'\n\nInserire comunque?'))return;
+ const busy=[...ov.keys()].filter(ds=>{const r=DAYS.get(ds);return r&&!r.auto&&(r.note||r.tags?.length||r.acts?.length)});
+ if(busy.length&&!confirm(`${busy.length} giorni hanno già attività registrate e verranno sovrascritti. Continuare?`))return;
+ if(ov.size){await DB.putMany([...ov.values()]);ov.forEach((r,k)=>DAYS.set(k,r))}
+ refreshBg();toast(`${STATI[t]}: ${ov.size+1} giorni`);renderType()}
+function actInfo(){const to=$('#eActTo')?.value,el=$('#eActInfo');if(!el)return;
+ if(!to||to<=E.date){el.textContent='Solo questo giorno';return}
+ const n=[];eachDay(E.date,to,ds=>{if(ds===E.date||isWork(dayOf(ds)))n.push(ds)});el.textContent=`${n.length} giorni (solo quelli di servizio) fino al ${itD(to)}`}
+async function actAdd(){const t=$('#eActT').value,txt=$('#eActTxt').value.trim(),to=$('#eActTo').value;
+ if(!txt&&!confirm('Aggiungere senza descrizione?'))return;
+ E.acts.push({t,txt});$('#eActTxt').value='';renderActs();
+ if(to&&to>E.date){await flushDay();const out=[];
+  eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.acts=[...(d.acts||[]),{t,txt}];d.updated=new Date().toISOString();out.push(d)});
+  if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}
+  $('#eActTo').value=E.date;actInfo();refreshBg();toast(`${t}: ${out.length+1} giorni`)}
+ else dayChanged()}
 function showTab(k){dayTab=k;$$('#eTabs [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===k))}
 function renderActs(){$('#eActs').innerHTML=E.acts.map((a,i)=>`<div class="row actrow"><span class="b" style="--c:${actCol(a.t)}">${ico(a.t)} ${esc(a.t)}</span><span class="grow">${esc(a.txt)||'<span class="mut">—</span>'}</span><button class="ico" style="width:30px;height:30px;font-size:14px" data-actdel="${i}">✕</button></div>`).join('')||'<p class="mut s">Nessuna attività registrata per questo giorno.</p>'}
 /* scelta rapida orari perquisizione */
@@ -1352,7 +1414,8 @@ function perqPrev(){const m=toMin($('#perqStart').value);if(m==null)return;const
 function syncModal(){
  const w=isWork(E);
  $$('#sheet .wkonly').forEach(el=>el.style.display=w?'':'none');
- if(!w&&(dayTab==='ora'||dayTab==='voci'))dayTab='att';
+ if(!w&&dayTab==='ora')dayTab=ABS.includes(E.status)?'perm':'att';
+ renderType(); renderPerm();
  showTab(dayTab);
  if($('#eHol'))$('#eHol').innerHTML=`🎉 <b>${esc(holName(E.date))}</b> · giorno festivo`+(w?' — <b>lavorato</b>: risulta come <i>Servizio festivo</i>':` <button data-holwork>Ho lavorato</button>`);
  if(!w)return;
@@ -1590,18 +1653,22 @@ $('#sheet').addEventListener('click',async e=>{
   if(t.closest('[data-rdel]'))return rangeRemove();
   return;
  }
- if(t.closest('[data-range]')){e.preventDefault();return openRange(E.date)}
- const st=t.closest('#eSt .chip');
- if(st){E.status=st.dataset.v==='riposo'&&isHol(E.date)?'festivo':st.dataset.v;if(E.status==='lavoro')dayTab='ora';
-  if(E.status==='lavoro'&&!E.shiftId&&!E.ranges){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;$('#eRanges').value=sh.ranges}}
-  $$('#eSt .chip').forEach(c=>c.classList.toggle('on',c===st));syncModal();return}
+ const ty=t.closest('#eType [data-ty]');
+ if(ty){const v=ty.dataset.ty;if(v==='abs'){absOpen=true;if(!ABS.includes(E.status))renderType();else syncModal();return}setStatus(v);return}
+ const ab=t.closest('#eAbs [data-ab]');if(ab){E._to=E.date;setStatus(ab.dataset.ab);return}
+ if(t.closest('#eAbsApply'))return absApply();
+ const pm=t.closest('.pseg [data-pmo]');
+ if(pm){const P=PERM.find(x=>x.k===pm.closest('.pseg').dataset.pk),m=pm.dataset.pmo;
+  if(m==='d'){E[P.h]=0;setStatus(P.st);return}
+  if(E.status===P.st)setStatus('lavoro');else if(!isWork(E))setStatus('lavoro');
+  E[P.h]=m==='h'?(+E[P.h]||1):0;syncModal();return}
  const tg=t.closest('#eTags .chip');
  if(tg&&tg.hasAttribute('data-ext')){E.esterna=!E.esterna;tg.classList.toggle('on');syncModal();return}
  if(tg){const v=tg.dataset.v,on=!E.tags.includes(v);E.tags=on?[...E.tags,v]:E.tags.filter(x=>x!==v);tg.classList.toggle('on');
   if(/^perquisiz/i.test(v))perqAsk(on);return}
  const pv=t.closest('[data-posk] [data-pv]');if(pv){const k=pv.closest('[data-posk]').dataset.posk;E[k]=pv.dataset.pv;pv.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===pv));syncModal();return}
  const tb=t.closest('#eTabs [data-tab]');if(tb){showTab(tb.dataset.tab);return}
- if(t.closest('[data-holwork]')){$('#eSt [data-v=lavoro]').click();return}
+ if(t.closest('[data-holwork]')){setStatus('lavoro');return}
  const fd=t.closest('[data-fdv]');if(fd){E.fdv=!E.fdv;fd.classList.toggle('on');if(E.fdv&&!E.esterna){E.esterna=true;$('[data-ext]').classList.add('on')}syncModal();return}
  const ex=t.closest('[data-ext]');if(ex){E.esterna=!E.esterna;ex.classList.toggle('on');syncModal();return}
  const ps=t.closest('[data-perqset]');if(ps){$('#perqStart').value=ps.dataset.perqset;perqPrev();return}
@@ -1612,8 +1679,7 @@ $('#sheet').addEventListener('click',async e=>{
    $('[data-ext]').classList.toggle('on',E.esterna);$('[data-fdv]').classList.toggle('on',E.fdv);syncModal()}perqAsk(false);return}
  if(t.closest('[data-perq]')){perqAsk(false);return}
  const pal=t.closest('[data-pal]');if(pal){E.calColor=pal.dataset.pal;$$('#ePal i').forEach(i=>i.classList.toggle('on',i===pal));return}
- if(t.closest('#eActAdd')&&!$('#eActTxt').value.trim()&&!confirm('Aggiungere senza descrizione?'))return;
- if(t.closest('#eActAdd')){const txt=$('#eActTxt').value.trim();E.acts.push({t:$('#eActT').value,txt});$('#eActTxt').value='';renderActs();return}
+ if(t.closest('#eActAdd'))return actAdd();
  const ad=t.closest('[data-actdel]');if(ad){E.acts.splice(+ad.dataset.actdel,1);renderActs();return}
  const bl=t.closest('[data-bulk]');if(bl){e.preventDefault();return openBulk(bl.dataset.bulk,E.date)}
  const tr=t.closest('#eTrn .chip');
@@ -1640,6 +1706,8 @@ $('#sheet').addEventListener('change',e=>{
  if(e.target.id==='swFrom'&&e.target.value){SW.from=e.target.value}if(e.target.id==='swAlt'){SW.alt=e.target.checked;if(!SW.alt)SW.grid=[SW.grid[0],SW.grid[0].slice()]}swRender();return}
  if(MODE!=='day')return;
  if(e.target.id==='perqPause')return perqPrev();
+ if(e.target.id==='eAbsTo'){E._to=e.target.value;return absInfo()}
+ if(e.target.id==='eActTo')return actInfo();
  if(e.target.id==='eReqChk'){E.richiesta=e.target.checked;syncModal();return}
  if(e.target.id==='eCambio'){E.cambio=e.target.checked;syncModal();return}
  if(e.target.id==='eShift'){E.shiftId=e.target.value;const sh=shiftById(E.shiftId);
@@ -1649,13 +1717,13 @@ $('#sheet').addEventListener('change',e=>{
 $('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();if(e.target.id==='eRanges'){E.ranges=e.target.value.trim();syncModal()}if(e.target.id==='eSE'){E.seRanges=e.target.value.trim();if(!E.seRanges){E.stra=0;$('[data-f=stra] output').textContent=fmtH(0)}syncModal()}});
 /* ===== Salvataggio automatico della giornata ===== */
 let dayTimer=null, daySnap='';
-const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;return JSON.stringify(c)};
+const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;delete c._to;return JSON.stringify(c)};
 function dayChanged(){if(MODE!=='day'||!$('#modal').classList.contains('open'))return;clearTimeout(dayTimer);dayTimer=setTimeout(()=>flushDay(),450)}
 async function flushDay(){
  clearTimeout(dayTimer); if(MODE!=='day'||!E)return;
  collectDay(); const sn=snapDay(); if(sn===daySnap)return;
  daySnap=sn; delete E.auto; E.updated=new Date().toISOString();
- const rec=structuredClone(E); await DB.put(rec); DAYS.set(rec.date,rec);
+ const rec=structuredClone(E); delete rec._to; await DB.put(rec); DAYS.set(rec.date,rec);
  if($('#eSaved'))$('#eSaved').textContent='✓ Salvato alle '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
  refreshBg();
 }
