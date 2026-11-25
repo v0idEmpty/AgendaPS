@@ -1,0 +1,43 @@
+# Pubblica l'app su GitHub Pages a ogni modifica, con numero di versione automatico.
+name: Pubblica Agenda PS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepara i file e timbra la versione
+        run: |
+          VER="1.${{ github.run_number }}"
+          BUILD="$(TZ=Europe/Rome date '+%d/%m/%Y %H:%M') · ${GITHUB_SHA::7}"
+          mkdir -p _site
+          cp -r index.html manifest.webmanifest sw.js icons _site/
+          sed -i "s|__APP_VERSION__|${VER}|g; s|__APP_BUILD__|${BUILD}|g" _site/index.html _site/sw.js
+          echo "Versione pubblicata: ${VER} (${BUILD})"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
