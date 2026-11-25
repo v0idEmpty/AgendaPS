@@ -1832,7 +1832,8 @@ addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('#b
 $('#btnInstall').onclick=async()=>{if(!installEvt)return;installEvt.prompt();await installEvt.userChoice;installEvt=null;$('#btnInstall').hidden=true};
 addEventListener('appinstalled',()=>{$('#btnInstall').hidden=true;toast('App installata ✓')});
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){
- navigator.serviceWorker.register('sw.js').then(reg=>{
+ navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{
+  reg.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update()});
   reg.addEventListener('updatefound',()=>{const nw=reg.installing;nw?.addEventListener('statechange',()=>{
    if(nw.state==='installed'&&navigator.serviceWorker.controller){const t=$('#toast');t.innerHTML='Nuova versione disponibile (attuale '+verTxt()+') <button style="margin-left:10px;padding:4px 12px;color:#fff;border-color:#fff" id="swUpd">Aggiorna</button>';t.style.pointerEvents='auto';t.classList.add('on');
     $('#swUpd').onclick=()=>nw.postMessage('skipWaiting')}})});
