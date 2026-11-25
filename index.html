@@ -201,12 +201,26 @@ tr[data-d]:hover td{background:var(--hov)}
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#323232;color:#fff;font-weight:500;padding:12px 20px;border-radius:6px;opacity:0;transition:.25s;z-index:40;pointer-events:none;box-shadow:var(--shadow)}
 .toast.on{opacity:1}
 header .hamb{display:none;margin-left:-6px}
+.mobonly{display:none!important}
+.tdy{display:inline-grid;place-items:center;width:24px;height:24px;border:2px solid currentColor;border-radius:5px;font-size:11px;font-weight:700;color:var(--tx2)}
 #navDrawer,#scrim{display:none}
 @media(max-width:899px){
  body{padding-bottom:0}
  header{gap:6px;padding:0 8px}
  header .hamb{display:inline-grid;color:var(--tx2);font-size:22px}
- header .logo{width:30px;height:30px}
+ header .logo,header h1,.greet,.strip,.toolbar,#viewSeg{display:none!important}
+ .mobonly{display:inline-grid!important}
+ header #mTitle{font-size:20px;font-weight:400;margin:0;flex:1;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:capitalize}
+ header{height:56px}
+ main{padding:0!important}
+ #v-cal.on>div{display:flex;flex-direction:column;height:calc(100dvh - 56px)}
+ .calwrap{flex:1;border:0;border-radius:0;display:flex;flex-direction:column}
+ .cal{flex:1;grid-template-rows:auto;grid-auto-rows:1fr}
+ .cell{min-height:0!important}
+ #dayView{flex:1;display:flex;flex-direction:column;border:0;border-radius:0;min-height:0}
+ #dayView[hidden],#calWrap[hidden]{display:none!important}
+ .dvGrid{flex:1;height:auto!important;min-height:0}
+ .vtabs{top:56px}
  #scrim{display:block;position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:49;opacity:0;pointer-events:none;transition:opacity .2s}
  body.navopen #scrim{opacity:1;pointer-events:auto}
  #navDrawer{display:block;position:fixed;top:0;left:0;bottom:0;width:min(86vw,330px);background:var(--surf);z-index:50;transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto;box-shadow:var(--shadow);padding:10px 0 30px;border-radius:0 16px 16px 0}
@@ -276,6 +290,7 @@ header .hamb{display:none;margin-left:-6px}
 .dvGrid .inner{position:relative;height:calc(24 * var(--hp))}
 .dvGrid .hr{position:absolute;left:0;right:0;height:var(--hp);border-top:1px solid var(--line);cursor:pointer}
 .dvGrid .hr:hover{background:var(--hov)}
+.dvGrid .hr .half{position:absolute;left:56px;right:0;border-top:1px dashed var(--line)}
 .dvGrid .hr span{position:absolute;left:8px;top:-9px;font-size:11px;color:var(--mut);background:var(--surf);padding:0 4px}
 .dvGrid .night{position:absolute;left:56px;right:0;background:repeating-linear-gradient(45deg,transparent 0 8px,color-mix(in srgb,#3949ab 7%,transparent) 8px 16px);pointer-events:none}
 .dvBlk{position:absolute;left:62px;right:10px;border-radius:8px;padding:5px 10px;color:#fff;font-size:13px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.2)}
@@ -287,7 +302,7 @@ header .hamb{display:none;margin-left:-6px}
 .dvNow{position:absolute;left:56px;right:0;height:2px;background:#ea4335;z-index:2;pointer-events:none}
 .dvNow::before{content:"";position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#ea4335}
 .dvEmpty{position:absolute;left:62px;right:10px;top:40%;text-align:center;color:var(--mut);font-size:14px;pointer-events:none}
-@media(max-width:600px){.mpick{left:50%!important;transform:translateX(-50%);width:min(320px,94vw)}.dvGrid{height:calc(100vh - 290px)}.vseg button{padding:5px 10px}#mTitle{font-size:17px}}
+@media(max-width:600px){.dvAll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;min-height:0}.dvAll>*{flex:none}.dvHead{padding:8px 10px;align-items:center}.dvDate b{width:38px;height:38px;font-size:20px}.dvMeta{padding:4px 12px}.mpick{left:50%!important;transform:translateX(-50%);width:min(320px,94vw)}.dvGrid{height:calc(100vh - 290px)}.vseg button{padding:5px 10px}#mTitle{font-size:17px}}
 /* drawer giornata (stile pannello evento) */
 .modal.drawer{justify-content:flex-end;align-items:stretch}
 .modal.drawer .sheet{max-width:560px;height:100%;max-height:100vh;border-radius:0;display:flex;flex-direction:column;padding:0;animation:slide .18s ease-out}
@@ -392,6 +407,8 @@ header .hamb{display:none;margin-left:-6px}
 </nav>
   <button class="fschip ok" id="btnInstall" hidden>⬇ Installa app</button>
   <button class="fschip" id="fsChip" hidden></button>
+  <button class="ico mobonly" id="hdrToday" title="Oggi"><span class="tdy" id="hdrTodayN"></span></button>
+  <button class="ico mobonly" id="hdrView" title="Mese / Giorno">▦</button>
   <button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button>
 </header>
 <div id="scrim"></div>
@@ -909,7 +926,7 @@ function cellEvents(x){
 const isoWeek=dt=>{const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));const n=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-n);const y0=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil(((d-y0)/864e5+1)/7)};
 let calView='month', dayCur=TODAY();
 function renderCal(){
- $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===calView));
+ $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===calView)); $('#hdrView').textContent=calView==='day'?'▦':'☰'; $('#hdrView').title=calView==='day'?'Vista mese':'Vista giorno';
  $('#calWrap').hidden=calView==='day'; $('#dayView').hidden=calView!=='day';
  if(calView==='day')return renderDayView();
  const y=cur.getFullYear(),m=cur.getMonth(),today=TODAY();
@@ -922,7 +939,7 @@ function renderCal(){
    const ds=iso(d), x=dayOf(ds), {ev,ln}=cellEvents(x), tint=x.calColor?col(x.calColor):isWork(x)?'transparent':(STCOL[x.status]?col(STCOL[x.status]):'transparent');
    if(isWork(x))wk++;
    const mob=innerWidth<=600; if(mob)for(let k=ln.length-1;k>=0;k--)if(ln[k][2])ln.splice(k,1);
-   const MAX=mob?3:4, shown=ln.slice(0,MAX);
+   const MAX=mob?Math.max(2,Math.floor((($('#cal').clientHeight||600)/6-34)/14)):4, shown=ln.slice(0,MAX);
    cells+=`<div class="cell ${i>4?'we':''} ${d.getMonth()!==m?'out':''} ${ds===today?'today':''} ${isHol(ds)?'hol':''} ${x.calColor?'mark':''}" style="--tint:${tint}" data-d="${ds}" title="${esc(extras(x).map(e=>e[1]).join(' · '))}">
     <span class="n">${d.getDate()}</span><span class="ods" title="Ordine di Servizio n. ${odsTxt(ds)}">n. ${odsN(ds)}</span>
     ${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${e.t}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}
@@ -935,10 +952,12 @@ function renderCal(){
  $('#cal').innerHTML=h;
  renderSide(y); renderMini(); renderEmpty(); renderGreet();
 }
-const HP=()=>innerWidth<=600?46:52;
-function renderDayView(){
+let dvZoom=(()=>{try{return +localStorage.getItem('apsZoom')||1}catch{return 1}})();
+const HP=()=>Math.round((innerWidth<=600?46:52)*dvZoom);
+function setZoom(z,anchorY){const g=$('#dvGrid');const old=HP(),st=g?g.scrollTop:0;dvZoom=Math.min(3,Math.max(.4,z));try{localStorage.setItem('apsZoom',dvZoom)}catch{}renderDayView(true);const g2=$('#dvGrid');if(g2){const ay=anchorY??g2.clientHeight/2;g2.scrollTop=(st+ay)*HP()/old-ay}}
+function renderDayView(keepScroll){
  const ds=dayCur, x=dayOf(ds), dt=parse(ds), today=TODAY(), hp=HP();
- $('#mTitle').textContent=dt.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'long',year:'numeric'});
+ $('#mTitle').textContent=dt.toLocaleDateString('it-IT',mqMob.matches?{weekday:'short',day:'numeric',month:'short'}:{weekday:'short',day:'numeric',month:'long',year:'numeric'});
  const {ev,ln}=cellEvents(x), allLn=ln.filter(l=>!l[2]&&!/^\(.*SE\)$|^Straord\./.test(l[1]));
  const blocks=[];
  {const pr=plannedRanges(ds);if(pr&&(!isWork(x)||pr!==x.ranges))parseR(pr).forEach(([a,b])=>blocks.push({a,b,c:'transparent',t:'Previsto',k:'plan'}))}
@@ -946,20 +965,24 @@ function renderDayView(){
   parseR(x.ranges).forEach(([a,b],i)=>blocks.push({a,b,c,lt:sh&&LIGHT.has(sh.color),t:i?'Rientro':(x.trn?.length?'Aggiornamento':'Servizio'),k:''}));
   parseR(x.seRanges).forEach(([a,b])=>blocks.push({a,b,c:C.stra,lt:true,t:'Straordinario (SE)',k:'se'}))}
  const real=blocks.filter(b=>b.k!=='plan');
- const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span></div>`).join('');
+ const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span>${hp>=90?`<i class="half" style="top:${hp/2}px"></i>`:''}</div>`).join('');
  blocks.sort((a,b)=>(a.k==='plan'?0:1)-(b.k==='plan'?0:1));
  const bl=blocks.map(B=>{const a=B.a,b=Math.min(B.b,1440);return `<div class="dvBlk ${B.k} ${B.lt?'lt':''} ${B.k!=='plan'&&blocks.some(z=>z.k==='plan')?'half':''}" data-blk style="--c:${B.c};background:${B.k?'':B.c};top:${a/60*hp+1}px;height:${Math.max(22,(b-a)/60*hp-2)}px"><b>${B.t}</b><small>${fmtT(B.a)} – ${fmtT(B.b)}</small></div>`}).join('');
  const nowM=new Date().getHours()*60+new Date().getMinutes();
  $('#dayView').innerHTML=`<div class="dvHead"><div class="dvDate"><span>${dt.toLocaleDateString('it-IT',{weekday:'short'})}</span><b class="${ds===today?'t':''}">${dt.getDate()}</b></div>
   <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}">${esc(t)}</span>`).join('')}${!ev.length&&!allLn.length?'<span class="mut s">Tocca per aggiungere</span>':''}</div>
-  <button class="ico" data-open title="Apri la giornata">✎</button></div>
+  <div class="row" style="gap:0;flex-wrap:nowrap"><button class="ico" data-zoom="-1" title="Mostra più ore">－</button><button class="ico" data-zoom="1" title="Più dettaglio">＋</button><button class="ico" data-open title="Apri la giornata">✎</button></div></div>
   <div class="dvMeta">Ordine di Servizio n. ${odsTxt(ds)} · settimana ${isoWeek(dt)}${isHol(ds)?' · 🎉 '+esc(holName(ds)):''}${isWork(x)?` · ${fmtH(rangesH(x.ranges))} ordinarie${x.stra?' + '+fmtH(x.stra)+' straord.':''}${nightH(x)?' · 🌙 '+fmtH(nightH(x)):''}`:''}</div>
   <div class="dvGrid" id="dvGrid" style="--hp:${hp}px"><div class="inner">${grid}
    <div class="night" style="top:0;height:${6*hp}px"></div><div class="night" style="top:${22*hp}px;height:${2*hp}px"></div>
    ${bl}${ds===today?`<div class="dvNow" style="top:${nowM/60*hp}px"></div>`:''}
    ${!real.length?`<div class="dvEmpty">${esc(isWork(x)?'Nessun orario':STATI[x.status])}<br><span class="s">tocca un orario per aggiungere</span></div>`:''}</div></div>`;
  const first=blocks.length?Math.min(...blocks.map(b=>b.a)):7*60;
- $('#dvGrid').scrollTop=Math.max(0,(first/60-1)*hp);
+ if(!keepScroll)$('#dvGrid').scrollTop=Math.max(0,(first/60-1)*hp);
+ {const g=$('#dvGrid');let d0=null,z0=1;g.addEventListener('touchstart',e=>{if(e.touches.length===2){d0=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);z0=dvZoom}},{passive:true});
+  g.addEventListener('touchmove',e=>{if(e.touches.length===2&&d0){e.preventDefault();const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),r=g.getBoundingClientRect(),cy=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top;const nz=Math.round(z0*d/d0*20)/20;if(Math.abs(nz-dvZoom)>=.05)setZoom(nz,cy)}},{passive:false});
+  g.addEventListener('touchend',e=>{if(e.touches.length<2)d0=null});
+  g.addEventListener('wheel',e=>{if(e.ctrlKey){e.preventDefault();setZoom(dvZoom*(e.deltaY<0?1.1:0.9),e.clientY-g.getBoundingClientRect().top)}},{passive:false})}
  renderSide(dt.getFullYear()); renderMini(); renderEmpty(); renderGreet();
 }
 function slotMenu(ds,h,anchor){
@@ -986,6 +1009,7 @@ document.addEventListener('click',e=>{
  if(k==='note'){showTab('att');setTimeout(()=>$('#eNote').focus(),80)}
 });
 $('#dayView').addEventListener('click',e=>{
+ const zb=e.target.closest('[data-zoom]');if(zb)return setZoom(dvZoom*(zb.dataset.zoom==='1'?1.25:0.8));
  if(e.target.closest('[data-open],[data-blk]'))return openDay(dayCur);
  const hr=e.target.closest('.hr');if(hr)slotMenu(dayCur,+hr.dataset.h,hr);
 });
@@ -1066,19 +1090,22 @@ $('#mini').addEventListener('click',e=>{
 });
 document.addEventListener('click',e=>{if(!e.target.closest('#v-cal,#navDrawer'))return;if(e.target.closest('#stripBk,#sideBk')){closeNav();e.preventDefault();return makeCloudBackup()}if(e.target.closest('[data-go]'))closeNav();if(e.target.closest('#stripBk,#sideBk')){e.preventDefault();return makeCloudBackup()}const g=e.target.closest('[data-go]');if(g){e.preventDefault();cur=parse(g.dataset.go);cur.setDate(1);miniM=new Date(cur);renderCal();openDay(g.dataset.go)}});
 $('#cal').addEventListener('click',e=>{const c=e.target.closest('.cell');if(!c)return;if(mqMob.matches)goDay(c.dataset.d);else openDay(c.dataset.d)});
+function slideAnim(dir){const el=calView==='day'?$('#dayView'):$('#cal');el.animate([{transform:`translateX(${dir*40}px)`,opacity:.3},{transform:'none',opacity:1}],{duration:180,easing:'ease-out'})}
 /* drawer laterale (mobile) */
 const mqMob=matchMedia('(max-width:899px)');
 function closeNav(){document.body.classList.remove('navopen')}
-function placeLayout(){const nav=$('nav'),side=$('.side');if(mqMob.matches){$('#ndNav').append(nav);$('#ndSide').append(side)}else{$('header .sp').after(nav);$('#v-cal').prepend(side)}}
+function placeLayout(){const nav=$('nav'),side=$('.side'),t=$('#mTitle');if(mqMob.matches){$('#ndNav').append(nav);$('#ndSide').append(side);$('#btnMenu').after(t)}else{$('header .sp').after(nav);$('#v-cal').prepend(side);$('#viewSeg').before(t)}}
 mqMob.addEventListener('change',placeLayout); placeLayout();
+$('#hdrToday').onclick=()=>{if(view!=='cal')go('cal');$('#btnToday').click()};
+$('#hdrView').onclick=()=>{if(view!=='cal')go('cal');calView=calView==='day'?'month':'day';if(calView==='day'){const t=TODAY();dayCur=t.slice(0,7)===iso(cur).slice(0,7)?t:iso(cur)}renderCal()};
 $('#btnMenu').onclick=()=>document.body.classList.add('navopen');
 $('#scrim').onclick=closeNav;
 $('#navDrawer').addEventListener('click',e=>{if(e.target.closest('nav button,[data-md]'))closeNav()});
 /* scorrimento orizzontale per cambiare mese */
-{let x0=null,y0=null;$('#cal').addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
- $('#cal').addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)(dx<0?$('#next'):$('#prev')).click()},{passive:true})}
-$('#prev').onclick=()=>{if(calView==='day'){const d=parse(dayCur);d.setDate(d.getDate()-1);return goDay(iso(d))}cur.setMonth(cur.getMonth()-1,1);miniM=new Date(cur);renderCal()};
-$('#next').onclick=()=>{if(calView==='day'){const d=parse(dayCur);d.setDate(d.getDate()+1);return goDay(iso(d))}cur.setMonth(cur.getMonth()+1,1);miniM=new Date(cur);renderCal()};
+{let x0=null,y0=null;$('#calWrap').addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
+ $('#calWrap').addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)(dx<0?$('#next'):$('#prev')).click()},{passive:true})}
+$('#prev').onclick=()=>{slideAnim(-1);if(calView==='day'){const d=parse(dayCur);d.setDate(d.getDate()-1);return goDay(iso(d))}cur.setMonth(cur.getMonth()-1,1);miniM=new Date(cur);renderCal()};
+$('#next').onclick=()=>{slideAnim(1);if(calView==='day'){const d=parse(dayCur);d.setDate(d.getDate()+1);return goDay(iso(d))}cur.setMonth(cur.getMonth()+1,1);miniM=new Date(cur);renderCal()};
 $('#btnToday').onclick=()=>{cur=new Date();cur.setDate(1);miniM=new Date();dayCur=TODAY();renderCal()};
 /* menu Crea */
 document.addEventListener('click',e=>{
@@ -1159,7 +1186,7 @@ function openDay(ds){
  </div>
  </div>
  <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Fatto</button></div>`;
- dayTab=isWork(E)?'ora':'att'; renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato automaticamente':'Le modifiche si salvano da sole';
+ dayTab=isWork(E)?'ora':'att'; renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato automaticamente':'Le modifiche si salvano da sole';
 }
 let dayTab='ora';
 function showTab(k){dayTab=k;$$('#eTabs [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===k))}
@@ -1233,7 +1260,7 @@ function syncModal(){
 let SW=null;
 function swLoad(){const m=monday(parse(SW.from));SW.grid=[0,1].map(w=>DOW.map((_,i)=>{const d=new Date(m);d.setDate(d.getDate()+w*7+i);return rotShift(iso(d))||''}))}
 function openShifts(onb){
- MODE='shifts'; const p=planFor(TODAY()); SW={from:iso(monday(new Date())),alt:(p?.weeks||2)>1,onb:onb===true,shifts:structuredClone(S.shifts)}; swLoad(); swRender(); $('#modal').classList.remove('drawer');$('#modal').classList.add('open');
+ MODE='shifts'; const p=planFor(TODAY()); SW={from:iso(monday(new Date())),over:true,alt:(p?.weeks||2)>1,onb:onb===true,shifts:structuredClone(S.shifts)}; swLoad(); swRender(); $('#modal').classList.remove('drawer');$('#modal').classList.add('open');
 }
 const swSh=id=>SW.shifts.find(s=>s.id===id);
 function swRender(){
@@ -1259,7 +1286,7 @@ function swRender(){
  ${rows.map(w=>`<span class="wl">${SW.alt?(w?'Sett. B':'Sett. A'):'Ogni sett.'}<br><span class="mut s">${wk(w)}</span></span>${DOW.map((_,i)=>cell(w,i)).join('')}`).join('')}</div>
  ${SW.alt?`<div class="row" style="margin-top:12px"><span class="mut s grow">La settimana che contiene la data scelta (${wk(0)}) è la <b>A</b>. Se per te è una settimana B:</span><button id="swSwap">⇄ Inverti A e B</button></div>`:''}
  <p class="mut s" style="margin-top:12px">${SW.alt?'Dopo la settimana B si ricomincia con la A, e così via.':'Lo stesso schema ogni settimana.'} I giorni già registrati a mano non vengono toccati; quelli passati compilati in automatico vengono ricalcolati.</p>
- ${(()=>{const n=[...DAYS.values()].filter(d=>!d.auto&&d.date>=SW.from).length;return n?`<label class="tgl" style="margin-top:10px"><input type="checkbox" id="swOver" ${SW.over?'checked':''}> Aggiorna anche i ${n} giorni già salvati da questa data: il turno si allinea al nuovo schema, note e attività restano (gli orari modificati a mano, es. perquisizioni, non vengono toccati)</label>`:''})()}
+ ${(()=>{const n=[...DAYS.values()].filter(d=>!d.auto&&d.date>=SW.from).length;return n?`<label class="tgl" style="margin-top:10px"><input type="checkbox" id="swOver" ${SW.over?'checked':''}> <span><b>Sovrascrivi i ${n} giorni già salvati</b> da questa data (consigliato): il turno segue il nuovo schema, note e attività restano. Gli orari scritti a mano (es. perquisizioni) non vengono toccati.</span></label>`:''})()}
  <div class="foot"><span class="grow"></span><button data-x>${SW.onb?'Salta':'Annulla'}</button><button class="pri" data-swsave>${SW.onb?'Avanti →':'Applica'}</button></div>`;
 }
 async function swSave(){
@@ -1274,7 +1301,7 @@ async function swSave(){
  if(SW.over){const upd=[];
   [...DAYS.values()].filter(d=>!d.auto&&d.date>=from).forEach(d=>{
    const plain=!d.note&&!(d.tags||[]).length&&!(d.acts||[]).length&&!(d.trn||[]).length&&!d.calNote&&!d.stra&&!d.pb&&!d.sind&&!d.rec&&!d.esterna&&!d.fdv&&!Object.values(d.ind||{}).some(Boolean);
-   const followed=isWork(d)&&d.shiftId&&(oldSh.find(x=>x.id===d.shiftId)?.ranges===d.ranges||shiftById(d.shiftId)?.ranges===d.ranges);
+   const followed=isWork(d)&&!!d.ranges&&[...oldSh,...S.shifts].some(x=>x.ranges===d.ranges);
    if(plain&&(isWork(d)?followed:['riposo','festivo'].includes(d.status)))keys.push(d.date);
    else if(followed&&!(d.trn||[]).length){const ps=plannedShift(d.date),sh=shiftById(ps);if(sh){const n={...d,shiftId:sh.id,ranges:sh.ranges};if(!n.buonoMan)n.buono=calcBuono(n,sh);n.ctAuto=autoCT(n);upd.push(n)}}});
   if(upd.length){await DB.putMany(upd);upd.forEach(d=>DAYS.set(d.date,d))}}
@@ -1848,7 +1875,7 @@ $('#btnTheme').onclick=()=>{const t=document.documentElement.dataset.theme==='li
 
 /* ===== Navigazione ===== */
 let view='cal';
-function go(v){view=v;if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
+function go(v){view=v;if(mqMob?.matches&&v!=='cal')$('#mTitle').textContent={sum:'Riepilogo',find:'Cerca',set:'Impostazioni'}[v];if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
 $$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
 function refreshBg(){if(view==='cal')renderCal();else if(view==='sum')renderSum()}
 function refresh(){({cal:renderCal,sum:renderSum,find:renderFind,set:renderSet})[view]();if(view==='set'){FS.ui();cbUi()}}
@@ -1860,7 +1887,7 @@ async function load(){
  DAYS=new Map(all.map(d=>[d.date,d])); await freezePast(); T=structuredClone(S); refresh();
 }
 (async()=>{
- $('#logoDay').textContent=new Date().getDate(); $('#ndDay').textContent=new Date().getDate(); $('#ndVer').textContent=verTxt(); cur.setDate(1);
+ $('#logoDay').textContent=new Date().getDate(); $('#hdrTodayN').textContent=new Date().getDate(); $('#ndDay').textContent=new Date().getDate(); $('#ndVer').textContent=verTxt(); cur.setDate(1);
  $('#verInfo').textContent='Agenda PS '+verTxt(); $('#sideVer').textContent='Agenda PS '+verTxt(); document.title='Agenda PS'+(APP_VERSION.startsWith('__')?'':' v'+APP_VERSION);
  await DB.open();
  await FS.init();
