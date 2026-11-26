@@ -196,6 +196,8 @@ tr[data-d]:hover td{background:var(--hov)}
 .list .it{padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:6px}
 .list .it:hover{background:var(--hov)}
 .shiftrow{display:grid;grid-template-columns:1fr 1.6fr 80px 110px auto auto;gap:6px;align-items:center;margin-bottom:6px}
+.shiftrow.shcard{display:flex;flex-direction:column;align-items:stretch;gap:4px;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--surf)}
+.shtop{display:flex;gap:8px;align-items:flex-end}.shtop label{min-width:0}.shtop .ico{flex:none;margin-bottom:2px}.shl{margin-top:8px}
 .indbox{border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:8px;display:grid;grid-template-columns:1.4fr 1fr 1.3fr auto;gap:6px;align-items:end}
 .indbox .sub{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
 .trnrow{display:grid;grid-template-columns:1.4fr 1fr 80px 120px auto;gap:6px;align-items:end;margin-bottom:6px}
@@ -317,7 +319,7 @@ header .hamb{display:none;margin-left:-6px}
  .calwrap{border-radius:10px}
  .ln.strk,.legend{display:none}
  .toolbar h2{font-size:18px}
- .shiftrow{grid-template-columns:1fr 1fr}.indbox{grid-template-columns:1fr 1fr}.grid5{grid-template-columns:1fr 1fr 1fr}.trnrow{grid-template-columns:1fr 1fr}
+ .shiftrow:not(.shcard){grid-template-columns:1fr 1fr}.indbox{grid-template-columns:1fr 1fr}.grid5{grid-template-columns:1fr 1fr 1fr}.trnrow{grid-template-columns:1fr 1fr}
  .bar .lb{width:110px}
 }
 #printArea{display:none}
@@ -338,7 +340,7 @@ header .hamb{display:none;margin-left:-6px}
 .dvDate span{display:block;font-size:12px;color:var(--mut);font-weight:500;text-transform:uppercase}
 .dvDate b{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;font-size:24px;font-weight:400;color:var(--tx2)}
 .dvDate b.t{background:var(--acc);color:var(--accTx)}
-.dvAll{flex:1;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:44px}
+.dvAll{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:44px}.dvAll .ev,.dvAll .ln{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dvHead>.ico{flex:none}
 .dvAll .ev,.dvAll .ln{font-size:12.5px;padding:3px 8px;border-radius:6px;cursor:pointer;max-width:100%}
 .dvAll .ln{background:color-mix(in srgb,var(--c) 22%,var(--surf));color:var(--tx2);display:inline-flex}
 .dvAll .ln i{display:none}
@@ -646,7 +648,7 @@ button.wide{width:100%;border-radius:10px}
       <label><span class="mut s">C.T. anticipo (h)</span><input type="number" min="0" step="0.5" id="ru_ctMin"></label>
       <label><span class="mut s">Pranzo oltre le</span><input type="time" id="ru_lunch"></label>
       <label><span class="mut s">Cena oltre le</span><input type="time" id="ru_dinner"></label>
-      <label><span class="mut s">Orario aggiornamento</span><input id="ru_trnRanges" placeholder="08:00-14:00"></label>
+      <div><span class="mut s">Orario giornate di aggiornamento</span><div id="trnRgBox"></div></div>
       <label><span class="mut s">Perquisizione: inizio abituale</span><input type="time" id="ru_perqStart"></label>
       <label><span class="mut s">Ore di una giornata di 104</span><input type="number" min="1" max="12" step="0.5" id="ru_p104hDay"></label>
     </div>
@@ -660,7 +662,7 @@ button.wide{width:100%;border-radius:10px}
   </div>
   <div class="card" data-vp="tur">
     <h4>Tipi di turno</h4>
-    <p class="mut">Fasce separate da virgola, es. <i>07:00-13:00, 13:30-16:30</i>. "Buono auto" spunta il buono in automatico. Modificare un turno non cambia i giorni passati.</p>
+    <p class="mut">Per ogni turno scegli le fasce con l'orologio (＋ per il rientro). "Buono pasto automatico" lo segna da solo nei giorni di quel turno. Modificare un turno non cambia i giorni passati.</p>
     <div id="shiftList" style="margin-top:10px"></div>
     <button id="addShift">+ Turno</button>
   </div>
@@ -2108,8 +2110,16 @@ function sortPlans(){T.plans.sort((a,b)=>a.from.localeCompare(b.from))}
 const swPick=c=>`<div class="swp"><input type="hidden" data-k="color" value="${c}">${Object.keys(PAL).map(k=>`<i data-sw="${k}" class="${k===c?'on':''}" style="--c:${PAL[k]}" title="${PALN[k]}"></i>`).join('')}</div>`;
 document.addEventListener('click',e=>{const b=e.target.closest('[data-sec]');if(b){const t=$(`#setTabs [data-vt="${b.dataset.sec}"]`);t&&t.click();$('#v-set').classList.add('insec');$('#setBack').textContent='‹ '+b.querySelector('b').textContent;scrollTo(0,0)}
  if(e.target.closest('#setBack')){$('#v-set').classList.remove('insec');scrollTo(0,0)}});
+const trgRows=(v,max)=>{const r=parseR(v||'');return r.map(([a,b],i)=>`<div class="rgrow"><span class="rgl">${max===1?'Orario':i?'Rientro':'Turno'}</span><input type="time" value="${fmtT(a)}"><span class="mut">→</span><input type="time" value="${fmtT(b)}"><span class="rgh">${fmtH((b-a)/60)}</span>${max===1?'':`<button type="button" class="ico" data-trgdel="${i}" title="Rimuovi">✕</button>`}</div>`).join('')+(max&&r.length>=max?'':`<button type="button" class="rgadd" data-trgadd>＋ ${r.length?'Aggiungi rientro':'Aggiungi orario'}</button>`)};
+const trg=(v,attrs,max)=>`<div class="trg rged" data-max="${max||0}"><input type="hidden" ${attrs} value="${esc(v||'')}">${trgRows(v,max)}</div>`;
+function trgSync(box){const v=[...box.querySelectorAll('.rgrow')].map(r=>{const[a,b]=r.querySelectorAll('input[type=time]');return a.value&&b.value?a.value+'-'+b.value:''}).filter(Boolean).join(', ');box.querySelector('input[type=hidden]').value=v;return v}
+function trgRedraw(box,v){box.querySelector('input[type=hidden]').value=v;box.querySelectorAll('.rgrow,.rgadd').forEach(x=>x.remove());box.insertAdjacentHTML('beforeend',trgRows(v,+box.dataset.max))}
+document.addEventListener('change',e=>{const box=e.target.closest('.trg');if(box&&e.target.type==='time'){trgRedraw(box,trgSync(box))}});
+document.addEventListener('click',e=>{const box=e.target.closest('.trg');if(!box)return;
+ if(e.target.closest('[data-trgadd]')){const r=parseR(box.querySelector('input[type=hidden]').value);const a=r.length?Math.max(...r.map(x=>x[1]))+30:9*60,b=a+(r.length?180:360);trgRedraw(box,[box.querySelector('input[type=hidden]').value,fmtT(a)+'-'+fmtT(b)].filter(Boolean).join(', '))}
+ const d=e.target.closest('[data-trgdel]');if(d){const r=parseR(box.querySelector('input[type=hidden]').value);r.splice(+d.dataset.trgdel,1);trgRedraw(box,r.map(([a,b])=>fmtT(a)+'-'+fmtT(b)).join(', '))}});
 function renderSet(){
- $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
+ $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; $('#trnRgBox').innerHTML=trg(T.rules.trnRanges,'id="ru_trnRanges"',1); Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
  const cy=new Date().getFullYear();
  $('#alYear').innerHTML=Array.from({length:Math.max(cy+10,alYear)-Math.min(cy-10,alYear)+1},(_,i)=>Math.min(cy-10,alYear)+i).map(y=>`<option ${y===alYear?'selected':''}>${y}</option>`).join('');
  const al=allowFor(alYear,T); Object.keys(ALDEF).forEach(k=>$('#al_'+k).value=al[k]);
@@ -2120,12 +2130,13 @@ function renderSet(){
   <label><span class="mut s">Gg/anno</span><input type="number" min="0" data-k="quota" value="${t.quota}"></label>
   <div class="full"><span class="mut s">Colore</span>${swPick(t.color)}</div>
   <button class="ico danger" data-deltrn="${i}">🗑</button></div>`).join('');
- $('#shiftList').innerHTML=T.shifts.map((s,i)=>`<div class="shiftrow" data-i="${i}">
-  <input data-k="name" value="${esc(s.name)}" placeholder="Nome"><input data-k="ranges" value="${esc(s.ranges)}" placeholder="09:00-15:00">
-  <input data-k="short" value="${esc(s.short||'')}" placeholder="Sigla">
-  <div class="full">${swPick(s.color)}</div>
-  <label class="tgl" style="padding:7px 9px;font-size:12.5px"><input type="checkbox" data-k="buono" ${s.buono?'checked':''}>Buono auto</label>
-  <button class="ico danger" data-delshift="${i}">🗑</button></div>`).join('');
+ $('#shiftList').innerHTML=T.shifts.map((s,i)=>`<div class="shiftrow shcard" data-i="${i}">
+  <div class="shtop"><label class="grow"><span class="mut s">Nome del turno</span><input data-k="name" value="${esc(s.name)}" placeholder="Es. 7-13 + rientro"></label>
+   <label style="width:96px"><span class="mut s">Sigla</span><input data-k="short" value="${esc(s.short||'')}" placeholder="Es. 7-13R" maxlength="8"></label>
+   <button class="ico danger" data-delshift="${i}" title="Elimina turno">🗑</button></div>
+  <span class="mut s shl">Fasce orarie</span>${trg(s.ranges,'data-k="ranges"')}
+  <span class="mut s shl">Colore nel calendario</span>${swPick(s.color)}
+  <label class="swt" style="margin-top:10px"><input type="checkbox" data-k="buono" ${s.buono?'checked':''}><i></i><span>Buono pasto automatico</span></label></div>`).join('');
  sortPlans(); selPlan=Math.min(selPlan,T.plans.length-1);
  const act=planFor(TODAY(),T);
  $('#plans').innerHTML=T.plans.map((p,i)=>`<span class="chip ${i===selPlan?'on':''}" data-plan="${i}">dal ${itD(p.from)}${p===act?' · in vigore':''}</span>`).join('');
@@ -2296,8 +2307,8 @@ let installEvt=null, swReg=null, silentSW=false;
 const curVer=()=>APP_VERSION.startsWith('__')?'locale':'v'+APP_VERSION;
 async function remoteVer(){try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/APP_VERSION='([^']+)'/);return m&&!m[1].startsWith('__')?m[1]:null}catch{return null}}
 async function doUpdate(){if(MODE==='day')await flushDay();$('#banOk')&&($('#banOk').textContent='Aggiorno…');if(swReg?.waiting)swReg.waiting.postMessage('skipWaiting');else location.reload()}
-async function updBanner(v){v=v||await remoteVer();if(!v||v===APP_VERSION)return;banner('upd','🔄 È uscita la versione v'+v,'Stai usando la '+curVer()+'. Aggiorna per passare alla v'+v+': i tuoi dati restano dove sono.','Aggiorna ora',doUpdate)}
-async function checkUpdates(btn){const o=btn?.textContent;if(btn){btn.disabled=true;btn.textContent='Verifico…'}
+async function updBanner(v){v=v||await remoteVer();if(!v||v===APP_VERSION)return;closeNav();banner('upd','🔄 È uscita la versione v'+v,'Stai usando la '+curVer()+'. Aggiorna per passare alla v'+v+': i tuoi dati restano dove sono.','Aggiorna ora',doUpdate)}
+async function checkUpdates(btn){closeNav();const o=btn?.textContent;if(btn){btn.disabled=true;btn.textContent='Verifico…'}
  try{if(swReg)await swReg.update().catch(()=>{});const v=await remoteVer();
   if(!v)toast('Impossibile verificare: sei offline o in versione locale');
   else if(v!==APP_VERSION)updBanner(v);else toast('✓ Hai già l\'ultima versione (v'+v+')')}
