@@ -165,10 +165,22 @@ nav button.on span{background:var(--accSoft)}
  header .sp{flex:1}
 }
 /* summary etc. */
-.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:12px}
-.kpi{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
-.kpi b{display:block;font-size:26px;font-weight:400;color:var(--tx2);margin-top:2px}
-.kpi small{color:var(--mut);font-size:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-bottom:12px}
+.kpi{display:flex;align-items:center;gap:10px;text-align:left;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px 10px 10px 12px;min-width:0;width:100%;cursor:pointer;transition:border-color .15s}
+.kpi:hover{border-color:var(--c)}.kpi>i{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-style:normal;font-size:17px;background:color-mix(in srgb,var(--c) 18%,transparent)}
+.kpi>span{flex:1;min-width:0}.kpi small{display:block;color:var(--mut);font-size:11.5px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi b{display:block;font-size:21px;font-weight:500;color:var(--tx2);line-height:1.25;font-variant-numeric:tabular-nums}.kpi b small{display:inline;font-size:11px;font-weight:400;margin-left:4px}
+.kpi em{font-style:normal;color:var(--mut);font-size:18px}.kpi.zero{opacity:.55;cursor:default}.kpi.zero:hover{border-color:var(--line)}
+.sumbar{display:flex;flex-direction:column;gap:10px}
+.segp{display:grid;grid-template-columns:repeat(3,1fr);background:var(--surf2);border-radius:10px;padding:3px;gap:3px}.segp button{border:0;border-radius:8px;padding:7px 0;background:none;color:var(--mut);font-weight:500}.segp button.on{background:var(--surf);color:var(--acc);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.sumnav{display:flex;align-items:center;justify-content:space-between;gap:8px}.sumnav b{flex:1;text-align:center;font-size:17px;font-weight:500;text-transform:capitalize;color:var(--tx2)}.sumnav input{flex:1;width:auto;min-width:0}
+.swt{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px}.swt input{display:none}.swt i{flex:none;width:38px;height:22px;border-radius:11px;background:var(--line);position:relative;transition:background .15s}
+.swt i::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}.swt input:checked+i{background:var(--acc)}.swt input:checked+i::after{left:19px}
+.sumbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px}.sumbtns button{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px;border-radius:10px;font-weight:500}
+.dlist{display:flex;flex-direction:column}.drow{display:flex;gap:12px;align-items:center;padding:10px 2px;border-top:1px solid var(--line);cursor:pointer}.drow:first-child{border-top:0}
+.drow .dd{flex:none;width:46px;text-align:center;line-height:1.1}.drow .dd small{display:block;font-size:10.5px;color:var(--mut);text-transform:uppercase}.drow .dd b{display:block;font-size:20px;font-weight:500;color:var(--tx2)}
+.drow .dm{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}.drow .dt{font-variant-numeric:tabular-nums}.drow .dt b{font-weight:500;color:var(--tx2)}.drow .se{color:var(--warn);font-size:12.5px}
+.dchips{display:flex;flex-wrap:wrap;gap:4px}.dchips .b{font-size:11.5px}.ods2{font-size:11px;color:var(--mut)}.drow em{font-style:normal;color:var(--mut);font-size:18px;flex:none}
 .bar{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}
 .bar .lb{width:150px}
 .bar .tr{flex:1;height:6px;background:var(--surf2);border-radius:4px;overflow:hidden}
@@ -517,27 +529,23 @@ button.wide{width:100%;border-radius:10px}
 
 <!-- RIEPILOGO -->
 <section class="view" id="v-sum"><div class="setwrap">
-  <div class="card noprint">
-    <div class="row">
-      <select id="sRange" style="width:auto"><option value="m">Mese</option><option value="y">Anno</option><option value="r">Intervallo date</option></select>
-      <span class="row" id="sNav"><button class="ico" id="sPrev">‹</button><b id="sTitle" style="min-width:140px;text-align:center;text-transform:capitalize;font-weight:500"></b><button class="ico" id="sNext">›</button></span>
-      <span class="row" id="sDates" style="display:none"><input type="date" id="sFrom" style="width:auto"> → <input type="date" id="sTo" style="width:auto"></span>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <label class="tgl" style="padding:8px 10px"><input type="checkbox" id="sOnlyX" checked> Solo giornate particolari</label>
-      <span class="grow"></span>
-      <button id="csvBtn">⬇ Excel</button><button class="pri" id="printBtn">🖨 PDF</button>
-    </div>
+  <div class="card noprint sumbar">
+    <select id="sRange" hidden><option value="m">Mese</option><option value="y">Anno</option><option value="r">Intervallo date</option></select>
+    <div class="segp" id="sRangeSeg"><button data-r="m" class="on">Mese</button><button data-r="y">Anno</button><button data-r="r">Intervallo</button></div>
+    <div class="sumnav" id="sNav"><button class="ico" id="sPrev" aria-label="Precedente">‹</button><b id="sTitle"></b><button class="ico" id="sNext" aria-label="Successivo">›</button></div>
+    <div class="sumnav" id="sDates" style="display:none"><input type="date" id="sFrom"><span class="mut">→</span><input type="date" id="sTo"></div>
+    <label class="swt"><input type="checkbox" id="sOnlyX" checked><i></i><span>Solo giornate particolari</span></label>
+    <div class="sumbtns"><button id="csvBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="#1d6f42"/><path d="M8 7.5l3 4.5-3 4.5M16 7.5l-3 4.5 3 4.5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/></svg><span>Excel</span></button><button id="printBtn"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 2.5h8l5 5V20a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 20V4a1.5 1.5 0 0 1 1-1.5z" fill="#d93025"/><path d="M14 2.5V7.5h5" fill="#f28b82"/><text x="12" y="17.5" font-size="6.2" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial">PDF</text></svg><span>PDF</span></button></div>
   </div>
   <div class="repHead" id="repHead"></div>
   <div class="kpis" id="kpis"></div>
-  <div class="vtabs noprint" id="sumTabs"><button data-vt="gio" class="on">📅 Giornate</button><button data-vt="ass">🌴 Assenze e indennità</button><button data-vt="agg">🎯 Aggiornamenti e saldi</button><button data-vt="att">📌 Attività</button></div>
+  <div class="vtabs noprint" id="sumTabs"><button data-vt="gio" class="on">📅 Giornate</button><button data-vt="ass">🌴 Assenze</button><button data-vt="agg">🎯 Saldi</button><button data-vt="att">📌 Attività</button></div>
   <div class="card" data-vp="ass"><h4>Assenze e permessi nel periodo</h4><table class="kv" id="absSum"></table></div>
   <div class="card" data-vp="agg"><h4>Giornate di aggiornamento</h4><table class="kv" id="trnSum"></table></div>
   <div class="card" data-vp="ass"><h4>Indennità</h4><table class="kv" id="indSum"></table></div>
   <div class="card" data-vp="att"><h4>Attività registrate</h4><div id="actSum"></div></div>
   <div class="card" data-vp="agg"><h4 id="balTitle"></h4><div id="balBars"></div><div id="pbDebt"></div></div>
-  <div class="card tblwrap on" data-vp="gio"><h4 id="tblTitle"></h4><table id="sTable"></table></div>
+  <div class="card on" data-vp="gio"><h4 id="tblTitle"></h4><div id="sTable" class="dlist"></div></div>
   <div class="card noprint" data-vp="att"><h4>Attività svolte (spunte)</h4><div id="tagBars"></div></div>
 </div></section>
 
@@ -1706,6 +1714,7 @@ $('#sheet').addEventListener('click',async e=>{
  const t=e.target;
  if(MODE==='pw'||MODE==='sec')return;
  if(t.closest('[data-x]'))return closeModal();
+ if(MODE==='kpi'){const g=t.closest('[data-kd]');if(g)openDay(g.dataset.kd);return}
  if(MODE==='welcome'){if(t.closest('[data-wok]'))welcomeSave();return}
  if(MODE==='bulk'){if(t.closest('[data-bkok]'))return bulkApply(false);if(t.closest('[data-bkdel]'))return bulkApply(true);return}
  if(MODE==='shifts'){
@@ -1834,7 +1843,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&MODE==='welcome'&&$(
 /* ===== Tab di sezione (riepilogo, impostazioni) ===== */
 document.addEventListener('click',e=>{const b=e.target.closest('.vtabs [data-vt]');if(!b)return;const box=b.closest('.view');
  box.querySelectorAll('.vtabs [data-vt]').forEach(x=>x.classList.toggle('on',x===b));box.querySelectorAll('[data-vp]').forEach(x=>x.classList.toggle('on',x.dataset.vp===b.dataset.vt));
- if(box.id==='v-set')$('#saveBar').style.display=b.dataset.vt==='dat'?'none':'';scrollTo(0,0)});
+ if(box.id==='v-set')$('#saveBar').style.display=b.dataset.vt==='dat'?'none':'';
+ const tb=box.querySelector('.vtabs'),ref=tb.previousElementSibling;if(ref){const y=ref.getBoundingClientRect().bottom+scrollY-64;if(scrollY>y)scrollTo(0,Math.max(0,y))}});
 /* ===== Riepilogo ===== */
 function period(){
  const y=sCur.getFullYear(),m=sCur.getMonth(),k=$('#sRange').value;
@@ -1865,14 +1875,33 @@ function compute(){
 }
 function turnoHTML(d){const pr=plannedRanges(d.date);
  return `<b>${esc(d.ranges||'—')}</b>`+(pr&&pr!==d.ranges?`<br><s class="mut">${esc(pr)}</s>`:'')+(d.seRanges?`<br>(${esc(d.seRanges)} SE)`:'');}
+const KPI=[
+ {id:'gg',l:'Giorni di servizio',i:'🏢',c:PAL.peacock,v:k=>k.gg,f:d=>isWork(d),x:d=>d.ranges},
+ {id:'bp',l:'Buoni pasto',i:'🍽',c:PAL.tangerine,v:k=>k.bp+(k.bp2?` <small>${k.bp2} doppi</small>`:''),f:d=>isWork(d)&&d.buono>0,x:d=>d.buono>1?'Doppio buono':'1 buono'},
+ {id:'stra',l:'Straordinario',i:'⏱',c:PAL.banana,v:k=>fmtH(k.stra),f:d=>isWork(d)&&d.stra>0,x:d=>fmtH(d.stra)+(d.seRanges?' · '+d.seRanges:'')},
+ {id:'ext',l:'Esterne',i:'🚓',c:PAL.grape,v:k=>k.ext,f:d=>isWork(d)&&d.esterna,x:d=>d.ranges+(d.fdv?' · foglio di viaggio':'')},
+ {id:'ch',l:'Cambi turno',i:'⇄',c:PAL.blueberry,v:k=>k.ch,f:d=>isWork(d)&&isChange(d),x:d=>d.ranges+' (previsto '+(plannedRanges(d.date)||'riposo')+')'},
+ {id:'fest',l:'Festivi e domeniche',i:'🎉',c:PAL.tomato,v:k=>k.fest,f:d=>isWork(d)&&(isHol(d.date)||parse(d.date).getDay()===0),x:d=>isHol(d.date)?holName(d.date):'Domenica'},
+ {id:'not',l:'Notturno',i:'🌙',c:C.night,v:k=>fmtH(k.not),f:d=>isWork(d)&&nightH(d)>0,x:d=>fmtH(nightH(d))},
+ {id:'fdv',l:'Fogli di viaggio',i:'🧾',c:C.fdv,v:k=>k.fdv,f:d=>isWork(d)&&d.fdv,x:d=>d.ranges},
+ {id:'req',l:'Richieste straord. da fare',i:'⚠️',c:PAL.tomato,v:k=>k.req,f:d=>isWork(d)&&d.stra>4&&!d.richiesta,x:d=>fmtH(d.stra)+' di straordinario'},
+ {id:'fuori',l:'Servizio fuori turno',i:'📆',c:PAL.flamingo,v:k=>k.fuori,f:d=>isWork(d)&&!plannedShift(d.date),x:d=>d.ranges},
+ {id:'ore',l:'Ore ordinarie',i:'🕐',c:PAL.sage,v:k=>fmtH(k.ore),f:d=>isWork(d),x:d=>fmtH(rangesH(d.ranges))+' · '+d.ranges},
+ {id:'nodesc',l:'Giorni senza descrizione',i:'📝',c:PAL.graphite,v:k=>k.nodesc,f:d=>isWork(d)&&!d.note&&!d.tags.length&&d.date<=TODAY(),x:d=>d.ranges}];
+const dBlock=ds=>{const d=parse(ds);return `<div class="dd"><small>${d.toLocaleDateString('it-IT',{weekday:'short'})}</small><b>${d.getDate()}</b><small>${d.toLocaleDateString('it-IT',{month:'short'})}</small></div>`};
+function openKpi(id){const K=KPI.find(x=>x.id===id),R=compute(),L=R.D.filter(K.f);if(!L.length)return toast('Nessun giorno nel periodo');
+ MODE='kpi';$('#sheet').innerHTML=`<div class="row"><h3 class="grow" style="text-transform:none">${K.i} ${esc(K.l)}</h3><button class="ico" data-x>✕</button></div>
+ <div class="mut s" style="margin-bottom:10px;text-transform:capitalize">${esc(R.label)} · ${L.length} giorn${L.length===1?'o':'i'} · totale ${K.v(R.k)}</div>
+ <div class="dlist">${L.map(d=>`<div class="drow" data-kd="${d.date}">${dBlock(d.date)}<div class="dm"><b>${esc(K.x(d)||'')}</b><div class="mut s">Ordine di Servizio n. ${odsTxt(d.date)}</div></div><em>›</em></div>`).join('')}</div>`;
+ $('#modal').classList.remove('drawer');$('#modal').classList.add('open')}
+document.addEventListener('click',e=>{const k=e.target.closest('[data-kpi]');if(k)openKpi(k.dataset.kpi);const r=e.target.closest('#sRangeSeg [data-r]');if(r){$('#sRange').value=r.dataset.r;$$('#sRangeSeg button').forEach(b=>b.classList.toggle('on',b===r));$('#sRange').dispatchEvent(new Event('change'))}});
 function renderSum(){
- const k$=$('#sRange').value; $('#sNav').style.display=k$==='r'?'none':''; $('#sDates').style.display=k$==='r'?'':'none';
+ const k$=$('#sRange').value; $$('#sRangeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.r===k$)); $('#sNav').style.display=k$==='r'?'none':''; $('#sDates').style.display=k$==='r'?'':'none';
  const R=compute(), k=R.k, only=$('#sOnlyX').checked;
  $('#sTitle').textContent=R.label;
  $('#repHead').innerHTML=`<div style="font-size:16pt;font-weight:700">Riepilogo servizio – ${esc(R.label)}</div><div>${esc(S.header)}</div><div style="font-size:9pt;color:#555">Periodo ${itD(R.a)} – ${itD(R.b)} · generato il ${new Date().toLocaleString('it-IT')}</div>`;
- $('#kpis').innerHTML=[['Giorni di servizio',k.gg],['Buoni pasto',k.bp+(k.bp2?` <small>(${k.bp2} doppi)</small>`:'')],['Straordinario',fmtH(k.stra)],['Esterne',k.ext],
-  ['Cambi turno',k.ch],['Festivi/domeniche lavorati',k.fest],['Notturno',fmtH(k.not)],['Fogli di viaggio',k.fdv],['Richieste straord. da fare',k.req],['Servizio fuori turno',k.fuori],['Ore ordinarie',fmtH(k.ore)],['Giorni senza descrizione',k.nodesc]]
-  .map(([l,v])=>`<div class="kpi"><small>${l}</small><b>${v}</b></div>`).join('');
+ $('#kpis').innerHTML=KPI.map(K=>{const v=K.v(k),z=!R.D.some(d=>K.f(d));
+  return `<button class="kpi ${z?'zero':''}" data-kpi="${K.id}" style="--c:${K.c}"><i>${K.i}</i><span><small>${K.l}</small><b>${v}</b></span>${z?'':'<em>›</em>'}</button>`}).join('');
  $('#absSum').innerHTML=R.abs.map(([n,v])=>`<tr><td>${n}</td><td>${v}</td></tr>`).join('')||'<tr><td class="mut">Nessuna.</td></tr>';
  $('#trnSum').innerHTML=R.trn.map(([n,v,y])=>`<tr><td>${esc(n)}<div class="mut s">${y}</div></td><td>${v}</td></tr>`).join('')||'<tr><td class="mut">Nessun tipo definito.</td></tr>';
  $('#indSum').innerHTML=R.ind.map(([n,v])=>`<tr><td>${esc(n)}</td><td>${esc(v)}</td></tr>`).join('')||'<tr><td class="mut">Nessuna indennità definita.</td></tr>';
@@ -1886,16 +1915,17 @@ function renderSum(){
  $('#pbDebt').innerHTML=L.open.length?`<div style="margin-top:10px"><b>Permessi brevi da recuperare: ${fmtH(L.tot)}</b><table style="margin-top:4px"><tr><th>Permesso del</th><th>Residuo</th><th>Entro</th></tr>${L.open.map(x=>`<tr><td>${itD(x.date)}</td><td>${fmtH(x.left)}</td><td style="${x.due<TODAY()?'color:var(--bad);font-weight:700':''}">${itD(x.due)}${x.due<TODAY()?' – SCADUTO':''}</td></tr>`).join('')}</table></div>`:'';
  const rows=R.X.filter(r=>only?r.x.length:(r.x.length||isWork(r.d)));
  $('#tblTitle').textContent=only?`Giornate particolari (${rows.length})`:`Tutte le giornate (${rows.length})`;
- $('#sTable').innerHTML=`<tr><th>Data</th><th>Turno</th><th>Voci</th><th>Attività</th></tr>`+rows.map(({d,x})=>{const sh=shiftById(d.shiftId);
-   return `<tr data-d="${d.date}" style="cursor:pointer"><td style="white-space:nowrap">${parse(d.date).toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'2-digit'})}<div class="mut s">O.d.S. n. ${odsTxt(d.date)}</div></td>
-   <td style="white-space:nowrap">${isWork(d)?turnoHTML(d):STATI[d.status]}</td>
-   <td>${x.map(([c,l])=>`<span class="b" style="--c:${c}">${esc(l)}</span>`).join(' ')||'<span class="mut">—</span>'}</td>
-   <td>${esc(d.tags.join(', '))}${d.note?`<div class="mut">${esc(d.note)}</div>`:''}${d.cambioNote?`<div class="mut">⇄ ${esc(d.cambioNote)}</div>`:''}</td></tr>`}).join('');
+ $('#sTable').innerHTML=rows.map(({d,x})=>{const pr=plannedRanges(d.date),w=isWork(d);
+   return `<div class="drow" data-d="${d.date}">${dBlock(d.date)}<div class="dm">
+    <div class="dt"><b>${w?esc(d.ranges||'—'):esc(STATI[d.status])}</b>${w&&pr&&pr!==d.ranges?` <s class="mut">${esc(pr)}</s>`:''}${d.seRanges?` <span class="se">+ ${esc(d.seRanges)} SE</span>`:''}</div>
+    ${x.length?`<div class="dchips">${x.map(([c,l])=>`<span class="b" style="--c:${c}">${esc(l)}</span>`).join('')}</div>`:''}
+    ${d.tags.length||d.note||d.cambioNote?`<div class="mut s">${esc(d.tags.join(', '))}${d.note?(d.tags.length?' · ':'')+esc(d.note):''}${d.cambioNote?' · ⇄ '+esc(d.cambioNote):''}</div>`:''}
+    <div class="ods2">Ordine di Servizio n. ${odsTxt(d.date)}</div></div><em>›</em></div>`}).join('')||'<p class="mut">Nessuna giornata nel periodo.</p>';
  const tc={};R.W.forEach(d=>d.tags.forEach(t=>tc[t]=(tc[t]||0)+1));const mx=Math.max(1,...Object.values(tc));
  $('#tagBars').innerHTML=Object.entries(tc).sort((a,b)=>b[1]-a[1]).map(([t,n])=>`<div class="bar"><span class="lb">${esc(t)}</span><span class="tr"><i style="width:${n/mx*100}%"></i></span><b>${n}</b></div>`).join('')||'<p class="mut">Nessuna attività registrata.</p>';
 }
 $('#actSum').addEventListener('click',e=>{const r=e.target.closest('tr[data-d]');if(r)openDay(r.dataset.d)});
-$('#sTable').addEventListener('click',e=>{const r=e.target.closest('tr[data-d]');if(r)openDay(r.dataset.d)});
+$('#sTable').addEventListener('click',e=>{const r=e.target.closest('[data-d]');if(r)openDay(r.dataset.d)});
 const sStep=n=>{$('#sRange').value==='y'?sCur.setFullYear(sCur.getFullYear()+n):sCur.setMonth(sCur.getMonth()+n,1);renderSum()};
 $('#sPrev').onclick=()=>sStep(-1);$('#sNext').onclick=()=>sStep(1);
 ['#sRange','#sFrom','#sTo','#sOnlyX'].forEach(s=>$(s).addEventListener('change',renderSum));
@@ -1920,7 +1950,7 @@ function buildPrint(){
   <table class="pr-tbl"><thead><tr><th style="width:70px">Data</th><th style="width:120px">Tipo</th><th>Descrizione</th></tr></thead><tbody>${R.acts.map(a=>`<tr><td>${itD(a.date)}</td><td><span class="pb" style="--c:${actCol(a.t)}">${esc(a.t)}</span></td><td>${esc(a.txt)}</td></tr>`).join('')}</tbody></table></div>`:''}
  <div class="pr-sec" style="break-inside:auto"><h3>${only?'Giornate particolari':'Tutte le giornate'} (${rows.length})</h3>
  <table class="pr-tbl"><thead><tr><th style="width:74px">Data</th><th style="width:118px">Orario</th><th>Voci</th><th>Attività e note</th></tr></thead><tbody>
- ${rows.map(({d,x})=>{const pr=plannedRanges(d.date);return `<tr><td class="d"><b>${parse(d.date).toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'2-digit'})}</b><small>O.d.S. n. ${odsTxt(d.date)}</small></td>
+ ${rows.map(({d,x})=>{const pr=plannedRanges(d.date);return `<tr><td class="d"><b>${parse(d.date).toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'2-digit'})}</b><small>Ord. di Servizio n. ${odsTxt(d.date)}</small></td>
   <td>${isWork(d)?`<b>${esc(d.ranges||'—')}</b>${pr&&pr!==d.ranges?`<br><s class="mutp">${esc(pr)}</s>`:''}${d.seRanges?`<br>(${esc(d.seRanges)} SE)`:''}`:esc(STATI[d.status])}</td>
   <td>${x.map(([c,l])=>`<span class="pb" style="--c:${c}">${esc(l)}</span>`).join('')||'<span class="mutp">—</span>'}</td>
   <td>${esc(d.tags.map(t=>ico(t)+' '+t).join(', '))}${d.calNote?`<div>✎ ${esc(d.calNote)}</div>`:''}${d.note?`<div class="mutp">${esc(d.note)}</div>`:''}${d.cambioNote?`<div class="mutp">⇄ ${esc(d.cambioNote)}</div>`:''}</td></tr>`}).join('')||'<tr><td colspan="4" class="mutp">Nessuna giornata.</td></tr>'}
