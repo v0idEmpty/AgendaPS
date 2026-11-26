@@ -580,6 +580,7 @@ button.wide{width:100%;border-radius:10px}
       <label><span class="mut s">Cena oltre le</span><input type="time" id="ru_dinner"></label>
       <label><span class="mut s">Orario aggiornamento</span><input id="ru_trnRanges" placeholder="08:00-14:00"></label>
       <label><span class="mut s">Perquisizione: inizio abituale</span><input type="time" id="ru_perqStart"></label>
+      <label><span class="mut s">Ore di una giornata di 104</span><input type="number" min="1" max="12" step="0.5" id="ru_p104hDay"></label>
     </div>
   </div>
   <div class="card" data-vp="spe">
@@ -1958,7 +1959,7 @@ $('#results').addEventListener('click',e=>{const i=e.target.closest('.it');if(i)
 const palOpts=v=>Object.keys(PAL).map(k=>`<option value="${k}" ${v===k?'selected':''}>● ${PALN[k]}</option>`).join('');
 function sortPlans(){T.plans.sort((a,b)=>a.from.localeCompare(b.from))}
 function renderSet(){
- $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; Object.keys(RULDEF).forEach(k=>$('#ru_'+k).value=T.rules[k]);
+ $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
  const cy=new Date().getFullYear();
  $('#alYear').innerHTML=Array.from({length:Math.max(cy+10,alYear)-Math.min(cy-10,alYear)+1},(_,i)=>Math.min(cy-10,alYear)+i).map(y=>`<option ${y===alYear?'selected':''}>${y}</option>`).join('');
  const al=allowFor(alYear,T); Object.keys(ALDEF).forEach(k=>$('#al_'+k).value=al[k]);
@@ -2002,7 +2003,7 @@ function renderRot(){
 function readAllow(){T.allow[alYear]=Object.fromEntries(Object.keys(ALDEF).map(k=>[k,Math.max(0,+$('#al_'+k).value||0)]))}
 function readSet(){
  T.header=$('#hdr').value.trim(); T.userName=$('#userName').value.trim(); T.actTypes=$('#actIn').value.split(',').map(t=>t.trim()).filter(Boolean); T.festLoc=$('#festLoc').value.trim(); readAllow();
- Object.keys(RULDEF).forEach(k=>{const v=$('#ru_'+k).value.trim();T.rules[k]=k==='ctMin'?Math.max(0,+v||0):(v||RULDEF[k])});
+ Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(!el)return;const v=el.value.trim();T.rules[k]=k==='ctMin'||k==='p104hDay'?Math.max(0,+v||0)||RULDEF[k]:(v||RULDEF[k])});
  $$('#trnGrpList .grprow').forEach(r=>{const g=T.trnGroups[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>g[i.dataset.k]=i.dataset.k==='quota'?Math.max(0,+i.value||0):i.value.trim())});
  $$('#trnList .trnrow').forEach(r=>{const t=T.trainings[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>t[i.dataset.k]=i.dataset.k==='quota'?Math.max(0,+i.value||0):i.value.trim())});
  $$('#shiftList .shiftrow').forEach(r=>{const s=T.shifts[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>s[i.dataset.k]=i.type==='checkbox'?i.checked:i.value.trim())});
