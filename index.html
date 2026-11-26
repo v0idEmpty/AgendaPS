@@ -244,8 +244,9 @@ header .hamb{display:none;margin-left:-6px}
  #v-cal.on>div{display:flex;flex-direction:column;height:calc(100dvh - 56px)}
  html:has(body.calmode),body.calmode{height:100dvh;overflow:hidden;overscroll-behavior:none}
  body.calmode{padding-bottom:0!important}
- .calwrap{flex:1;border:0;border-radius:0;display:flex;flex-direction:column}
- .cal{flex:1;grid-template-rows:auto;grid-auto-rows:1fr}
+ .calwrap{flex:1;border:0;border-radius:0;display:flex;flex-direction:column;min-height:0}
+ .cal{flex:1;min-height:0;grid-template-rows:auto;grid-auto-rows:minmax(0,1fr)}
+ .cal .wk{min-height:0;overflow:hidden}
  .cell{min-height:0!important}
  #dayView{flex:1;display:flex;flex-direction:column;border:0;border-radius:0;min-height:0}
  #dayView[hidden],#calWrap[hidden]{display:none!important}
@@ -1017,6 +1018,12 @@ function cellEvents(x){
 }
 const isoWeek=dt=>{const d=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));const n=d.getUTCDay()||7;d.setUTCDate(d.getUTCDate()+4-n);const y0=new Date(Date.UTC(d.getUTCFullYear(),0,1));return Math.ceil(((d-y0)/864e5+1)/7)};
 let calView='month', dayCur=TODAY();
+/* caselle tutte uguali: mostra le righe che ci stanno, il resto diventa "+N" */
+function fitCells(){$$('#cal .cell').forEach(c=>{const box=c.querySelector('.lines');if(!box)return;box.querySelector('.more')?.remove();
+ const it=[...box.querySelectorAll('.ln')];it.forEach(i=>i.hidden=false);const lim=c.clientHeight;if(c.scrollHeight<=lim+1)return;
+ const m=document.createElement('div');m.className='more';box.appendChild(m);let n=it.length;
+ while(n>0&&c.scrollHeight>lim+1){it[--n].hidden=true;m.textContent='+'+(it.length-n)}})}
+addEventListener('resize',()=>{if(innerWidth<=600&&$('#cal'))fitCells()});
 function renderCal(){
  $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===calView)); $('#hdrView').textContent=calView==='day'?'Mese':'Giorno'; $('#hdrView').title=calView==='day'?'Torna al mese':'Vista giorno';
  $('#calWrap').hidden=calView==='day'; $('#dayView').hidden=calView!=='day';
@@ -1031,7 +1038,7 @@ function renderCal(){
    const ds=iso(d), x=dayOf(ds), {ev,ln}=cellEvents(x), tint=x.calColor?col(x.calColor):isWork(x)?'transparent':(STCOL[x.status]?col(STCOL[x.status]):'transparent');
    if(isWork(x))wk++;
    const mob=innerWidth<=600; if(mob)for(let k=ln.length-1;k>=0;k--)if(ln[k][2])ln.splice(k,1);
-   const MAX=mob?Math.max(2,Math.floor((($('#cal').clientHeight||600)/6-34)/14)):4, shown=ln.slice(0,MAX);
+   const MAX=mob?99:4, shown=ln.slice(0,MAX);
    cells+=`<div class="cell ${i>4?'we':''} ${d.getMonth()!==m?'out':''} ${ds===today?'today':''} ${isHol(ds)?'hol':''} ${x.calColor?'mark':''}" style="--tint:${tint}" data-d="${ds}" title="${esc(extras(x).map(e=>e[1]).join(' · '))}">
     <span class="n">${d.getDate()}</span><span class="ods" title="Ordine di Servizio n. ${odsTxt(ds)}">n. ${odsN(ds)}</span>
     ${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${e.t}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}
@@ -1041,7 +1048,7 @@ function renderCal(){
   }
   const wd=new Date(d);wd.setDate(wd.getDate()-7);h+=`<div class="wk" title="Settimana ${isoWeek(wd)} · ${wk} giorni di servizio">${isoWeek(wd)}</div>`+cells;
  }while(d.getMonth()===m);
- $('#cal').innerHTML=h;
+ $('#cal').innerHTML=h; if(innerWidth<=600)requestAnimationFrame(fitCells);
  renderSide(y); renderEmpty(); renderGreet(); hdrMode(); setTimeout(hSync,0);
 }
 let dvZoom=(()=>{try{return +localStorage.getItem('apsZoom')||1}catch{return 1}})();
