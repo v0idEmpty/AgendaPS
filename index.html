@@ -347,7 +347,7 @@ header .hamb{display:none;margin-left:-6px}
 .dvGrid .inner{position:relative;height:calc(24 * var(--hp))}
 .dvGrid .hr{position:absolute;left:0;right:0;height:var(--hp);border-top:1px solid var(--line);cursor:pointer}
 .dvGrid .hr:hover{background:var(--hov)}
-.dvGrid .hr .half{position:absolute;left:56px;right:0;border-top:1px dashed var(--line)}
+.dvGrid .hr .half{position:absolute;left:56px;right:0;border-top:1px dashed var(--line)}.dvGrid .hr .half b{position:absolute;left:-52px;top:-7px;font-size:10.5px;font-weight:400;color:var(--mut);opacity:.8}.dvGrid .hr .half.q{border-top-style:dotted;opacity:.7}
 .dvGrid .hr span{position:absolute;left:8px;top:-9px;font-size:11px;color:var(--mut);background:var(--surf);padding:0 4px}
 .dvGrid .night{position:absolute;left:56px;right:0;background:repeating-linear-gradient(45deg,transparent 0 8px,color-mix(in srgb,#3949ab 7%,transparent) 8px 16px);pointer-events:none}
 .dvBlk{position:absolute;left:62px;right:10px;border-radius:8px;padding:5px 10px;color:#fff;font-size:13px;overflow:hidden;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.2)}
@@ -404,6 +404,21 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .rgrow input{width:auto;flex:1;min-width:0;padding:6px 6px;font-variant-numeric:tabular-nums}.rgl{font-size:12px;color:var(--mut);width:58px;flex:none}.rgh{font-size:12px;color:var(--tx2);width:38px;text-align:right;flex:none}
 .rgrow .ico{width:30px;height:30px;font-size:14px;flex:none}.rgadd{border:1px dashed var(--line);border-radius:10px;padding:8px;color:var(--acc);background:none;font-size:13px}
 .recb{font-size:11px;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--tx2)}
+.swp{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}.swp i{width:24px;height:24px;border-radius:50%;background:var(--c);cursor:pointer;box-shadow:inset 0 0 0 2px transparent;transition:transform .1s}.swp i.on{box-shadow:0 0 0 2px var(--surf),0 0 0 4px var(--c);transform:scale(1.05)}
+.shiftrow .full,.trnrow .full{flex-basis:100%;width:100%;grid-column:1/-1}
+.indcard{border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px;background:var(--surf)}.ich{display:flex;gap:8px;align-items:center}.ich .iic{font-size:20px;width:28px;text-align:center;flex:none}.ich input{min-width:0}
+.wdp{display:flex;gap:6px;margin-top:6px}.wdp button{flex:1;min-width:0;padding:7px 0;border-radius:8px;font-weight:600;font-size:13px}.wdp button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.sethome,.setback{display:none}
+@media (max-width:899px){
+ #v-set .sethome{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+ #v-set .sethome button{display:flex;align-items:center;gap:14px;padding:14px;border-radius:14px;text-align:left;background:var(--surf);border:1px solid var(--line);width:100%}
+ #v-set .sethome i{font-style:normal;font-size:20px;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--accSoft);flex:none}
+ #v-set .sethome span{flex:1;min-width:0;display:flex;flex-direction:column}#v-set .sethome b{font-weight:500;font-size:15px;color:var(--tx2)}#v-set .sethome small{color:var(--mut);font-size:12.5px}#v-set .sethome em{font-style:normal;color:var(--mut);font-size:20px}
+ #v-set #setTabs{display:none}
+ #v-set:not(.insec) [data-vp],#v-set:not(.insec) #saveBar{display:none!important}
+ #v-set.insec .sethome{display:none}
+ #v-set.insec .setback{display:block;border:0;background:none;color:var(--acc);font-size:15px;font-weight:500;padding:4px 2px 12px}
+}
 .actrow2{display:flex;gap:8px;align-items:center;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 8%,var(--surf));border-radius:0 10px 10px 0;padding:6px 6px 6px 10px;margin-bottom:6px}
 .actrow2 b{font-weight:500;font-size:13px;white-space:nowrap;color:var(--tx2)}.actrow2 input{flex:1;min-width:0;width:auto;padding:6px 8px}.actrow2 .ico{width:30px;height:30px;font-size:14px;flex:none}
 .addbox{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px}
@@ -575,7 +590,16 @@ button.wide{width:100%;border-radius:10px}
 
 <!-- IMPOSTAZIONI -->
 <section class="view" id="v-set"><div class="setwrap">
-  <div class="vtabs" id="setTabs"><button data-vt="pro" class="on">👤 Profilo</button><button data-vt="tur">🔁 Turni e regole</button><button data-vt="spe">📊 Spettanze</button><button data-vt="att">📌 Attività e indennità</button><button data-vt="dat">💾 Dati</button></div>
+  <div id="setHome" class="sethome">
+   <button data-sec="pro"><i>👤</i><span><b>Profilo</b><small>Nome, intestazione report, festività</small></span><em>›</em></button>
+   <button data-sec="tur"><i>🔁</i><span><b>Turni e regole</b><small>Orari, schema settimanale, calcoli automatici</small></span><em>›</em></button>
+   <button data-sec="spe"><i>📊</i><span><b>Spettanze e aggiornamenti</b><small>CO, CS, permessi, giornate di addestramento</small></span><em>›</em></button>
+   <button data-sec="att"><i>📌</i><span><b>Attività</b><small>Cosa hai fatto e atti da registrare</small></span><em>›</em></button>
+   <button data-sec="ind"><i>💶</i><span><b>Indennità</b><small>Manuali, automatiche, mensili</small></span><em>›</em></button>
+   <button data-sec="dat"><i>💾</i><span><b>Dati e backup</b><small>Backup cifrato, statistiche, ripristino</small></span><em>›</em></button>
+  </div>
+  <button class="setback" id="setBack">‹ Impostazioni</button>
+  <div class="vtabs" id="setTabs"><button data-vt="pro" class="on">👤 Profilo</button><button data-vt="tur">🔁 Turni e regole</button><button data-vt="spe">📊 Spettanze</button><button data-vt="att">📌 Attività</button><button data-vt="ind">💶 Indennità</button><button data-vt="dat">💾 Dati</button></div>
   <div class="card on" data-vp="pro">
     <h4>Profilo e intestazione report</h4>
     <div class="row"><label class="grow"><span class="mut s">Il tuo nome (e qualifica)</span><input id="userName" placeholder="Es. Ass. Capo Nome Cognome"></label>
@@ -645,9 +669,9 @@ button.wide{width:100%;border-radius:10px}
     <h4 style="margin-top:14px">Attività da registrare singolarmente</h4><p class="mut">Tipi con descrizione libera, per giorno o su più giorni (es. 360 c.p.p., SIT, Interrogatorio, Analisi dispositivi). Separati da virgola.</p>
     <textarea id="actIn" style="min-height:50px;margin-top:8px"></textarea>
   </div>
-  <div class="card" data-vp="att">
+  <div class="card" data-vp="ind">
     <h4>Indennità</h4>
-    <p class="mut"><b>Manuale</b>: la segni tu nel giorno · <b>Ogni giorno di servizio</b>: già spuntata, la togli se serve · <b>Mensile</b>: conteggiata una volta al mese (es. indennità PG, cyber). Dal/Al opzionali.</p>
+    <p class="mut"><b>Manuale</b>: la segni tu nella giornata · <b>Automatica</b>: già segnata nei giorni di servizio scelti (la togli nel singolo giorno se serve) · <b>Mensile</b>: contata una volta al mese.</p>
     <div id="indList" style="margin-top:10px"></div>
     <button id="addInd">+ Indennità</button>
   </div>
@@ -657,7 +681,7 @@ button.wide{width:100%;border-radius:10px}
     <p class="mut">Per sapere quante persone usano l'app, a ogni apertura viene inviato un conteggio anonimo (installata o browser, versione). <b>Nessun dato dell'agenda, nome o posizione</b> viene inviato. Servizio usato: GoatCounter, senza cookie.</p>
     <label class="swt" style="margin-top:8px"><input type="checkbox" id="statsOn"><i></i><span>Invia statistiche anonime</span></label>
   </div>
-  <div class="card" data-vp="dat">
+  <div class="card" data-vp="dat" id="fsCard">
     <h4>Salvataggio su file (cartella)</h4>
     <p class="mut">Scegli una cartella: l'app salva in automatico tutto in <b>registro_servizio.json</b> a ogni modifica e lo ricarica all'apertura. Puoi copiare la cartella su chiavetta o cloud e aprirla su un altro PC. Funziona con Chrome ed Edge su computer.</p>
     <p id="fsStatus" style="margin:10px 0;font-weight:500"></p>
@@ -829,7 +853,7 @@ const RULDEF={ctMin:2,lunch:'15:00',dinner:'20:00',trnRanges:'08:00-14:00',perqS
 const ACTDEF=['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi'];
 const ACTCOL=['blueberry','sage','tangerine','grape','peacock','flamingo','basil','lavender'];
 const TRNGRP=()=>[{id:'add',name:'Addestramento',quota:6},{id:'agg',name:'Aggiornamento professionale',quota:6}];
-const INDNEW=()=>[['Reperibilità',0],['Alta montagna',0],['Meccanografica',1],['Cyber',1],['Polizia Giudiziaria',1]].map(([name,rep])=>({id:uid(),name,type:'check',rec:'no',from:'',to:'',def:'',rep:!!rep}));
+const INDNEW=()=>[['Reperibilità',0],['Alta montagna',0],['Meccanografica',1],['Cyber',1],['Polizia Giudiziaria',1]].map(([name,rep])=>({id:uid(),name,type:'check',rec:'no',from:'',to:'',def:'',rep:!!rep,cal:/cyber|giudiziaria|reperib/i.test(name)}));
 const TRNDEF=()=>[{id:'tiro',name:'Addestramento al tiro',short:'Tiro',group:'add',quota:3,color:'tomato'},
  {id:'to',name:'Tecniche operative',short:'Tecn. oper.',group:'add',quota:3,color:'tangerine'},
  {id:'gen',name:'Agg. materie di interesse generale',short:'Int. generale',group:'agg',quota:3,color:'peacock'},
@@ -839,7 +863,7 @@ function defaults(){const t=TODAY();return{
  shifts:[{id:'A',name:'8-14',ranges:'08:00-14:00',buono:false,short:'8-14',color:'peacock'},
          {id:'B',name:'8-14 + rientro',ranges:'08:00-14:00, 14:30-17:30',buono:true,short:'8-14+R',color:'sage'}],
  plans:[{id:uid(),from:iso(monday(new Date())),anchor:iso(monday(new Date())),weeks:1,rotation:[['A','B','A','B','A',null,null]]}],
- tags:['Ufficio','Perquisizione','Analisi forense','Notifica','Udienza','Sopralluogo','Interrogatorio','Trasferta','Formazione'],
+ tags:['Ufficio','Perquisizione','Analisi forense','Notifica','Udienza','Sopralluogo','Trasferta','Formazione'],
  ind:[{id:uid(),name:'Missione (km)',type:'num',rec:'no',from:'',to:'',def:''},...INDNEW()]
 }}
 function migrate(s){
@@ -852,6 +876,7 @@ function migrate(s){
  s.trainings=s.trainings||TRNDEF(); s.trnGroups=s.trnGroups||TRNGRP();
  if(!s.v6){const D=TRNDEF();s.trainings.forEach(t=>{const d=D.find(x=>x.id===t.id);if(d&&!t.group){t.group=d.group;t.quota=d.quota;t.short=d.short}});
   D.forEach(d=>{if(!s.trainings.some(t=>t.id===d.id))s.trainings.push(d)});s.v6=true}
+ if(!s.v10){const at=new Set((s.actTypes||[]).map(x=>x.toLowerCase()));s.tags=(s.tags||[]).filter(t=>!at.has(t.toLowerCase()));s.ind=(s.ind||[]).map(i=>({...i,cal:i.cal??/cyber|giudiziaria|reperib/i.test(i.name)}));s.v10=true}
  if(!s.v9){const have=new Set((s.ind||[]).map(i=>i.name.toLowerCase().replace(/\s*\(.*\)$/,'')));s.ind=[...(s.ind||[]),...INDNEW().filter(i=>!have.has(i.name.toLowerCase()))];s.tags=(s.tags||[]).filter(t=>!/^reperibilit/i.test(t));s.v9=true}
  if(!s.v8){s.trainings.forEach(t=>{if((t.id==='tiro'||t.id==='to')&&!+t.quota)t.quota=3});s.v8=true}
  s.trainings.forEach(t=>{t.group=t.group||'';t.short=t.short||t.name;t.quota=+t.quota||0});
@@ -914,12 +939,12 @@ const inRange=(ds,i)=>(!i.from||ds>=i.from)&&(!i.to||ds<=i.to);
 function indVal(d,i){
  if(!isWork(d)||i.rec==='month')return undefined;
  if(d.ind&&i.id in d.ind)return d.ind[i.id];
- if(i.rec==='day'&&inRange(d.date,i))return i.type==='check'?true:(i.def||'');
+ if(i.rec==='day'&&inRange(d.date,i)&&!(i.wd&&i.wd.length&&!i.wd.includes(parse(d.date).getDay())))return i.type==='check'?true:(i.def||'');
  return undefined;
 }
 /* voci fuori dall'ordinario: [colore, etichetta] */
 const indIco=n=>/missione/i.test(n)?'🚗':/reperib/i.test(n)?'📟':/montagna/i.test(n)?'🏔️':/meccanograf/i.test(n)?'🖥️':/cyber/i.test(n)?'💻':/giudiziaria/i.test(n)?'⚖️':/rischio/i.test(n)?'☢️':'💶';
-const canRep=i=>!!i.rep||i.rec==='day'||/cyber|giudiziaria|meccanograf/i.test(i.name);
+const canRep=()=>false;
 function ordBuono(d){if(!isWork(d)||d.buono!==1)return false;const ps=shiftById(plannedShift(d.date));return !!(ps&&ps.buono&&d.ranges===ps.ranges&&!d.seRanges&&!+d.stra)}
 function extras(d){
  const r=[], ps=plannedShift(d.date), dow=parse(d.date).getDay();
@@ -1037,6 +1062,7 @@ function cellEvents(x){
   if(x.p104h)ln.push([col('flamingo'),'104 '+fmtH(x.p104h)]);
   if(x.rec)ln.push([C.pm,'Recupero '+fmtH(x.rec)]);
   if(x.studioh)ln.push([col('blueberry'),'Studio '+fmtH(x.studioh)]);
+  S.ind.forEach(i=>{if(i.cal&&i.rec!=='month'){const v=indVal(x,i);if(v)ln.push([C.ind,indIco(i.name)+' '+i.name.replace(/\s*\(.*\)$/,'')+(v===true?'':': '+v)])}});
   if(x.op)ln.push([C.ext,'🛡 OP '+(x.op==='fuori'?'fuori sede':'in sede')+(x.opNote?': '+x.opNote:'')]);
   S.ind.forEach(i=>{if(i.rec==='no'&&indVal(x,i))ln.push([C.ind,i.name])});
   (x.acts||[]).forEach(a=>ln.push([actCol(a.t),(a.from?a.from+' ':'')+ico(a.t)+' '+a.t+(a.txt?': '+a.txt:'')]));
@@ -1085,7 +1111,7 @@ function renderCal(){
 }
 let dvZoom=(()=>{try{return +localStorage.getItem('apsZoom')||1}catch{return 1}})();
 const HP=()=>Math.round((innerWidth<=600?46:52)*dvZoom);
-function setZoom(z,anchorY){const g=$('#dvGrid');const old=HP(),st=g?g.scrollTop:0;dvZoom=Math.min(3,Math.max(.4,z));try{localStorage.setItem('apsZoom',dvZoom)}catch{}renderDayView(true);const g2=$('#dvGrid');if(g2){const ay=anchorY??g2.clientHeight/2;g2.scrollTop=(st+ay)*HP()/old-ay}}
+function setZoom(z,anchorY){const g=$('#dvGrid');const old=HP(),st=g?g.scrollTop:0;dvZoom=Math.min(4,Math.max(.4,z));try{localStorage.setItem('apsZoom',dvZoom)}catch{}renderDayView(true);const g2=$('#dvGrid');if(g2){const ay=anchorY??g2.clientHeight/2;g2.scrollTop=(st+ay)*HP()/old-ay}}
 function dayItems(x){
  /* elementi con orario: servizio, SE, note a orario, attività a orario */
  const L=[],R2=[];
@@ -1108,7 +1134,7 @@ function renderDayView(keepScroll){
  const {L,R:RR}=dayItems(x), two=RR.length>0, pr=plannedRanges(ds), showPlan=pr&&(!isWork(x)||pr!==x.ranges);
  const blk=(B,lane)=>{const a=B.a,b=Math.min(B.b,1440),style=lane==='L'?(two?'left:60px;right:calc(50% + 2px)':'left:60px;right:24px'):'left:calc(50% + 2px);right:24px';
   return `<div class="dvBlk ${B.k==='se'?'se':''} ${B.k==='perm'?'perm':''} ${B.lt?'lt':''}" data-k="${B.k}" ${B.i!=null?`data-i="${B.i}"`:''} style="--c:${B.c};${B.k==='se'?'':'background:'+B.c};${style};top:${a/60*hp+1}px;height:${Math.max(20,(b-a)/60*hp-2)}px"><b>${esc(B.t)}</b><small>${fmtT(B.a)} – ${fmtT(B.b)}</small>${B.det?.length?`<div class="bdet">${B.det.map(z=>`<span>${esc(z)}</span>`).join('')}</div>`:''}</div>`};
- const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span>${hp>=90?`<i class="half" style="top:${hp/2}px"></i>`:''}</div>`).join('');
+ const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span>${hp>=80?`<i class="half" style="top:${hp/2}px"><b>${pad(h)}:30</b></i>`:''}${hp>=170?[1,3].map(q=>`<i class="half q" style="top:${hp*q/4}px"><b>${pad(h)}:${q*15}</b></i>`).join(''):''}</div>`).join('');
  const plan=showPlan?parseR(pr).map(([a,b])=>`<div class="dvPlan" title="Turno previsto ${fmtT(a)}-${fmtT(b)}" style="top:${a/60*hp}px;height:${(Math.min(b,1440)-a)/60*hp}px"></div>`).join(''):'';
  const nowM=new Date().getHours()*60+new Date().getMinutes(), note='';
  $('#dayView').innerHTML=`<div class="dvHead"><div class="dvDate"><span>${dt.toLocaleDateString('it-IT',{weekday:'short'})}</span><b class="${ds===today?'t':''}">${dt.getDate()}</b></div>
@@ -1204,7 +1230,7 @@ document.addEventListener('click',e=>{
  if(k==='se'){if(!isWork(E))setStatus('lavoro');showTab('ora');const st=h??(parseR(E.ranges).length?Math.max(...parseR(E.ranges).map(x=>x[1]))/60:14);const a=Math.floor(st*60),r=fmtT(a)+'-'+fmtT(a+60);
   rngSet('seRanges',[E.seRanges,r].filter(Boolean).join(', '));dayChanged()}
  if(k==='perq'){if(!isWork(E))setStatus('lavoro');showTab('att');const c=[...$$('#eTags .chip')].find(c=>/perquisiz/i.test(c.dataset.v||''));if(c&&!c.classList.contains('on'))c.click();else perqAsk(true);if(h!=null&&$('#perqStart')){$('#perqStart').value=pad(h)+':00';perqPrev()}}
- if(k==='act'){if(!isWork(E))setStatus('lavoro');showTab('uff')}
+ if(k==='act'){if(!isWork(E))setStatus('lavoro');showTab('att')}
  if(k==='note'){showTab('att');setTimeout(()=>$('#eNote').focus(),80)}
 });
 $('#dayView').addEventListener('click',e=>{
@@ -1356,7 +1382,7 @@ function openDay(ds){
  <div id="eAbs"></div>
  <div id="ePrev" class="dprev wkonly"></div>
  <div class="tabs" id="eTabs">
-  <button data-tab="ora" class="wkonly"><i>⏱</i>Orario</button><button data-tab="ind" class="wkonly"><i>💶</i>Indennità</button><button data-tab="att" class="wkonly"><i>🚓</i>Attività</button><button data-tab="uff" class="wkonly"><i>🏢</i>Ufficio</button><button data-tab="trn" class="wkonly"><i>🎯</i>Aggiorn.</button><button data-tab="eti" class="wkonly"><i>🏷</i>Etichetta</button></div>
+  <button data-tab="ora" class="wkonly"><i>⏱</i>Orario</button><button data-tab="att" class="wkonly"><i>📌</i>Attività</button><button data-tab="trn" class="wkonly"><i>🎯</i>Aggiorn.</button><button data-tab="ind" class="wkonly"><i>💶</i>Indennità</button><button data-tab="eti" class="wkonly"><i>🏷</i>Etichetta</button></div>
  <div class="panes">
  <div class="pane" data-pane="ora">
   <div class="g2">
@@ -1375,18 +1401,10 @@ function openDay(ds){
  </div>
  <div class="pane" data-pane="att">
   <div class="wkonly">
+   <div class="sect" style="margin-top:0"><span>✔︎ Cosa hai fatto</span><span class="mut s">tocca per segnare</span></div>
    <div class="chips" id="eTags">${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
    <div id="ePerq"></div>
-  </div>
-  <div class="sect"><span>📝 Nota</span></div><textarea id="eNote" style="min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
- </div>
- <div class="pane" data-pane="ind">
-  <p class="mut s" style="margin:0 0 8px">Tocca le indennità di oggi. Quelle <b>ricorrenti</b> si ripetono da sole in tutti i giorni di servizio.</p>
-  <div class="chips" id="eIndChips"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span><span class="chip col ${E.op?'on':''}" style="--c:${C.ext}" data-opchip>🛡 Ordine pubblico</span>${dayInd.map(i=>`<span class="chip col" style="--c:${C.ind}" data-indc="${i.id}">${indIco(i.name)} ${esc(i.name.replace(/\s*\(.*\)$/,''))}</span>`).join('')}</div>
-  <div id="eOpBox"></div><div id="eIndBox"></div>
- </div>
- <div class="pane" data-pane="uff">
-  <div class="sect" style="margin-top:0"><span>📌 Attività d'ufficio di oggi</span></div>
+  <div class="sect"><span>📋 Atti registrati</span><span class="mut s">con descrizione</span></div>
   <div id="eActs"></div>
   <div class="addbox">
    <div class="mut s" style="margin-bottom:6px">Tocca per aggiungere un'attività a oggi</div>
@@ -1394,6 +1412,13 @@ function openDay(ds){
   <div class="addbox" id="eActRange" style="margin-top:10px">
    <div class="row" style="flex-wrap:nowrap"><span class="mut s" style="flex:none">Ripeti le attività di oggi fino al</span><input type="date" id="eActTo" value="${ds}" min="${ds}" style="flex:1;width:auto;min-width:0"></div>
    <div class="row" style="margin-top:6px"><span class="mut s grow" id="eActInfo">Solo questo giorno</span><button id="eActAdd" hidden>Applica</button></div></div>
+  </div>
+  <div class="sect"><span>📝 Nota</span></div><textarea id="eNote" style="min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
+ </div>
+ <div class="pane" data-pane="ind">
+  <p class="mut s" style="margin:0 0 8px">Tocca le indennità di oggi. Quelle <b>automatiche</b> (↻) si impostano in Impostazioni → Indennità.</p>
+  <div class="chips" id="eIndChips"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span><span class="chip col ${E.op?'on':''}" style="--c:${C.ext}" data-opchip>🛡 Ordine pubblico</span>${dayInd.filter(i=>!i.hide).map(i=>`<span class="chip col" style="--c:${C.ind}" data-indc="${i.id}">${indIco(i.name)} ${esc(i.name.replace(/\s*\(.*\)$/,''))}${i.rec==='day'&&inRange(ds,i)?' <small>↻</small>':''}</span>`).join('')}</div>
+  <div id="eOpBox"></div><div id="eIndBox"></div>
  </div>
  <div class="pane" data-pane="trn">
   ${S.trainings.length?`<p class="mut s" style="margin:0 0 8px">Tocca il tipo di giornata svolta: l'orario diventa ${esc(S.rules.trnRanges)}, senza buono pasto né cambio turno.</p>
@@ -1435,7 +1460,7 @@ function rngRead(k){return [...$$(`#rg_${k} .rgrow`)].map(row=>{const[a,b]=row.q
 function rngSet(k,v,re=true){E[k]=v;if(k==='seRanges')E.stra=rangesH(v);else{const m=S.shifts.find(x=>x.ranges===v);E.shiftId=m?m.id:'';if($('#eShift'))$('#eShift').value=E.shiftId;E.buonoMan=false}if(re)rngEd(k);syncModal()}
 function rngAll(){rngEd('ranges');rngEd('seRanges')}
 function restoreShift(){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh&&!E.ranges){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;rngEd('ranges')}}
-function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(!['ora','ind','att','uff','trn','eti'].includes(dayTab))dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
+function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(!['ora','ind','att','trn','eti'].includes(dayTab))dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
 const permOf=st=>PERM.find(P=>P.st===st);
 function absSel(){if(ABS.includes(E.status))return E.status;if(isWork(E)){const P=PERM.find(P=>P.k===E._pk)||PERM.find(P=>+E[P.h]>0);if(P)return P.st}return ''}
 function renderType(){
@@ -1478,12 +1503,12 @@ let indOn={};
 function renderInd(){const b=$('#eIndBox');if(!b)return;const L=S.ind.filter(i=>i.rec!=='month'&&!/^ordine pubblico$/i.test(i.name));
  const on=i=>!!indVal({...E,status:'lavoro'},i)||!!indOn[i.id];
  L.forEach(i=>$$(`[data-indc="${i.id}"]`).forEach(c=>c.classList.toggle('on',on(i))));
- b.innerHTML=L.filter(i=>on(i)&&(i.type!=='check'||canRep(i))).map(i=>{const v=indVal({...E,status:'lavoro'},i),rec=i.rec==='day'&&inRange(E.date,i)&&!(E.ind&&i.id in E.ind);
+ b.innerHTML=L.filter(i=>on(i)&&i.type!=='check').map(i=>{const v=indVal({...E,status:'lavoro'},i),rec=i.rec==='day'&&inRange(E.date,i)&&!(E.ind&&i.id in E.ind);
   return `<div class="pbox" style="--c:${C.ind};margin:12px 0 0"><div class="row" style="justify-content:space-between"><b>${indIco(i.name)} ${esc(i.name)}</b>${rec?'<span class="recb">↻ ricorrente</span>':''}</div>
   ${i.type!=='check'?`<input data-ind="${i.id}" style="margin-top:8px" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal" placeholder="Valore"':'placeholder="Dettagli"'} value="${esc(v===true?'':v??'')}">`:''}
   ${canRep(i)?`<div class="seg pseg"><button data-indrep="${i.id}|once" class="${rec?'':'on'}">Solo oggi</button><button data-indrep="${i.id}|day" class="${rec?'on':''}">Ogni giorno di servizio</button></div>
    <div class="mut s" style="margin-top:6px">${rec?`Si ripete dal ${itD(i.from||E.date)}${i.to?' al '+itD(i.to):''} in tutti i giorni di servizio.`:'Vale solo per questa giornata.'}</div>`
-   :`<button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica a più giorni</button>`}</div>`}).join('')}
+   :''}${rec?'<div class="mut s" style="margin-top:6px">↻ Automatica: impostata in Impostazioni → Indennità</div>':''}</div>`}).join('')}
 async function indRep(id,mode){const i=S.ind.find(x=>x.id===id);if(!i)return;const v=E.ind?.[id];
  if(mode==='day'){i.rec='day';i.from=E.date;i.to='';if(i.type!=='check')i.def=(v!==undefined&&v!==true?v:i.def)||'';if(E.ind)delete E.ind[id];delete indOn[id]}
  else{const val=indVal({...E,status:'lavoro'},i);if(i.rec==='day'){if((i.from||'')>=E.date){i.rec='no';i.from='';i.to=''}else i.to=E.date}E.ind=E.ind||{};E.ind[id]=i.type==='check'?true:(val===true?'':val??'')}
@@ -2031,6 +2056,9 @@ $('#results').addEventListener('click',e=>{const i=e.target.closest('.it');if(i)
 /* ===== Impostazioni (bozza T) ===== */
 const palOpts=v=>Object.keys(PAL).map(k=>`<option value="${k}" ${v===k?'selected':''}>● ${PALN[k]}</option>`).join('');
 function sortPlans(){T.plans.sort((a,b)=>a.from.localeCompare(b.from))}
+const swPick=c=>`<div class="swp"><input type="hidden" data-k="color" value="${c}">${Object.keys(PAL).map(k=>`<i data-sw="${k}" class="${k===c?'on':''}" style="--c:${PAL[k]}" title="${PALN[k]}"></i>`).join('')}</div>`;
+document.addEventListener('click',e=>{const b=e.target.closest('[data-sec]');if(b){const t=$(`#setTabs [data-vt="${b.dataset.sec}"]`);t&&t.click();$('#v-set').classList.add('insec');$('#setBack').textContent='‹ '+b.querySelector('b').textContent;scrollTo(0,0)}
+ if(e.target.closest('#setBack')){$('#v-set').classList.remove('insec');scrollTo(0,0)}});
 function renderSet(){
  $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
  const cy=new Date().getFullYear();
@@ -2041,12 +2069,12 @@ function renderSet(){
   <label><span class="mut s">Nome</span><input data-k="name" value="${esc(t.name)}"></label>
   <label><span class="mut s">Gruppo</span><select data-k="group">${T.trnGroups.map(g=>`<option value="${g.id}" ${t.group===g.id?'selected':''}>${esc(g.name)}</option>`).join('')}<option value="" ${!t.group?'selected':''}>— nessuno —</option></select></label>
   <label><span class="mut s">Gg/anno</span><input type="number" min="0" data-k="quota" value="${t.quota}"></label>
-  <label><span class="mut s">Colore</span><select data-k="color" style="color:${col(t.color)}">${palOpts(t.color)}</select></label>
+  <div class="full"><span class="mut s">Colore</span>${swPick(t.color)}</div>
   <button class="ico danger" data-deltrn="${i}">🗑</button></div>`).join('');
  $('#shiftList').innerHTML=T.shifts.map((s,i)=>`<div class="shiftrow" data-i="${i}">
   <input data-k="name" value="${esc(s.name)}" placeholder="Nome"><input data-k="ranges" value="${esc(s.ranges)}" placeholder="09:00-15:00">
   <input data-k="short" value="${esc(s.short||'')}" placeholder="Sigla">
-  <select data-k="color" style="color:${col(s.color)}">${palOpts(s.color)}</select>
+  <div class="full">${swPick(s.color)}</div>
   <label class="tgl" style="padding:7px 9px;font-size:12.5px"><input type="checkbox" data-k="buono" ${s.buono?'checked':''}>Buono auto</label>
   <button class="ico danger" data-delshift="${i}">🗑</button></div>`).join('');
  sortPlans(); selPlan=Math.min(selPlan,T.plans.length-1);
@@ -2056,14 +2084,19 @@ function renderSet(){
  renderRot();
  $('#delPlan').style.display=T.plans.length>1?'':'none';
  $('#tagsIn').value=T.tags.join(', ');
- $('#indList').innerHTML=T.ind.map((x,i)=>`<div class="indbox" data-i="${i}">
-  <label><span class="mut s">Nome</span><input data-k="name" value="${esc(x.name)}"></label>
-  <label><span class="mut s">Tipo</span><select data-k="type">${[['check','Spunta'],['num','Numero'],['text','Testo']].map(([v,l])=>`<option value="${v}" ${x.type===v?'selected':''}>${l}</option>`).join('')}</select></label>
-  <label><span class="mut s">Ricorrenza</span><select data-k="rec">${Object.entries(REC).map(([v,l])=>`<option value="${v}" ${x.rec===v?'selected':''}>${l}</option>`).join('')}</select></label>
-  <button class="ico danger" data-delind="${i}">🗑</button>
-  <div class="sub"><label><span class="mut s">Dal</span><input type="date" data-k="from" value="${x.from||''}"></label><label><span class="mut s">Al</span><input type="date" data-k="to" value="${x.to||''}"></label>
-  <label><span class="mut s">Valore default</span><input data-k="def" value="${esc(x.def||'')}" placeholder="solo Numero/Testo"></label></div></div>`).join('');
+ const WD=[[1,'L'],[2,'M'],[3,'M'],[4,'G'],[5,'V'],[6,'S'],[0,'D']];
+ $('#indList').innerHTML=T.ind.map((x,i)=>{const rec=x.rec||'no',wd=x.wd&&x.wd.length?x.wd:[1,2,3,4,5,6,0];
+  return `<div class="indcard" data-i="${i}">
+  <div class="ich"><span class="iic">${indIco(x.name)}</span><input data-k="name" value="${esc(x.name)}" class="grow"><select data-k="type" style="width:auto">${[['check','Spunta'],['num','Numero'],['text','Testo']].map(([v,l])=>`<option value="${v}" ${x.type===v?'selected':''}>${l}</option>`).join('')}</select><button class="ico danger" data-delind="${i}" title="Elimina">🗑</button></div>
+  <input type="hidden" data-k="rec" value="${rec}">
+  <div class="segp" style="margin-top:8px">${[['no','Manuale'],['day','Automatica'],['month','Mensile']].map(([v,l])=>`<button type="button" data-indrec="${i}|${v}" class="${rec===v?'on':''}">${l}</button>`).join('')}</div>
+  ${rec==='day'?`<div class="mut s" style="margin-top:8px">Nei giorni di servizio di:</div><input type="hidden" data-k="wd" value="${wd.join(',')}"><div class="wdp">${WD.map(([n,l])=>`<button type="button" data-wd="${i}|${n}" class="${wd.includes(n)?'on':''}">${l}</button>`).join('')}</div>`:''}
+  ${rec!=='no'?`<div class="row" style="margin-top:8px"><label class="grow"><span class="mut s">Dal</span><input type="date" data-k="from" value="${x.from||''}"></label><label class="grow"><span class="mut s">Al (vuoto = sempre)</span><input type="date" data-k="to" value="${x.to||''}"></label></div>`:''}
+  ${rec==='day'&&x.type!=='check'?`<label><span class="mut s">Valore automatico</span><input data-k="def" value="${esc(x.def||'')}"></label>`:''}
+  <div class="row" style="margin-top:10px;gap:16px"><label class="swt"><input type="checkbox" data-k="show" ${x.hide?'':'checked'}><i></i><span>Nella giornata</span></label><label class="swt"><input type="checkbox" data-k="cal" ${x.cal?'checked':''}><i></i><span>Nel calendario</span></label></div>
+  </div>`}).join('');
  $('#qTag').innerHTML='<option value="">Tutte le attività</option>'+S.tags.map(t=>`<option>${esc(t)}</option>`).join('')+S.trainings.map(t=>`<option value="trn:${t.id}">🎯 ${esc(t.name)}</option>`).join('')+S.actTypes.map(t=>`<option value="act:${esc(t)}">📌 ${esc(t)}</option>`).join('');
+ if($('#statsOn'))$('#statsOn').checked=statsOn(); if($('#fsCard'))$('#fsCard').hidden=!FS.sup;
  $('#dbInfo').textContent=`${[...DAYS.values()].filter(d=>!d.auto).length} giornate compilate · ${DAYS.size} totali nel database · registro attivo dal ${itD(S.since)}.`;
 }
 function renderRot(){
@@ -2082,7 +2115,8 @@ function readSet(){
  $$('#shiftList .shiftrow').forEach(r=>{const s=T.shifts[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>s[i.dataset.k]=i.type==='checkbox'?i.checked:i.value.trim())});
  const p=T.plans[selPlan]; if(p){p.from=$('#pFrom').value||p.from;p.anchor=$('#pAnchor').value?iso(monday(parse($('#pAnchor').value))):p.anchor;p.weeks=+$('#nWeeks').value;
   $$('#rot select').forEach(s=>p.rotation[s.dataset.w][s.dataset.d]=s.value||null)}
- $$('#indList .indbox').forEach(r=>{const x=T.ind[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>x[i.dataset.k]=i.value.trim())});
+ $$('#indList .indcard').forEach(r=>{const x=T.ind[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>{const k=i.dataset.k;
+   if(k==='show')x.hide=!i.checked;else if(k==='cal')x.cal=i.checked;else if(k==='wd')x.wd=i.value.split(',').filter(Boolean).map(Number);else x[k]=i.value.trim()})});
  T.tags=$('#tagsIn').value.split(',').map(t=>t.trim()).filter(Boolean);
 }
 $('#v-set').addEventListener('change',e=>{if(e.target.matches('select[data-k=color]'))e.target.style.color=col(e.target.value)});
@@ -2099,9 +2133,12 @@ $('#addPlan').onclick=()=>{
 };
 $('#delPlan').onclick=()=>{if(T.plans.length>1&&confirm('Eliminare questa pianificazione?')){T.plans.splice(selPlan,1);selPlan=0;renderSet()}};
 $('#addShift').onclick=()=>{readSet();T.shifts.push({id:uid(),name:'Nuovo turno',ranges:'',buono:false,short:'',color:'lavender'});renderSet()};
-$('#addInd').onclick=()=>{readSet();T.ind.push({id:uid(),name:'Nuova indennità',type:'check',rec:'no',from:'',to:'',def:''});renderSet()};
+$('#addInd').onclick=()=>{readSet();T.ind.push({id:uid(),name:'Nuova indennità',type:'check',rec:'no',from:'',to:'',def:'',cal:false});renderSet()};
 $('#addTrn').onclick=()=>{readSet();T.trainings.push({id:uid(),name:'Nuovo aggiornamento',short:'',group:'agg',quota:0,color:'peacock'});renderSet()};
 $('#v-set').addEventListener('click',e=>{
+ const ir=e.target.closest('[data-indrec]');if(ir){readSet();const[i,v]=ir.dataset.indrec.split('|');const x=T.ind[i];x.rec=v;if(v!=='no'&&!x.from)x.from=TODAY();renderSet();return}
+ const w=e.target.closest('[data-wd]');if(w){const[i,n]=w.dataset.wd.split('|'),inp=w.closest('.indcard').querySelector('[data-k=wd]');let a=inp.value.split(',').filter(Boolean).map(Number);a=a.includes(+n)?a.filter(x=>x!==+n):[...a,+n];inp.value=a.join(',');w.classList.toggle('on');return}
+ const sw=e.target.closest('[data-sw]');if(sw){const box=sw.closest('.swp');box.querySelector('input').value=sw.dataset.sw;box.querySelectorAll('[data-sw]').forEach(x=>x.classList.toggle('on',x===sw));return}
  const ds=e.target.closest('[data-delshift]'),di=e.target.closest('[data-delind]'),dt=e.target.closest('[data-deltrn]');
  if(ds&&confirm('Eliminare questo turno? Sparirà dalle pianificazioni (i giorni passati restano).')){readSet();const id=T.shifts[ds.dataset.delshift].id;T.shifts.splice(ds.dataset.delshift,1);T.plans.forEach(p=>p.rotation=p.rotation.map(w=>w.map(x=>x===id?null:x)));renderSet()}
  if(di&&confirm('Eliminare questa indennità?')){readSet();T.ind.splice(di.dataset.delind,1);renderSet()}
@@ -2277,7 +2314,7 @@ $('#btnTheme').onclick=()=>{const t=document.documentElement.dataset.theme==='li
 
 /* ===== Navigazione ===== */
 let view='cal';
-function go(v){view=v;document.body.classList.toggle('calmode',v==='cal');setTimeout(()=>{hSync();hdrMode()},0);if(mqMob?.matches&&v!=='cal')$('#mTitle').textContent={sum:'Riepilogo',find:'Cerca',set:'Impostazioni'}[v];if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
+function go(v){view=v;document.body.classList.toggle('calmode',v==='cal');if(v==='set')$('#v-set').classList.remove('insec');setTimeout(()=>{hSync();hdrMode()},0);if(mqMob?.matches&&v!=='cal')$('#mTitle').textContent={sum:'Riepilogo',find:'Cerca',set:'Impostazioni'}[v];if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
 $$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
 function refreshBg(){if(view==='cal')renderCal();else if(view==='sum')renderSum()}
 function refresh(){({cal:renderCal,sum:renderSum,find:renderFind,set:renderSet})[view]();if(view==='set'){FS.ui();cbUi()}}
@@ -2286,6 +2323,8 @@ async function load(){
  const all=await DB.all(), fix=[];
  all.forEach(d=>{if(d.status==='ferie'){d.status='co';fix.push(d)}else if(d.status==='malattia'){d.status='cs';fix.push(d)}if(!d.trn)d.trn=[]});
  if(fix.length)await DB.putMany(fix);
+ {const at=new Map(S.actTypes.map(x=>[x.toLowerCase(),x]));const up=all.filter(d=>(d.tags||[]).some(t=>at.has(t.toLowerCase())));
+  up.forEach(d=>{d.acts=d.acts||[];d.tags=d.tags.filter(t=>{const k=at.get(t.toLowerCase());if(k){d.acts.push({t:k,txt:''});return false}return true})});if(up.length)await DB.putMany(up)}
  {const ri=S.ind.find(i=>/^reperibilit/i.test(i.name));if(ri){const up=all.filter(d=>(d.tags||[]).some(t=>/^reperibilit/i.test(t)));up.forEach(d=>{d.tags=d.tags.filter(t=>!/^reperibilit/i.test(t));d.ind={...(d.ind||{}),[ri.id]:true}});if(up.length)await DB.putMany(up)}}
  {const oi=S.ind.find(i=>/^ordine pubblico$/i.test(i.name)&&i.type==='check');
   if(oi){const up=all.filter(d=>d.ind&&d.ind[oi.id]===true&&!d.op);up.forEach(d=>{d.op='sede';delete d.ind[oi.id]});if(up.length)await DB.putMany(up);
