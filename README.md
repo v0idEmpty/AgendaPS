@@ -71,26 +71,6 @@ Quando esce una nuova versione, l'app mostra l'avviso **"È uscita la versione v
 
 ---
 
-## 🛠️ Pubblicare la propria copia
-
-1. Fai un **fork** del repository (o caricane i file in un repository tuo).
-2. **Settings → Pages → Source: GitHub Actions**.
-3. A ogni modifica di `index.html` sul ramo `main`, il workflow pubblica il sito e **assegna il numero di versione** (`1.<numero pubblicazione>`).
-4. Controlla l'esito in **Actions**: ✅ pubblicato, ❌ resta online la versione precedente.
-
-### Struttura
-
-```
-index.html                  App completa (HTML + CSS + JS in un solo file)
-sw.js                       Service worker: offline e aggiornamenti
-manifest.webmanifest        Nome, icone e colori dell'app installata
-icons/                      Icone 192/512 e maskable
-.github/workflows/deploy.yml  Pubblicazione automatica su GitHub Pages
-```
-
-Nessuna dipendenza esterna, nessuna build: per provarla in locale basta un server statico, ad esempio `python3 -m http.server`, e aprire `http://localhost:8000`.
-
----
 
 ## ⚙️ Personalizzazione
 
