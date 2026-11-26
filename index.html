@@ -229,6 +229,8 @@ tr[data-d]:hover td{background:var(--hov)}
 #instGate .ig-btn{font-size:16px;padding:13px 26px;border-radius:26px;margin-top:18px;min-width:240px}
 #instGate .ig-skip{margin-top:14px;border:0;background:none;color:var(--acc);font-size:14px}
 #instGate .ig-warn{font-size:12.5px;color:var(--warn);margin-top:10px;max-width:340px}
+.appban .spin{flex:none;width:28px;height:28px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--acc);animation:spin .8s linear infinite;margin:0 6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 .appban{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:45;max-width:520px;margin:0 auto;background:var(--surf);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:16px;box-shadow:var(--shadow);padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:center;animation:up .25s ease-out}
 .appban[hidden]{display:none}
 .appban img{width:44px;height:44px;border-radius:10px;flex:none}
@@ -268,14 +270,25 @@ header .hamb{display:none;margin-left:-6px}
  body.navopen #scrim{opacity:1;pointer-events:auto}
  #navDrawer{display:block;position:fixed;top:0;left:0;bottom:0;width:min(86vw,330px);background:var(--surf);z-index:50;transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto;box-shadow:var(--shadow);padding:10px 0 30px;border-radius:0 16px 16px 0}
  body.navopen #navDrawer{transform:none}
- .ndHead{display:flex;gap:12px;align-items:center;padding:8px 20px 14px}
- .ndHead b{font-size:17px;font-weight:500;color:var(--tx2)}
- .ndSep{height:1px;background:var(--line);margin:6px 0 10px}
- #ndNav nav{position:static;display:flex;flex-direction:column;border:0;padding:0 12px 0 0;background:none;gap:2px}
- #ndNav nav button{flex-direction:row;justify-content:flex-start;font-size:15px;padding:13px 20px;border-radius:0 26px 26px 0;gap:16px;color:var(--tx);font-weight:500}
- #ndNav nav button span{width:auto;background:none!important;font-size:19px;padding:0}
+ #navDrawer{padding:0 0 28px!important}
+ .ndHead{display:flex;flex-direction:column;gap:12px;padding:calc(18px + env(safe-area-inset-top)) 16px 14px;background:color-mix(in srgb,var(--acc) 7%,var(--surf));border-bottom:1px solid var(--line)}
+ .ndBrand{display:flex;gap:12px;align-items:center}.ndName{display:flex;align-items:baseline;gap:8px}
+ .ndName b{font-size:18px;font-weight:600;color:var(--tx2);letter-spacing:.2px}
+ .ndName .ver{font-size:10.5px;padding:1px 7px;border-radius:10px;background:var(--surf);border:1px solid var(--line);color:var(--mut)}
+ .ndUser{display:flex!important;align-items:center;gap:10px;width:100%;padding:8px 10px!important;border:1px solid var(--line)!important;border-radius:12px;background:var(--surf)!important;text-align:left}
+ .ndUser .av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:#fff;font-weight:600;font-size:15px}
+ .ndUser .un{flex:1;min-width:0;display:flex;flex-direction:column}.ndUser .un b{font-size:14.5px;font-weight:500;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ndUser .un small{font-size:11.5px;color:var(--mut)}.ndUser .ed{color:var(--mut)}
+ .ndLbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding:16px 20px 6px}
+ #ndNav nav{position:static;display:flex;flex-direction:column;border:0;padding:0 10px;background:none;gap:1px}
+ #ndNav nav button{flex-direction:row;justify-content:flex-start;align-items:center;font-size:14.5px;padding:10px 12px;border-radius:10px;gap:14px;color:var(--tx);font-weight:500}
+ #ndNav nav button span{flex:none;width:26px!important;text-align:center;background:none!important;font-size:18px;padding:0}
  #ndNav nav button.on{background:var(--accSoft);color:var(--acc)}
- #ndSide .side{display:flex;margin:0;padding:0 16px;gap:10px}
+ #ndSide .side{display:flex;margin:0;padding:0 12px;gap:10px}
+ #ndSide .sideCard:not(.todayCard){border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--surf)}
+ #ndSide .sideCard:not(.todayCard) h4{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mut)}
+ #ndSide .prog{margin:10px 0 0}#ndSide .prog .top{font-size:13px;align-items:baseline}#ndSide .prog .top b{font-weight:600;font-variant-numeric:tabular-nums;color:var(--tx2)}
+ #ndSide .prog .tr{height:5px}#ndSide .warnbox{border-radius:10px;font-size:12.5px}
+ .sideFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 4px 0}.sideFoot button{font-size:12.5px;padding:6px 10px;border-radius:16px}
  #ndSide .side .create{display:none}
  #ndSide .mini{padding:0 2px}
  .fab{bottom:22px;right:18px}
@@ -497,7 +510,7 @@ button.wide{width:100%;border-radius:10px}
   <button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button>
 </header>
 <div id="scrim"></div>
-<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="logo"><i></i><b id="ndDay"></b></div><div><b>Agenda PS</b> <span class="ver" id="ndVer"></span><button class="ndUser" id="ndUser" title="Cambia nome"></button></div></div><div id="ndNav"></div><div class="ndSep"></div><div id="ndSide"></div></aside>
+<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><b>Agenda PS</b><span class="ver" id="ndVer"></span></div></div><button class="ndUser" id="ndUser" title="Cambia nome"></button></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
 
 <main>
 <!-- CALENDARIO -->
@@ -507,8 +520,7 @@ button.wide{width:100%;border-radius:10px}
     <div class="sideCard todayCard" id="sideToday"></div>
     <div class="sideCard"><h4 id="sbTitle"></h4><div id="sideBal"></div></div>
     <div class="sideCard"><h4 id="stTitle"></h4><div id="sideTrn"></div></div>
-    <div class="mut s" id="sideVer" style="padding:0 6px"></div>
-    <button class="wide" data-chkupd style="margin:6px 0 0;font-size:12.5px;padding:6px">🔄 Verifica aggiornamenti</button>
+    <div class="sideFoot"><span class="mut s" id="sideVer"></span><button data-chkupd>🔄 Verifica aggiornamenti</button></div>
   </aside>
   <div>
     <div class="greet" id="greet"></div>
@@ -897,6 +909,7 @@ function indVal(d,i){
  return undefined;
 }
 /* voci fuori dall'ordinario: [colore, etichetta] */
+function ordBuono(d){if(!isWork(d)||d.buono!==1)return false;const ps=shiftById(plannedShift(d.date));return !!(ps&&ps.buono&&d.ranges===ps.ranges&&!d.seRanges&&!+d.stra)}
 function extras(d){
  const r=[], ps=plannedShift(d.date), dow=parse(d.date).getDay();
  if(isWork(d)){
@@ -1206,7 +1219,7 @@ $('#mpick').addEventListener('click',e=>{e.stopPropagation();const y=e.target.cl
  const m=e.target.closest('[data-mm]');if(m){cur=new Date(mpY,+m.dataset.mm,1);miniM=new Date(cur);if(calView==='day')dayCur=iso(cur);$('#mpick').classList.remove('open');return renderCal()}
  if(e.target.closest('[data-mtoday]')){cur=new Date();cur.setDate(1);miniM=new Date();dayCur=TODAY();$('#mpick').classList.remove('open');renderCal()}});
 document.addEventListener('click',e=>{if(!e.target.closest('#mpick,#mTitle'))$('#mpick').classList.remove('open')});
-function renderGreet(){if($('#ndUser'))$('#ndUser').textContent=S.userName?'👤 '+S.userName:'👤 Inserisci il tuo nome';const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
+function renderGreet(){if($('#ndUser'))$('#ndUser').innerHTML=`<span class="av">${S.userName?esc(S.userName.trim()[0].toUpperCase()):'?'}</span><span class="un"><b>${S.userName?esc(S.userName):'Inserisci il tuo nome'}</b><small>${S.userName?'Tocca per modificare':'Per il messaggio di benvenuto'}</small></span><span class="ed">✎</span>`;const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
  $('#greet').innerHTML=`${g}${S.userName?', '+esc(S.userName):''} 👋<small>${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · Ordine di Servizio n. ${odsTxt(t)}${isHol(t)?' · '+holName(t):''}</small>`}
 function openWelcome(){
  MODE='welcome';
@@ -1871,7 +1884,7 @@ function compute(){
   trn.push([G.g.name.toUpperCase(),np+' gg',G.q?`${G.n}/${G.q} nel ${year}`:'']);
   G.members.forEach(m=>{const p=TP[m.t.id];trn.push(['   '+m.t.name,p.length+' gg'+(p.length?' ('+p.map(ddmm).join(', ')+')':''),m.t.quota?`${m.ds.length}/${m.t.quota} nel ${year}`:`${m.ds.length} nel ${year}`])})});
  const acts=[];D.forEach(d=>(d.acts||[]).forEach(a=>acts.push({date:d.date,...a})));
- return{a,b,label,D,W,k,ind,abs,trn,acts,X:D.map(d=>({d,x:extras(d)})),year};
+ return{a,b,label,D,W,k,ind,abs,trn,acts,X:D.map(d=>{const x=extras(d);return{d,x,part:x.some(e=>!(e[1]==='Buono pasto'&&ordBuono(d)))}}),year};
 }
 function turnoHTML(d){const pr=plannedRanges(d.date);
  return `<b>${esc(d.ranges||'—')}</b>`+(pr&&pr!==d.ranges?`<br><s class="mut">${esc(pr)}</s>`:'')+(d.seRanges?`<br>(${esc(d.seRanges)} SE)`:'');}
@@ -1913,7 +1926,7 @@ function renderSum(){
  $('#balBars').innerHTML=Object.keys(ALLBL).map(x=>{const over=u[x]>al[x],h=ALLBL[x][1]==='h';
   return `<div class="bar ${over?'over':''}"><span class="lb">${ALLBL[x][0]}</span><span class="tr"><i style="width:${Math.min(100,al[x]?u[x]/al[x]*100:0)}%"></i></span><b>${h?fmtH(u[x]):u[x]} / ${h?fmtH(al[x]):al[x]}</b><span class="mut">${over?'SFORATO':'resid. '+(h?fmtH(al[x]-u[x]):al[x]-u[x])}</span></div>`}).join('');
  $('#pbDebt').innerHTML=L.open.length?`<div style="margin-top:10px"><b>Permessi brevi da recuperare: ${fmtH(L.tot)}</b><table style="margin-top:4px"><tr><th>Permesso del</th><th>Residuo</th><th>Entro</th></tr>${L.open.map(x=>`<tr><td>${itD(x.date)}</td><td>${fmtH(x.left)}</td><td style="${x.due<TODAY()?'color:var(--bad);font-weight:700':''}">${itD(x.due)}${x.due<TODAY()?' – SCADUTO':''}</td></tr>`).join('')}</table></div>`:'';
- const rows=R.X.filter(r=>only?r.x.length:(r.x.length||isWork(r.d)));
+ const rows=R.X.filter(r=>only?r.part:(r.x.length||isWork(r.d)));
  $('#tblTitle').textContent=only?`Giornate particolari (${rows.length})`:`Tutte le giornate (${rows.length})`;
  $('#sTable').innerHTML=rows.map(({d,x})=>{const pr=plannedRanges(d.date),w=isWork(d);
    return `<div class="drow" data-d="${d.date}">${dBlock(d.date)}<div class="dm">
@@ -1931,7 +1944,7 @@ $('#sPrev').onclick=()=>sStep(-1);$('#sNext').onclick=()=>sStep(1);
 ['#sRange','#sFrom','#sTo','#sOnlyX'].forEach(s=>$(s).addEventListener('change',renderSum));
 function buildPrint(){
  const R=compute(),k=R.k,only=$('#sOnlyX').checked,u=usage(R.year),al=allowFor(R.year),L=pbLedger();
- const rows=R.X.filter(r=>only?r.x.length:(r.x.length||isWork(r.d)));
+ const rows=R.X.filter(r=>only?r.part:(r.x.length||isWork(r.d)));
  const kv=(arr,cls='')=>`<table class="pr-kv">${arr.map(([n,v,g])=>`<tr class="${g?'g':''}"><td>${esc(n)}</td><td>${esc(v)}</td></tr>`).join('')}</table>`;
  const trn=[];trnTree(trnDates(R.year)).forEach(G=>{const tp=trnDates(R.year,R.a,R.b);trn.push([G.g.name,G.q?`${G.n}/${G.q} anno`:'',1]);G.members.forEach(m=>trn.push(['   '+(m.t.short||m.t.name),`${tp[m.t.id].length} nel periodo · ${m.ds.length}${m.t.quota?'/'+m.t.quota:''} anno`]))});
  const ac={};R.acts.forEach(a=>ac[a.t]=(ac[a.t]||0)+1);
@@ -1971,7 +1984,7 @@ $('#csvBtn').onclick=()=>{
   ['Permessi sindacali (h, nessun limite)',num(u.sind)],[],['ATTIVITÀ REGISTRATE','Data','Descrizione'],...R.acts.map(a=>[a.t,itD(a.date),a.txt]),['Permessi brevi da recuperare (h)',num(L.tot)],[],
   [only?'GIORNATE PARTICOLARI':'TUTTE LE GIORNATE'],
   ['Data','Ordine di Servizio n.','Giorno','Stato','Turno','Orario effettivo','Orario previsto','Straord. emergente (SE)','Voci particolari','Buoni','Straord. (h)','Notturno (h)','Esterna','Foglio di viaggio','Perm. breve (h)','Perm. 104 (h)','Sindacale (h)','Recupero (h)','Perm. studio (h)','Ordine pubblico','Aggiornamento','Cambio turno','Attività','Descrizione',...S.ind.filter(i=>i.rec!=='month').map(i=>i.name)]];
- R.X.filter(r=>only?r.x.length:(r.x.length||isWork(r.d))).forEach(({d,x})=>{const sh=shiftById(d.shiftId),w=isWork(d);
+ R.X.filter(r=>only?r.part:(r.x.length||isWork(r.d))).forEach(({d,x})=>{const sh=shiftById(d.shiftId),w=isWork(d);
   L1.push([itD(d.date),odsTxt(d.date),DOW[(parse(d.date).getDay()+6)%7],STATI[d.status],w?(sh?sh.name:'Personalizzato'):'',w?d.ranges:'',w?plannedRanges(d.date):'',w?(d.seRanges||''):'',x.map(r=>r[1]).join(', '),
    d.buono||'',d.stra?num(d.stra):'',nightH(d)?num(nightH(d)):'',d.esterna?'SI':'',d.fdv?'SI':'',d.pb?num(d.pb)+(d.pbPos==='in'?' ingr.':' usc.'):'',d.p104h?num(d.p104h)+(d.p104Pos==='in'?' ingr.':' usc.'):'',d.sind?num(d.sind):'',d.rec?num(d.rec):'',d.studioh?num(d.studioh):'',d.op==='fuori'?'fuori sede':d.op==='sede'?'in sede':'',(d.trn||[]).map(id=>trnById(id)?.name).filter(Boolean).join(', '),
    isChange(d)?'SI'+(d.ctType==='prog'?' (2ª in progr.)':' (d\'ufficio)')+(d.cambioNote?' - '+d.cambioNote:''):isVar(d)?'NO (1ª var. in programmazione)':'',d.tags.join(', '),d.note,
@@ -2183,7 +2196,7 @@ async function checkUpdates(btn){const o=btn?.textContent;if(btn){btn.disabled=t
 document.addEventListener('click',e=>{const b=e.target.closest('[data-chkupd]');if(b)checkUpdates(b)});
 function banner(kind,title,sub,btn,onOk){const b=$('#appBan');b.className='appban'+(kind==='upd'?' upd':'');b.hidden=false;
  b.innerHTML=`<img src="icons/icon-192.png" alt="" onerror="this.style.display='none'"><div class="tx"><b>${title}</b><span>${sub}</span></div><button class="pri" id="banOk">${btn}</button><button class="x" id="banX" title="Chiudi">✕</button>`;
- $('#banOk').onclick=()=>{onOk();};$('#banX').onclick=()=>{b.hidden=true;if(kind==='inst')try{sessionStorage.setItem('apsNoInst',1)}catch{}}}
+ $('#banOk').onclick=()=>{if(kind==='upd'){b.classList.add('busy');b.innerHTML=`<span class="spin" aria-hidden="true"></span><div class="tx"><b>Aggiornamento in corso…</b><span>L'app si riavvia da sola tra pochi secondi</span></div>`;setTimeout(()=>location.reload(),8000)}onOk()};$('#banX').onclick=()=>{b.hidden=true;if(kind==='inst')try{sessionStorage.setItem('apsNoInst',1)}catch{}}}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('#btnInstall').hidden=false;
  let snooze=0;try{snooze=+sessionStorage.getItem('apsNoInst')?Date.now():0}catch{}
  if($('#instGate')&&!$('#instGate').hidden){instGate();return}
