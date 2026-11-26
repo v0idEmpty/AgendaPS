@@ -242,6 +242,8 @@ header .hamb{display:none;margin-left:-6px}
  header{height:56px}
  main{padding:0!important}
  #v-cal.on>div{display:flex;flex-direction:column;height:calc(100dvh - 56px)}
+ html:has(body.calmode),body.calmode{height:100dvh;overflow:hidden;overscroll-behavior:none}
+ body.calmode{padding-bottom:0!important}
  .calwrap{flex:1;border:0;border-radius:0;display:flex;flex-direction:column}
  .cal{flex:1;grid-template-rows:auto;grid-auto-rows:1fr}
  .cell{min-height:0!important}
@@ -412,6 +414,7 @@ button.wide{width:100%;border-radius:10px}
 .savebar{position:sticky;bottom:76px;z-index:6;display:flex;justify-content:flex-end;padding:8px 0}
 .savebar button{box-shadow:var(--shadow)}
 @media(min-width:900px){.savebar{bottom:12px}}
+.ndUser{display:block;border:0;background:none;padding:2px 0 0;font-size:13px;color:var(--mut);text-align:left;min-width:0}.ndUser:hover{color:var(--acc)}
 .greet{font-size:22px;font-weight:400;color:var(--tx2);margin:2px 0 10px}
 .greet small{display:block;font-size:13px;color:var(--mut);margin-top:2px}
 .cell.mark{background:color-mix(in srgb,var(--tint) 24%,var(--surf))}
@@ -481,7 +484,7 @@ button.wide{width:100%;border-radius:10px}
   <button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button>
 </header>
 <div id="scrim"></div>
-<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="logo"><i></i><b id="ndDay"></b></div><div><b>Agenda PS</b> <span class="ver" id="ndVer"></span></div></div><div id="ndNav"></div><div class="ndSep"></div><div id="ndSide"></div></aside>
+<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="logo"><i></i><b id="ndDay"></b></div><div><b>Agenda PS</b> <span class="ver" id="ndVer"></span><button class="ndUser" id="ndUser" title="Cambia nome"></button></div></div><div id="ndNav"></div><div class="ndSep"></div><div id="ndSide"></div></aside>
 
 <main>
 <!-- CALENDARIO -->
@@ -1187,7 +1190,7 @@ $('#mpick').addEventListener('click',e=>{e.stopPropagation();const y=e.target.cl
  const m=e.target.closest('[data-mm]');if(m){cur=new Date(mpY,+m.dataset.mm,1);miniM=new Date(cur);if(calView==='day')dayCur=iso(cur);$('#mpick').classList.remove('open');return renderCal()}
  if(e.target.closest('[data-mtoday]')){cur=new Date();cur.setDate(1);miniM=new Date();dayCur=TODAY();$('#mpick').classList.remove('open');renderCal()}});
 document.addEventListener('click',e=>{if(!e.target.closest('#mpick,#mTitle'))$('#mpick').classList.remove('open')});
-function renderGreet(){const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
+function renderGreet(){if($('#ndUser'))$('#ndUser').textContent=S.userName?'👤 '+S.userName:'👤 Inserisci il tuo nome';const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
  $('#greet').innerHTML=`${g}${S.userName?', '+esc(S.userName):''} 👋<small>${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · Ordine di Servizio n. ${odsTxt(t)}${isHol(t)?' · '+holName(t):''}</small>`}
 function openWelcome(){
  MODE='welcome';
@@ -1275,7 +1278,7 @@ $('#hdrView').onclick=()=>{if(view!=='cal')go('cal');calView=calView==='day'?'mo
 function hdrMode(){const back=view==='cal'&&calView==='day'||view!=='cal';$('#btnMenu').textContent=back?'←':'☰';$('#btnMenu').title=back?'Indietro':'Menu'}
 $('#btnMenu').onclick=()=>{if($('#btnMenu').textContent==='←')return history.back();document.body.classList.add('navopen')};
 $('#scrim').onclick=closeNav;
-$('#navDrawer').addEventListener('click',e=>{if(e.target.closest('nav button,[data-md]'))closeNav()});
+$('#navDrawer').addEventListener('click',async e=>{if(e.target.closest('#ndUser')){const n=prompt('Il tuo nome',S.userName||'');if(n!=null){S.userName=n.trim();await DB.setMeta('settings',S);T=structuredClone(S);renderGreet();toast('Nome salvato')}return}if(e.target.closest('nav button,[data-md]'))closeNav()});
 /* scorrimento orizzontale per cambiare mese */
 {let x0=null,y0=null;$('#calWrap').addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
  $('#calWrap').addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)(dx<0?$('#next'):$('#prev')).click()},{passive:true})}
@@ -2189,7 +2192,7 @@ $('#btnTheme').onclick=()=>{const t=document.documentElement.dataset.theme==='li
 
 /* ===== Navigazione ===== */
 let view='cal';
-function go(v){view=v;setTimeout(()=>{hSync();hdrMode()},0);if(mqMob?.matches&&v!=='cal')$('#mTitle').textContent={sum:'Riepilogo',find:'Cerca',set:'Impostazioni'}[v];if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
+function go(v){view=v;document.body.classList.toggle('calmode',v==='cal');setTimeout(()=>{hSync();hdrMode()},0);if(mqMob?.matches&&v!=='cal')$('#mTitle').textContent={sum:'Riepilogo',find:'Cerca',set:'Impostazioni'}[v];if(v==='set'){T=structuredClone(S);alYear=cur.getFullYear()}$$('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$('.fab').style.visibility=v==='cal'?'':'hidden';refresh();scrollTo(0,0)}
 $$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
 function refreshBg(){if(view==='cal')renderCal();else if(view==='sum')renderSum()}
 function refresh(){({cal:renderCal,sum:renderSum,find:renderFind,set:renderSet})[view]();if(view==='set'){FS.ui();cbUi()}}
@@ -2204,7 +2207,7 @@ async function load(){
  DAYS=new Map(all.map(d=>[d.date,d])); await freezePast(); T=structuredClone(S); refresh();
 }
 (async()=>{
- $('#logoDay').textContent=new Date().getDate(); $('#hdrTodayN').textContent=new Date().getDate(); $('#ndDay').textContent=new Date().getDate(); $('#ndVer').textContent=APP_VERSION.startsWith('__')?'dev':'v'+APP_VERSION; $('#hVer').textContent=$('#ndVer').textContent; cur.setDate(1);
+ document.body.classList.add('calmode'); $('#logoDay').textContent=new Date().getDate(); $('#hdrTodayN').textContent=new Date().getDate(); $('#ndDay').textContent=new Date().getDate(); $('#ndVer').textContent=APP_VERSION.startsWith('__')?'dev':'v'+APP_VERSION; $('#hVer').textContent=$('#ndVer').textContent; cur.setDate(1);
  $('#verInfo').textContent='Agenda PS '+verTxt(); $('#sideVer').textContent='Agenda PS '+verTxt(); document.title='Agenda PS'+(APP_VERSION.startsWith('__')?'':' v'+APP_VERSION);
  await DB.open();
  await FS.init();
