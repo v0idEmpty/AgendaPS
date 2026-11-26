@@ -204,6 +204,19 @@ tr[data-d]:hover td{background:var(--hov)}
 .fschip.ok{border-color:transparent;background:color-mix(in srgb,var(--ok) 14%,var(--surf));color:var(--ok)}
 .fschip.warn{border-color:var(--warn);color:var(--warn)}
 @media(max-width:600px){.fschip{font-size:11px;padding:5px 9px}}
+#instGate{position:fixed;inset:0;z-index:300;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 22px calc(24px + env(safe-area-inset-bottom));text-align:center;overflow:auto}
+#instGate[hidden]{display:none}
+#instGate .ig-ico{width:96px;height:96px;border-radius:24px;box-shadow:var(--shadow)}
+#instGate h2{font-size:24px;font-weight:500;margin:18px 0 6px;color:var(--tx2)}
+#instGate .ig-sub{color:var(--mut);font-size:14.5px;max-width:340px;line-height:1.45}
+#instGate .ig-feat{display:flex;flex-direction:column;gap:8px;margin:20px 0;text-align:left;font-size:14px;max-width:320px;width:100%}
+#instGate .ig-feat div{display:flex;gap:10px;align-items:center}#instGate .ig-feat i{font-style:normal;font-size:20px;width:28px;text-align:center}
+#instGate .ig-steps{background:var(--surf2);border-radius:14px;padding:14px 16px;text-align:left;font-size:14.5px;max-width:340px;width:100%;line-height:1.5}
+#instGate .ig-steps ol{margin:6px 0 0;padding-left:20px}#instGate .ig-steps li{margin:6px 0}
+#instGate .ig-k{display:inline-block;padding:1px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surf);font-weight:500}
+#instGate .ig-btn{font-size:16px;padding:13px 26px;border-radius:26px;margin-top:18px;min-width:240px}
+#instGate .ig-skip{margin-top:14px;border:0;background:none;color:var(--acc);font-size:14px}
+#instGate .ig-warn{font-size:12.5px;color:var(--warn);margin-top:10px;max-width:340px}
 .appban{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom));z-index:45;max-width:520px;margin:0 auto;background:var(--surf);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:16px;box-shadow:var(--shadow);padding:14px 14px 14px 16px;display:flex;gap:12px;align-items:center;animation:up .25s ease-out}
 .appban[hidden]{display:none}
 .appban img{width:44px;height:44px;border-radius:10px;flex:none}
@@ -655,6 +668,7 @@ button.wide{width:100%;border-radius:10px}
 <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
 <div class="toast" id="toast"></div>
 <div class="appban" id="appBan" hidden></div>
+<div id="instGate" hidden></div>
 
 <script>
 'use strict';
@@ -2110,12 +2124,37 @@ async function checkUpdates(btn){const o=btn?.textContent;if(btn){btn.disabled=t
 document.addEventListener('click',e=>{const b=e.target.closest('[data-chkupd]');if(b)checkUpdates(b)});
 function banner(kind,title,sub,btn,onOk){const b=$('#appBan');b.className='appban'+(kind==='upd'?' upd':'');b.hidden=false;
  b.innerHTML=`<img src="icons/icon-192.png" alt="" onerror="this.style.display='none'"><div class="tx"><b>${title}</b><span>${sub}</span></div><button class="pri" id="banOk">${btn}</button><button class="x" id="banX" title="Chiudi">✕</button>`;
- $('#banOk').onclick=()=>{onOk();};$('#banX').onclick=()=>{b.hidden=true;if(kind==='inst')try{localStorage.setItem('apsNoInst',Date.now())}catch{}}}
+ $('#banOk').onclick=()=>{onOk();};$('#banX').onclick=()=>{b.hidden=true;if(kind==='inst')try{sessionStorage.setItem('apsNoInst',1)}catch{}}}
 addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvt=e;$('#btnInstall').hidden=false;
- let snooze=0;try{snooze=+localStorage.getItem('apsNoInst')||0}catch{}
+ let snooze=0;try{snooze=+sessionStorage.getItem('apsNoInst')?Date.now():0}catch{}
+ if($('#instGate')&&!$('#instGate').hidden){instGate();return}
  if(Date.now()-snooze>7*864e5)banner('inst','Installa Agenda PS','Icona sulla schermata Home, a schermo intero e anche offline','📲 Installa',()=>$('#btnInstall').click())});
 $('#btnInstall').onclick=async()=>{if(!installEvt)return;installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;$('#btnInstall').hidden=true;$('#appBan').hidden=true};
-addEventListener('appinstalled',()=>{$('#btnInstall').hidden=true;toast('App installata ✓')});
+const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true;
+const UA=navigator.userAgent, isIOS=/iPhone|iPad|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1), isMobUA=/Android|iPhone|iPad|iPod|Mobile/.test(UA)||isIOS,
+ inApp=/FBAN|FBAV|Instagram|WhatsApp|Telegram|Line\/|Snapchat|; wv\)|GSA\//.test(UA)||(isIOS&&!/Safari\//.test(UA));
+function instGate(){const g=$('#instGate');
+ const feats=`<div class="ig-feat"><div><i>📲</i>Icona sulla schermata Home, a schermo intero</div><div><i>📴</i>Funziona anche senza rete</div><div><i>🔒</i>I dati restano sul tuo telefono, cifrati nel backup</div></div>`;
+ let body;
+ if(inApp)body=`<div class="ig-steps"><b>Stai usando il browser interno di un'altra app</b> (WhatsApp, Telegram…): da qui non si può installare.<ol>
+   <li>Tocca il menu <span class="ig-k">⋮</span> o <span class="ig-k">…</span> in alto</li><li>Scegli <b>Apri in ${isIOS?'Safari':'Chrome'}</b> (o "Apri nel browser")</li><li>Poi installa da lì</li></ol></div>
+   <button class="pri ig-btn" data-ig="copy">📋 Copia il link</button>`;
+ else if(isIOS)body=`<div class="ig-steps"><b>Su iPhone si installa da Safari in 3 tocchi:</b><ol>
+   <li>Tocca <span class="ig-k">Condividi ⬆︎</span> nella barra di Safari</li><li>Scorri e scegli <span class="ig-k">Aggiungi alla schermata Home ⊞</span></li><li>Tocca <b>Aggiungi</b>, poi apri Agenda PS dall'icona</li></ol></div>
+   <div class="ig-warn">⚠ Su iPhone i dati inseriti in Safari non passano all'app: installala prima di iniziare.</div>`;
+ else body=installEvt?`<button class="pri ig-btn" data-ig="inst">📲 Installa Agenda PS</button>`
+   :`<div class="ig-steps"><b>Per installare:</b><ol><li>Tocca il menu <span class="ig-k">⋮</span> del browser</li><li>Scegli <span class="ig-k">Installa app</span> o <span class="ig-k">Aggiungi a schermata Home</span></li><li>Conferma con <b>Installa</b></li></ol></div>`;
+ g.innerHTML=`<img class="ig-ico" src="icons/icon-192.png" alt="" onerror="this.style.display='none'"><h2>Installa Agenda PS</h2>
+  <div class="ig-sub">Usala come un'app: si apre più in fretta, a schermo intero, e ti avvisa degli aggiornamenti.</div>${feats}${body}
+  <button class="ig-skip" data-ig="skip">Continua nel browser</button>`;
+ g.hidden=false}
+document.addEventListener('click',async e=>{const b=e.target.closest('#instGate [data-ig]');if(!b)return;const k=b.dataset.ig;
+ if(k==='skip'){$('#instGate').hidden=true;try{sessionStorage.setItem('apsNoInst',1)}catch{}return}
+ if(k==='copy'){try{await navigator.clipboard.writeText(location.href);b.textContent='✓ Link copiato: incollalo nel browser'}catch{prompt('Copia questo link:',location.href)}return}
+ if(k==='inst'&&installEvt){installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;if(r.outcome==='accepted')$('#instGate').hidden=true;else instGate()}});
+function maybeGate(){let sk=false;try{sk=!!sessionStorage.getItem('apsNoInst')}catch{}
+ if(isStandalone()||!isMobUA||sk||!/^https?:/.test(location.protocol))return;instGate()}
+addEventListener('appinstalled',()=>{$('#instGate').hidden=true;$('#btnInstall').hidden=true;toast('App installata ✓')});
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){
  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{swReg=reg;
   reg.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update()});
@@ -2156,6 +2195,7 @@ async function load(){
  if(navigator.storage?.persist)navigator.storage.persist();
  lastCloud=await DB.getMeta('lastCloud')||null;
  await load();
+ maybeGate();
  if(!S.userName)openWelcome();
  else if(!S.secAsked&&!(await DB.getMeta('cbPw')))openSecurity(false);
 })();
