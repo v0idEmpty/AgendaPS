@@ -386,7 +386,7 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .dsub{font-size:12.5px;color:var(--mut);margin-top:2px}
 .holbar{margin:0 20px 8px;padding:7px 12px;border-radius:8px;background:color-mix(in srgb,var(--bad) 10%,var(--surf));font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .holbar button{padding:4px 12px;font-size:12.5px;border-color:var(--bad);color:var(--bad)}
-.dtype{display:flex;gap:6px;padding:4px 20px 8px}.dtype button{flex:1;padding:9px 4px;border-radius:10px;font-size:13.5px;min-width:0}
+.dtype{display:flex;gap:6px;padding:4px 20px 8px}.dtype button{display:flex;align-items:center;justify-content:center;gap:6px;flex:1;padding:9px 4px;border-radius:10px;font-size:13.5px;min-width:0}
 .dtype button.on{background:var(--accSoft);color:var(--acc);border-color:var(--acc);font-weight:600}
 .absgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 20px 8px}
 .absgrid button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 2px;border-radius:10px;min-width:0;border-left:4px solid var(--c)}
@@ -403,6 +403,7 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .rged.se .rgrow{background:color-mix(in srgb,var(--c,#f6bf26) 14%,var(--surf))}
 .rgrow input{width:auto;flex:1;min-width:0;padding:6px 6px;font-variant-numeric:tabular-nums}.rgl{font-size:12px;color:var(--mut);width:58px;flex:none}.rgh{font-size:12px;color:var(--tx2);width:38px;text-align:right;flex:none}
 .rgrow .ico{width:30px;height:30px;font-size:14px;flex:none}.rgadd{border:1px dashed var(--line);border-radius:10px;padding:8px;color:var(--acc);background:none;font-size:13px}
+.recb{font-size:11px;padding:2px 8px;border-radius:10px;background:color-mix(in srgb,var(--c) 20%,transparent);color:var(--tx2)}
 .actrow2{display:flex;gap:8px;align-items:center;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 8%,var(--surf));border-radius:0 10px 10px 0;padding:6px 6px 6px 10px;margin-bottom:6px}
 .actrow2 b{font-weight:500;font-size:13px;white-space:nowrap;color:var(--tx2)}.actrow2 input{flex:1;min-width:0;width:auto;padding:6px 8px}.actrow2 .ico{width:30px;height:30px;font-size:14px;flex:none}
 .addbox{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px}
@@ -418,6 +419,7 @@ button.wide{width:100%;border-radius:10px}
 .dprev b{font-size:14px;color:var(--tx2)}
 .tabs{display:flex;border-bottom:1px solid var(--line);padding:0 12px;gap:2px;overflow-x:auto;scrollbar-width:none;flex:none}
 .tabs button{border:0;border-radius:0;padding:10px 12px;font-size:13px;color:var(--mut);border-bottom:3px solid transparent;white-space:nowrap;flex:none}
+#eTabs.tabs{padding:0 4px;gap:0;overflow:hidden}#eTabs.tabs button{flex:1 1 0;display:flex;flex-direction:column;align-items:center;padding:7px 0 6px;font-size:11px;min-width:0;overflow:hidden;text-overflow:ellipsis}
 .tabs button.on{color:var(--acc);border-bottom-color:var(--acc)}
 .panes{flex:1;overflow-y:auto;padding:14px 20px}
 .modal:not(.drawer) .panes{max-height:none}
@@ -510,7 +512,7 @@ button.wide{width:100%;border-radius:10px}
   <button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button>
 </header>
 <div id="scrim"></div>
-<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><b>Agenda PS</b><span class="ver" id="ndVer"></span></div></div><button class="ndUser" id="ndUser" title="Cambia nome"></button></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
+<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><b>Agenda PS</b><span class="ver" id="ndVer"></span></div></div><div class="ndUser" id="ndUser"></div></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
 
 <main>
 <!-- CALENDARIO -->
@@ -551,7 +553,7 @@ button.wide{width:100%;border-radius:10px}
   </div>
   <div class="repHead" id="repHead"></div>
   <div class="kpis" id="kpis"></div>
-  <div class="vtabs noprint" id="sumTabs"><button data-vt="gio" class="on">📅 Giornate</button><button data-vt="ass">🌴 Assenze</button><button data-vt="agg">🎯 Saldi</button><button data-vt="att">📌 Attività</button></div>
+  <div class="vtabs noprint" id="sumTabs"><button data-vt="gio" class="on">📅 Giornate</button><button data-vt="ass">🗓 Assenze</button><button data-vt="agg">🎯 Saldi</button><button data-vt="att">📌 Attività</button></div>
   <div class="card" data-vp="ass"><h4>Assenze e permessi nel periodo</h4><table class="kv" id="absSum"></table></div>
   <div class="card" data-vp="agg"><h4>Giornate di aggiornamento</h4><table class="kv" id="trnSum"></table></div>
   <div class="card" data-vp="ass"><h4>Indennità</h4><table class="kv" id="indSum"></table></div>
@@ -651,6 +653,11 @@ button.wide{width:100%;border-radius:10px}
   </div>
   <div class="savebar" id="saveBar"><button class="pri" id="saveSet">💾 Salva impostazioni</button></div>
   <div class="card" data-vp="dat">
+    <h4>📈 Statistiche anonime</h4>
+    <p class="mut">Per sapere quante persone usano l'app, a ogni apertura viene inviato un conteggio anonimo (installata o browser, versione). <b>Nessun dato dell'agenda, nome o posizione</b> viene inviato. Servizio usato: GoatCounter, senza cookie.</p>
+    <label class="swt" style="margin-top:8px"><input type="checkbox" id="statsOn"><i></i><span>Invia statistiche anonime</span></label>
+  </div>
+  <div class="card" data-vp="dat">
     <h4>Salvataggio su file (cartella)</h4>
     <p class="mut">Scegli una cartella: l'app salva in automatico tutto in <b>registro_servizio.json</b> a ogni modifica e lo ricarica all'apertura. Puoi copiare la cartella su chiavetta o cloud e aprirla su un altro PC. Funziona con Chrome ed Edge su computer.</p>
     <p id="fsStatus" style="margin:10px 0;font-weight:500"></p>
@@ -682,7 +689,7 @@ button.wide{width:100%;border-radius:10px}
 <button class="fab" data-create title="Crea">＋</button>
 <div class="popmenu" id="popmenu">
   <div data-pm="today">📝  Giornata di oggi</div>
-  <div data-pm="range">🌴  Assenza / periodo (CO, CS, 937…)</div>
+  <div data-pm="range">🗓  Assenza / periodo (CO, CS, 937…)</div>
   <div data-pm="trn">🎯  Giornate di aggiornamento</div>
   <div data-pm="shifts">🔁  Imposta / correggi turni</div>
   <div data-pm="act">📌  Attività (360 c.p.p., SIT, interrogatori…)</div>
@@ -822,6 +829,7 @@ const RULDEF={ctMin:2,lunch:'15:00',dinner:'20:00',trnRanges:'08:00-14:00',perqS
 const ACTDEF=['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi'];
 const ACTCOL=['blueberry','sage','tangerine','grape','peacock','flamingo','basil','lavender'];
 const TRNGRP=()=>[{id:'add',name:'Addestramento',quota:6},{id:'agg',name:'Aggiornamento professionale',quota:6}];
+const INDNEW=()=>[['Reperibilità',0],['Alta montagna',0],['Meccanografica',1],['Cyber',1],['Polizia Giudiziaria',1]].map(([name,rep])=>({id:uid(),name,type:'check',rec:'no',from:'',to:'',def:'',rep:!!rep}));
 const TRNDEF=()=>[{id:'tiro',name:'Addestramento al tiro',short:'Tiro',group:'add',quota:3,color:'tomato'},
  {id:'to',name:'Tecniche operative',short:'Tecn. oper.',group:'add',quota:3,color:'tangerine'},
  {id:'gen',name:'Agg. materie di interesse generale',short:'Int. generale',group:'agg',quota:3,color:'peacock'},
@@ -831,8 +839,8 @@ function defaults(){const t=TODAY();return{
  shifts:[{id:'A',name:'8-14',ranges:'08:00-14:00',buono:false,short:'8-14',color:'peacock'},
          {id:'B',name:'8-14 + rientro',ranges:'08:00-14:00, 14:30-17:30',buono:true,short:'8-14+R',color:'sage'}],
  plans:[{id:uid(),from:iso(monday(new Date())),anchor:iso(monday(new Date())),weeks:1,rotation:[['A','B','A','B','A',null,null]]}],
- tags:['Ufficio','Perquisizione','Analisi forense','Notifica','Udienza','Sopralluogo','Interrogatorio','Trasferta','Formazione','Reperibilità'],
- ind:[{id:uid(),name:'Missione (km)',type:'num',rec:'no',from:'',to:'',def:''}]
+ tags:['Ufficio','Perquisizione','Analisi forense','Notifica','Udienza','Sopralluogo','Interrogatorio','Trasferta','Formazione'],
+ ind:[{id:uid(),name:'Missione (km)',type:'num',rec:'no',from:'',to:'',def:''},...INDNEW()]
 }}
 function migrate(s){
  if(!s)return defaults();
@@ -844,6 +852,7 @@ function migrate(s){
  s.trainings=s.trainings||TRNDEF(); s.trnGroups=s.trnGroups||TRNGRP();
  if(!s.v6){const D=TRNDEF();s.trainings.forEach(t=>{const d=D.find(x=>x.id===t.id);if(d&&!t.group){t.group=d.group;t.quota=d.quota;t.short=d.short}});
   D.forEach(d=>{if(!s.trainings.some(t=>t.id===d.id))s.trainings.push(d)});s.v6=true}
+ if(!s.v9){const have=new Set((s.ind||[]).map(i=>i.name.toLowerCase().replace(/\s*\(.*\)$/,'')));s.ind=[...(s.ind||[]),...INDNEW().filter(i=>!have.has(i.name.toLowerCase()))];s.tags=(s.tags||[]).filter(t=>!/^reperibilit/i.test(t));s.v9=true}
  if(!s.v8){s.trainings.forEach(t=>{if((t.id==='tiro'||t.id==='to')&&!+t.quota)t.quota=3});s.v8=true}
  s.trainings.forEach(t=>{t.group=t.group||'';t.short=t.short||t.name;t.quota=+t.quota||0});
  const dc=['peacock','sage','lavender','banana','flamingo','basil'];
@@ -909,6 +918,8 @@ function indVal(d,i){
  return undefined;
 }
 /* voci fuori dall'ordinario: [colore, etichetta] */
+const indIco=n=>/missione/i.test(n)?'🚗':/reperib/i.test(n)?'📟':/montagna/i.test(n)?'🏔️':/meccanograf/i.test(n)?'🖥️':/cyber/i.test(n)?'💻':/giudiziaria/i.test(n)?'⚖️':/rischio/i.test(n)?'☢️':'💶';
+const canRep=i=>!!i.rep||i.rec==='day'||/cyber|giudiziaria|meccanograf/i.test(i.name);
 function ordBuono(d){if(!isWork(d)||d.buono!==1)return false;const ps=shiftById(plannedShift(d.date));return !!(ps&&ps.buono&&d.ranges===ps.ranges&&!d.seRanges&&!+d.stra)}
 function extras(d){
  const r=[], ps=plannedShift(d.date), dow=parse(d.date).getDay();
@@ -1177,7 +1188,7 @@ function slotMenu(ds,h,anchor){
  const m=$('#slotMenu'), hh=h==null?null:pad(h)+':00';
  m.innerHTML=`<div style="padding:8px 18px 4px;font-size:12px;color:var(--mut)">${parse(ds).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})}${hh?' · '+hh:''}</div>
   <div data-sl="ora">🕐  Orario di servizio</div><div data-sl="se">⏱  Straordinario${hh?' dalle '+hh:''}</div><div data-sl="perq">🚪  Perquisizione</div>
-  <div data-sl="act">📌  Attività (SIT, 360, interrogatorio…)</div><div data-sl="note">📝  Nota / cosa ho fatto</div><div data-sl="abs">🌴  Assenza (CO, CS, 937…)</div>`;
+  <div data-sl="act">📌  Attività (SIT, 360, interrogatorio…)</div><div data-sl="note">📝  Nota / cosa ho fatto</div><div data-sl="abs">🗓  Assenza (CO, CS, 937…)</div>`;
  m.dataset.ds=ds; m.dataset.h=h==null?'':h; m.classList.add('open');
  const r=anchor.getBoundingClientRect(), w=m.offsetWidth, H=m.offsetHeight;
  m.style.left=Math.max(8,Math.min(innerWidth-w-8,(anchor.classList.contains('fab')?r.right-w:r.left+60)))+'px';
@@ -1219,7 +1230,7 @@ $('#mpick').addEventListener('click',e=>{e.stopPropagation();const y=e.target.cl
  const m=e.target.closest('[data-mm]');if(m){cur=new Date(mpY,+m.dataset.mm,1);miniM=new Date(cur);if(calView==='day')dayCur=iso(cur);$('#mpick').classList.remove('open');return renderCal()}
  if(e.target.closest('[data-mtoday]')){cur=new Date();cur.setDate(1);miniM=new Date();dayCur=TODAY();$('#mpick').classList.remove('open');renderCal()}});
 document.addEventListener('click',e=>{if(!e.target.closest('#mpick,#mTitle'))$('#mpick').classList.remove('open')});
-function renderGreet(){if($('#ndUser'))$('#ndUser').innerHTML=`<span class="av">${S.userName?esc(S.userName.trim()[0].toUpperCase()):'?'}</span><span class="un"><b>${S.userName?esc(S.userName):'Inserisci il tuo nome'}</b><small>${S.userName?'Tocca per modificare':'Per il messaggio di benvenuto'}</small></span><span class="ed">✎</span>`;const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
+function renderGreet(){if($('#ndUser'))$('#ndUser').innerHTML=`<span class="av">${S.userName?esc(S.userName.trim()[0].toUpperCase()):'?'}</span><span class="un"><b>${S.userName?esc(S.userName):'Inserisci il tuo nome'}</b><small>${S.userName?'Agenda personale':'Impostalo in Impostazioni → Profilo'}</small></span>`;const h=new Date().getHours(),g=h<13?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera',t=TODAY();
  $('#greet').innerHTML=`${g}${S.userName?', '+esc(S.userName):''} 👋<small>${new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})} · Ordine di Servizio n. ${odsTxt(t)}${isHol(t)?' · '+holName(t):''}</small>`}
 function openWelcome(){
  MODE='welcome';
@@ -1307,7 +1318,7 @@ $('#hdrView').onclick=()=>{if(view!=='cal')go('cal');calView=calView==='day'?'mo
 function hdrMode(){const back=view==='cal'&&calView==='day'||view!=='cal';$('#btnMenu').textContent=back?'←':'☰';$('#btnMenu').title=back?'Indietro':'Menu'}
 $('#btnMenu').onclick=()=>{if($('#btnMenu').textContent==='←')return history.back();document.body.classList.add('navopen')};
 $('#scrim').onclick=closeNav;
-$('#navDrawer').addEventListener('click',async e=>{if(e.target.closest('#ndUser')){const n=prompt('Il tuo nome',S.userName||'');if(n!=null){S.userName=n.trim();await DB.setMeta('settings',S);T=structuredClone(S);renderGreet();toast('Nome salvato')}return}if(e.target.closest('nav button,[data-md]'))closeNav()});
+$('#navDrawer').addEventListener('click',async e=>{if(e.target.closest('nav button,[data-md]'))closeNav()});
 /* scorrimento orizzontale per cambiare mese */
 {let x0=null,y0=null;$('#calWrap').addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY},{passive:true});
  $('#calWrap').addEventListener('touchend',e=>{if(x0==null)return;const dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5)(dx<0?$('#next'):$('#prev')).click()},{passive:true})}
@@ -1341,11 +1352,11 @@ function openDay(ds){
    <div class="dsub">Ordine di Servizio n. ${odsTxt(ds)} · Previsto: <b>${ps?esc(ps.name):hol&&rs?esc(rs.name)+' (festivo)':'Riposo'}</b>${E.auto?' · compilato in automatico':''}</div></div>
   <button class="ico" data-x title="Chiudi (Esc)">✕</button></div>
  ${hol?`<div class="holbar" id="eHol"></div>`:''}
- <div class="dtype" id="eType"><button data-ty="lavoro">🏢 Servizio</button><button data-ty="riposo">😴 Riposo</button><button data-ty="abs">🌴 Assenza</button></div>
+ <div class="dtype" id="eType"><button data-ty="lavoro"><svg class="ti" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2M3 12h18"/></svg>Servizio</button><button data-ty="riposo"><svg class="ti" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>Riposo</button><button data-ty="abs"><svg class="ti" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18M9.5 14.5l5 5M14.5 14.5l-5 5"/></svg>Assenza</button></div>
  <div id="eAbs"></div>
  <div id="ePrev" class="dprev wkonly"></div>
  <div class="tabs" id="eTabs">
-  <button data-tab="ora" class="wkonly"><i>⏱</i>Orario</button><button data-tab="att" class="wkonly"><i>🚓</i>Attività</button><button data-tab="uff" class="wkonly"><i>🏢</i>Ufficio</button><button data-tab="trn" class="wkonly"><i>🎯</i>Aggiorn.</button><button data-tab="eti" class="wkonly"><i>🏷</i>Etichetta</button></div>
+  <button data-tab="ora" class="wkonly"><i>⏱</i>Orario</button><button data-tab="ind" class="wkonly"><i>💶</i>Indennità</button><button data-tab="att" class="wkonly"><i>🚓</i>Attività</button><button data-tab="uff" class="wkonly"><i>🏢</i>Ufficio</button><button data-tab="trn" class="wkonly"><i>🎯</i>Aggiorn.</button><button data-tab="eti" class="wkonly"><i>🏷</i>Etichetta</button></div>
  <div class="panes">
  <div class="pane" data-pane="ora">
   <div class="g2">
@@ -1364,11 +1375,15 @@ function openDay(ds){
  </div>
  <div class="pane" data-pane="att">
   <div class="wkonly">
-   <div class="chips" id="eTags"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span>${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}<span class="chip col ${E.op?'on':''}" style="--c:${C.ext}" data-opchip>🛡 Ordine pubblico</span>${dayInd.map(i=>`<span class="chip col" style="--c:${C.ind}" data-indc="${i.id}">${/missione/i.test(i.name)?'🚗':'💶'} ${esc(i.name.replace(/\s*\(.*\)$/,''))}</span>`).join('')}</div>
+   <div class="chips" id="eTags">${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
    <div id="ePerq"></div>
-   <div id="eOpBox"></div><div id="eIndBox"></div>
   </div>
   <div class="sect"><span>📝 Nota</span></div><textarea id="eNote" style="min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
+ </div>
+ <div class="pane" data-pane="ind">
+  <p class="mut s" style="margin:0 0 8px">Tocca le indennità di oggi. Quelle <b>ricorrenti</b> si ripetono da sole in tutti i giorni di servizio.</p>
+  <div class="chips" id="eIndChips"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span><span class="chip col ${E.op?'on':''}" style="--c:${C.ext}" data-opchip>🛡 Ordine pubblico</span>${dayInd.map(i=>`<span class="chip col" style="--c:${C.ind}" data-indc="${i.id}">${indIco(i.name)} ${esc(i.name.replace(/\s*\(.*\)$/,''))}</span>`).join('')}</div>
+  <div id="eOpBox"></div><div id="eIndBox"></div>
  </div>
  <div class="pane" data-pane="uff">
   <div class="sect" style="margin-top:0"><span>📌 Attività d'ufficio di oggi</span></div>
@@ -1406,7 +1421,7 @@ const PERM=[
  {k:'rec',ic:'↺',lab:'Recupero',h:'rec',st:'recupero',max:12,hl:'Ore di recupero',hint:()=>{const L=pbLedger();return L.tot?`Da recuperare ${fmtH(L.tot)} entro ${itD(L.open[0].due)}`:'Nessun debito orario'}}];
 const pMode=P=>isWork(E)&&+E[P.h]>0?'h':'0';
 function renderPerm(){const box=$('#ePerm');if(!box)return;
- box.innerHTML=`<p class="mut s" style="margin:0 0 10px">Ore di permesso dentro il turno. Per la <b>giornata intera</b> usa <b>🌴 Assenza</b> in alto.</p>`+PERM.map(P=>{const m=pMode(P);
+ box.innerHTML=`<p class="mut s" style="margin:0 0 10px">Ore di permesso dentro il turno. Per la <b>giornata intera</b> usa <b>Assenza</b> in alto.</p>`+PERM.map(P=>{const m=pMode(P);
   return `<div class="pcard ${m!=='0'?'on':''}" style="--c:${col(STCOL[P.st]||'lavender')}"><div class="pch"><b>${P.ic} ${P.lab}</b></div>
   <div class="seg pseg" data-pk="${P.k}"><button data-pmo="0" class="${m==='0'?'on':''}">No</button><button data-pmo="h" class="${m==='h'?'on':''}">${P.hl||'A ore'}</button></div>
   ${m==='h'?`<div class="pbody"><div class="stepper" data-f="${P.h}" data-max="${P.max}"><button data-s="-1">−</button><output>${fmtH(E[P.h])}</output><button data-s="1">+</button></div>${P.pos?posSel(P.pos):''}</div>`:''}
@@ -1420,7 +1435,7 @@ function rngRead(k){return [...$$(`#rg_${k} .rgrow`)].map(row=>{const[a,b]=row.q
 function rngSet(k,v,re=true){E[k]=v;if(k==='seRanges')E.stra=rangesH(v);else{const m=S.shifts.find(x=>x.ranges===v);E.shiftId=m?m.id:'';if($('#eShift'))$('#eShift').value=E.shiftId;E.buonoMan=false}if(re)rngEd(k);syncModal()}
 function rngAll(){rngEd('ranges');rngEd('seRanges')}
 function restoreShift(){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh&&!E.ranges){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;rngEd('ranges')}}
-function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(!['ora','att','uff','trn','eti'].includes(dayTab))dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
+function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(!['ora','ind','att','uff','trn','eti'].includes(dayTab))dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
 const permOf=st=>PERM.find(P=>P.st===st);
 function absSel(){if(ABS.includes(E.status))return E.status;if(isWork(E)){const P=PERM.find(P=>P.k===E._pk)||PERM.find(P=>+E[P.h]>0);if(P)return P.st}return ''}
 function renderType(){
@@ -1461,11 +1476,18 @@ function renderOp(){const b=$('#eOpBox');if(!b)return;const on=!!E.op;$$('[data-
  <div class="mut s" style="margin-top:4px">Nel riepilogo i giorni in sede e fuori sede sono contati a parte.</div>`:''}</div>`;renderInd()}
 let indOn={};
 function renderInd(){const b=$('#eIndBox');if(!b)return;const L=S.ind.filter(i=>i.rec!=='month'&&!/^ordine pubblico$/i.test(i.name));
- L.forEach(i=>{const v=indVal({...E,status:'lavoro'},i);$$(`[data-indc="${i.id}"]`).forEach(c=>c.classList.toggle('on',!!v||!!indOn[i.id]))});
- b.innerHTML=L.filter(i=>i.type!=='check'&&(indVal({...E,status:'lavoro'},i)||indOn[i.id])).map(i=>{const v=indVal({...E,status:'lavoro'},i);
-  return `<div class="pbox" style="--c:${C.ind};margin:12px 0 0"><b>${/missione/i.test(i.name)?'🚗':'💶'} ${esc(i.name)}</b>
-  <input data-ind="${i.id}" style="margin-top:8px" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal" placeholder="Valore"':'placeholder="Dettagli"'} value="${esc(v===true?'':v??'')}">
-  <button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica a più giorni</button></div>`}).join('')}
+ const on=i=>!!indVal({...E,status:'lavoro'},i)||!!indOn[i.id];
+ L.forEach(i=>$$(`[data-indc="${i.id}"]`).forEach(c=>c.classList.toggle('on',on(i))));
+ b.innerHTML=L.filter(i=>on(i)&&(i.type!=='check'||canRep(i))).map(i=>{const v=indVal({...E,status:'lavoro'},i),rec=i.rec==='day'&&inRange(E.date,i)&&!(E.ind&&i.id in E.ind);
+  return `<div class="pbox" style="--c:${C.ind};margin:12px 0 0"><div class="row" style="justify-content:space-between"><b>${indIco(i.name)} ${esc(i.name)}</b>${rec?'<span class="recb">↻ ricorrente</span>':''}</div>
+  ${i.type!=='check'?`<input data-ind="${i.id}" style="margin-top:8px" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal" placeholder="Valore"':'placeholder="Dettagli"'} value="${esc(v===true?'':v??'')}">`:''}
+  ${canRep(i)?`<div class="seg pseg"><button data-indrep="${i.id}|once" class="${rec?'':'on'}">Solo oggi</button><button data-indrep="${i.id}|day" class="${rec?'on':''}">Ogni giorno di servizio</button></div>
+   <div class="mut s" style="margin-top:6px">${rec?`Si ripete dal ${itD(i.from||E.date)}${i.to?' al '+itD(i.to):''} in tutti i giorni di servizio.`:'Vale solo per questa giornata.'}</div>`
+   :`<button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica a più giorni</button>`}</div>`}).join('')}
+async function indRep(id,mode){const i=S.ind.find(x=>x.id===id);if(!i)return;const v=E.ind?.[id];
+ if(mode==='day'){i.rec='day';i.from=E.date;i.to='';if(i.type!=='check')i.def=(v!==undefined&&v!==true?v:i.def)||'';if(E.ind)delete E.ind[id];delete indOn[id]}
+ else{const val=indVal({...E,status:'lavoro'},i);if(i.rec==='day'){if((i.from||'')>=E.date){i.rec='no';i.from='';i.to=''}else i.to=E.date}E.ind=E.ind||{};E.ind[id]=i.type==='check'?true:(val===true?'':val??'')}
+ await DB.setMeta('settings',S);T=structuredClone(S);renderInd();dayChanged();refreshBg();toast(mode==='day'?'Ricorrente in tutti i giorni di servizio':'Solo per questa giornata')}
 async function opApply(){const to=$('#eOpTo').value;if(!to||to<=E.date)return;await flushDay();const out=[];
  eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.op=E.op;d.opNote=E.opNote||'';d.updated=new Date().toISOString();out.push(d)});
  if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}refreshBg();toast(`Ordine pubblico: ${out.length+1} giorni`);$('#eOpTo').value=E.date;$('#eOpApply').hidden=true}
@@ -1782,8 +1804,9 @@ $('#sheet').addEventListener('click',async e=>{
   const b=a+(k==='ranges'&&!r.length?360:k==='ranges'?180:60);rngSet(k,[E[k],fmtT(a)+'-'+fmtT(b)].filter(Boolean).join(', '));return}
  const rd=t.closest('[data-rdel]');if(rd){const[k,i]=rd.dataset.rdel.split('|');const r=parseR(E[k]);r.splice(+i,1);rngSet(k,r.map(([a,b])=>fmtT(a)+'-'+fmtT(b)).join(', '));return}
  if(t.closest('[data-opchip]')){E.op=E.op?'':'sede';renderOp();return}
+ const ir=t.closest('[data-indrep]');if(ir){const[id,m]=ir.dataset.indrep.split('|');return indRep(id,m)}
  const ic=t.closest('[data-indc]');if(ic){const id=ic.dataset.indc,i=S.ind.find(x=>x.id===id),v=indVal({...E,status:'lavoro'},i),on=!!v||!!indOn[id];E.ind=E.ind||{};
-  if(on){E.ind[id]=i.type==='check'?false:'';delete indOn[id]}else if(i.type==='check')E.ind[id]=true;else indOn[id]=1;renderInd();$('#eIndBox [data-ind]')?.focus();return}
+  if(on){E.ind[id]=i.type==='check'?false:'';delete indOn[id];if(i.rec==='day'&&inRange(E.date,i))toast('Tolta solo per oggi: negli altri giorni resta')}else if(i.type==='check')E.ind[id]=true;else indOn[id]=1;renderInd();$('#eIndBox [data-ind]')?.focus();return}
  const op=t.closest('[data-op]');if(op){E.op=op.dataset.op;renderOp();return}
  if(t.closest('#eOpApply'))return opApply();
  if(t.closest('[data-opentrn]')){await flushDay();return openTrn(+E.date.slice(0,4))}
@@ -2226,7 +2249,18 @@ document.addEventListener('click',async e=>{const b=e.target.closest('#instGate 
  if(k==='inst'&&installEvt){installEvt.prompt();const r=await installEvt.userChoice;installEvt=null;if(r.outcome==='accepted')$('#instGate').hidden=true;else instGate()}});
 function maybeGate(){let sk=false;try{sk=!!sessionStorage.getItem('apsNoInst')}catch{}
  if(isStandalone()||!isMobUA||sk||!/^https?:/.test(location.protocol))return;instGate()}
-addEventListener('appinstalled',()=>{$('#instGate').hidden=true;$('#btnInstall').hidden=true;toast('App installata ✓')});
+/* ===== Statistiche anonime (GoatCounter) ===== */
+const GC='https://v0idempty.goatcounter.com/count';
+const statsOn=()=>{try{return localStorage.getItem('apsStats')!=='0'}catch{return true}};
+let gcLoad=null;
+function gc(path,title){if(!statsOn()||!/^https:/.test(location.protocol))return;
+ gcLoad=gcLoad||new Promise(res=>{window.goatcounter={no_onload:true,allow_local:false};const sc=document.createElement('script');sc.async=true;sc.src='https://gc.zgo.at/count.js';sc.dataset.goatcounter=GC;sc.onload=res;sc.onerror=()=>res();document.head.appendChild(sc)});
+ gcLoad.then(()=>{try{window.goatcounter?.count?.({path,title:title||path,event:true})}catch{}})}
+function gcOpen(){let k='apsGcDay';try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,1)}catch{}
+ const mode=isStandalone()?'installata':'browser',v=APP_VERSION.startsWith('__')?'locale':'v'+APP_VERSION;
+ gc('apertura-'+mode,'Apertura ('+mode+')');gc('versione-'+v,'Versione '+v)}
+document.addEventListener('change',e=>{if(e.target.id==='statsOn'){try{localStorage.setItem('apsStats',e.target.checked?'1':'0')}catch{}toast(e.target.checked?'Statistiche anonime attive':'Statistiche disattivate')}});
+addEventListener('appinstalled',()=>{gc('installazione','Installazione');$('#instGate').hidden=true;$('#btnInstall').hidden=true;toast('App installata ✓')});
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){
  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{swReg=reg;
   reg.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update()});
@@ -2252,6 +2286,7 @@ async function load(){
  const all=await DB.all(), fix=[];
  all.forEach(d=>{if(d.status==='ferie'){d.status='co';fix.push(d)}else if(d.status==='malattia'){d.status='cs';fix.push(d)}if(!d.trn)d.trn=[]});
  if(fix.length)await DB.putMany(fix);
+ {const ri=S.ind.find(i=>/^reperibilit/i.test(i.name));if(ri){const up=all.filter(d=>(d.tags||[]).some(t=>/^reperibilit/i.test(t)));up.forEach(d=>{d.tags=d.tags.filter(t=>!/^reperibilit/i.test(t));d.ind={...(d.ind||{}),[ri.id]:true}});if(up.length)await DB.putMany(up)}}
  {const oi=S.ind.find(i=>/^ordine pubblico$/i.test(i.name)&&i.type==='check');
   if(oi){const up=all.filter(d=>d.ind&&d.ind[oi.id]===true&&!d.op);up.forEach(d=>{d.op='sede';delete d.ind[oi.id]});if(up.length)await DB.putMany(up);
    S.ind=S.ind.filter(i=>i!==oi);await DB.setMeta('settings',S)}}
@@ -2267,7 +2302,7 @@ async function load(){
  if(navigator.storage?.persist)navigator.storage.persist();
  lastCloud=await DB.getMeta('lastCloud')||null;
  await load();
- maybeGate();
+ maybeGate(); gcOpen(); if($('#statsOn'))$('#statsOn').checked=statsOn();
  if(!S.userName)openWelcome();
  else if(!S.secAsked&&!(await DB.getMeta('cbPw')))openSecurity(false);
 })();
