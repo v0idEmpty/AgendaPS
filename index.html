@@ -341,7 +341,10 @@ header .hamb{display:none;margin-left:-6px}
 .dvDate span{display:block;font-size:12px;color:var(--mut);font-weight:500;text-transform:uppercase}
 .dvDate b{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;font-size:24px;font-weight:400;color:var(--tx2)}
 .dvDate b.t{background:var(--acc);color:var(--accTx)}
-.dvAll{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:44px}.dvAll .ev,.dvAll .ln{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dvHead>.ico{flex:none}
+.dvAll{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;min-height:44px}.dvAll .ev,.dvAll .ln{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dvAll .mq{text-overflow:clip}.dvAll .mqt{font-style:normal;white-space:nowrap}.dvAll .mq{display:block!important}.dvAll .mq>.mqt{display:inline-block;animation:mq var(--d) linear infinite;padding-right:28px}
+@keyframes mq{0%,12%{transform:translateX(0)}88%,100%{transform:translateX(var(--x))}}
+@media (prefers-reduced-motion:reduce){.dvAll .mq>.mqt{animation:none}.dvAll .mq{text-overflow:ellipsis}}.dvHead>.ico{flex:none}
 .dvAll .ev,.dvAll .ln{font-size:12.5px;padding:3px 8px;border-radius:6px;cursor:pointer;max-width:100%}
 .dvAll .ln{background:color-mix(in srgb,var(--c) 22%,var(--surf));color:var(--tx2);display:inline-flex}
 .dvAll .ln i{display:none}
@@ -671,12 +674,6 @@ button.wide{width:100%;border-radius:10px}
     <button id="addShift">+ Turno</button>
   </div>
   <div class="card" data-vp="tur">
-    <h4>📅 Straordinario programmato fisso</h4>
-    <p class="mut">Le ore programmate che si ripetono ogni settimana, anche frazionate (es. 1 ora il lunedì e 2 ore il giovedì), con scadenza facoltativa. Vengono messe in automatico nei giorni di servizio; nel singolo giorno puoi sempre cambiarle o toglierle. Secondo l'ANQ 2009 (art. 16) l'adesione è volontaria, non si fa nei giorni di riposo settimanale o di giorno libero e può precedere o seguire subito il turno ordinario; se incide sull'orario dei pasti serve uno stacco di almeno 30 minuti.</p>
-    <div id="spList" style="margin-top:10px"></div>
-    <button id="addSp">+ Fascia programmata</button>
-  </div>
-  <div class="card" data-vp="tur">
     <h4>Pianificazione turni</h4>
     <button class="pri" id="setShiftsEasy" style="margin:4px 0 10px">🔁 Imposta turni (modo semplice)</button>
     <details class="adv"><summary>Modalità avanzata (più schemi nel tempo)</summary>
@@ -695,6 +692,12 @@ button.wide{width:100%;border-radius:10px}
     <h4>Festività</h4>
     <p class="mut">Le festività nazionali (Pasquetta compresa) sono calcolate in automatico. Aggiungi quelle locali come GG/MM e nome, separate da virgola (es. 30/10 Santo Patrono).</p>
     <input id="festLoc" style="margin-top:8px" placeholder="es. 30/10">
+  </div>
+  <div class="card" data-vp="tur">
+    <h4>📅 Straordinario programmato fisso</h4>
+    <p class="mut">Le ore programmate che si ripetono ogni settimana, anche frazionate su più giorni, con scadenza facoltativa. Vengono messe in automatico nei giorni di servizio; nel singolo giorno puoi sempre cambiarle o toglierle. Secondo l'ANQ 2009 (art. 16) l'adesione è volontaria, non si fa nei giorni di riposo settimanale o di giorno libero e può precedere o seguire subito il turno ordinario; se incide sull'orario dei pasti serve uno stacco di almeno 30 minuti.</p>
+    <div id="spList" style="margin-top:10px"></div>
+    <button id="addSp">+ Fascia programmata</button>
   </div>
   <div class="card" data-vp="att">
     <h4>Attività rapide</h4><p class="mut">Le spunte di "Cosa ho fatto", separate da virgola.</p>
@@ -716,7 +719,7 @@ button.wide{width:100%;border-radius:10px}
   </div>
   <div class="card" data-vp="dat" id="fsCard">
     <h4>Salvataggio su file (cartella)</h4>
-    <p class="mut">Scegli una cartella: l'app salva in automatico tutto in <b>registro_servizio.json</b> a ogni modifica e lo ricarica all'apertura. Puoi copiare la cartella su chiavetta o cloud e aprirla su un altro PC. Funziona con Chrome ed Edge su computer.</p>
+    <p class="mut">Scegli una cartella: l'app salva in automatico tutto in <b>agenda_ps.json</b> a ogni modifica e lo ricarica all'apertura. Puoi copiare la cartella su chiavetta o cloud e aprirla su un altro PC. Funziona con Chrome ed Edge su computer.</p>
     <p id="fsStatus" style="margin:10px 0;font-weight:500"></p>
     <div class="row"><button class="pri" id="fsLink">📁 Scegli cartella</button><button id="fsNow">Salva ora</button><button class="danger" id="fsUnlink">Scollega</button></div>
   </div>
@@ -789,7 +792,7 @@ const PAL={tomato:'#d50000',flamingo:'#e67c73',tangerine:'#f4511e',banana:'#f6bf
 const PALN={tomato:'Pomodoro',flamingo:'Fenicottero',tangerine:'Mandarino',banana:'Banana',sage:'Salvia',basil:'Basilico',peacock:'Pavone',blueberry:'Mirtillo',lavender:'Lavanda',grape:'Uva',graphite:'Grafite'};
 const col=k=>PAL[k]||k||PAL.graphite;
 const LIGHT=new Set(['banana']);
-const C={sp:PAL.tangerine,night:'#3949ab',fdv:PAL.sage,stra:PAL.banana,ext:PAL.grape,ct:PAL.blueberry,pm:PAL.peacock,ind:PAL.flamingo,al:PAL.tomato,tag:PAL.graphite};
+const C={buono:PAL.tangerine,sp:PAL.tangerine,night:'#3949ab',fdv:PAL.sage,stra:PAL.banana,ext:PAL.grape,ct:PAL.blueberry,pm:PAL.peacock,ind:PAL.flamingo,al:PAL.tomato,tag:PAL.graphite};
 
 const STATI={lavoro:'Servizio',riposo:'Riposo',co:'Congedo ordinario (CO)',cs:'Congedo straord. (CS)',f937:'Festività sopp. 937',riposo_comp:'Riposo comp.',recupero:'Recupero',permesso:'Permesso (giorno)',p104:'Permesso L.104',psind:'Permesso sindacale (giorno)',sangue:'Donazione sangue',citazione:'Citazione in tribunale',studio:'Permesso studio (giorno)',esami:'Congedo per esami',festivo:'Festivo'};
 const SHORT={riposo:'Riposo',co:'CO',cs:'CS',f937:'937',riposo_comp:'Rip. comp.',recupero:'Recupero',permesso:'Permesso',p104:'104',psind:'Sindacale',sangue:'Donaz. sangue',citazione:'Citazione trib.',studio:'Studio',esami:'Esami',festivo:'Festivo'};
@@ -851,11 +854,11 @@ const DB={db:null,
 };
 
 /* ===== Salvataggio su file nella cartella scelta (File System Access API) ===== */
-const FS={h:null,ok:false,t:null,mute:false,last:null,file:'registro_servizio.json',sup:'showDirectoryPicker' in window&&!/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent),
+const FS={h:null,ok:false,t:null,mute:false,last:null,file:'agenda_ps.json',sup:'showDirectoryPicker' in window&&!/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent),
  meta(k,v){return v===undefined?DB.req(DB.tx('meta').get(k)):DB.req(DB.tx('meta','readwrite').put(v,k))},
  async init(){if(!this.sup)return this.ui();this.h=await this.meta('dirHandle');
   if(this.h&&await this.h.queryPermission({mode:'readwrite'})==='granted'){this.ok=true;await this.sync()}this.ui()},
- async readFile(){try{const fh=await this.h.getFileHandle(this.file);return JSON.parse(await(await fh.getFile()).text())}catch{return null}},
+ async readFile(){for(const n of [this.file,'registro_servizio.json']){try{const fh=await this.h.getFileHandle(n);return JSON.parse(await(await fh.getFile()).text())}catch{}}return null},
  async sync(){const f=await this.readFile(),loc=+(await this.meta('localStamp'))||0;
   if(f&&+new Date(f.savedAt)>loc)await this.importData(f);else await this.save()},
  async importData(j){this.mute=true;try{await DB.clear();await DB.putMany(j.days||[]);if(j.settings)await DB.setMeta('settings',migrate(j.settings));
@@ -1206,8 +1209,9 @@ function renderDayView(keepScroll){
  const grid=Array.from({length:24},(_,h)=>`<div class="hr" data-h="${h}" style="top:${h*hp}px"><span>${pad(h)}:00</span>${hp>=80?`<i class="half" style="top:${hp/2}px"><b>${pad(h)}:30</b></i>`:''}${hp>=170?[1,3].map(q=>`<i class="half q" style="top:${hp*q/4}px"><b>${pad(h)}:${q*15}</b></i>`).join(''):''}</div>`).join('');
  const plan=showPlan?parseR(pr).map(([a,b])=>`<div class="dvPlan" title="Turno previsto ${fmtT(a)}-${fmtT(b)}" style="top:${a/60*hp}px;height:${(Math.min(b,1440)-a)/60*hp}px"></div>`).join(''):'';
  const nowM=new Date().getHours()*60+new Date().getMinutes(), note='';
+ requestAnimationFrame(()=>$$('#dayView .dvAll .ln').forEach(el=>{const i=el.querySelector('.mqt');if(!i)return;const over=i.scrollWidth-el.clientWidth+16;if(over>20){el.classList.add('mq');el.style.setProperty('--x',-(over+28)+'px');el.style.setProperty('--d',Math.max(6,over/22+3)+'s')}}));
  $('#dayView').innerHTML=`<div class="dvHead"><div class="dvDate"><span>${dt.toLocaleDateString('it-IT',{weekday:'short'})}</span><b class="${ds===today?'t':''}">${dt.getDate()}</b></div>
-  <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}">${esc(t.length>70?t.slice(0,70)+'…':t)}</span>`).join('')}${note}${!ev.length&&!allLn.length&&!note?'<span class="mut s">Tocca per aprire la giornata</span>':''}</div>
+  <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}"><em class="mqt">${esc(t)}</em></span>`).join('')}${note}${!ev.length&&!allLn.length&&!note?'<span class="mut s">Tocca per aprire la giornata</span>':''}</div>
   <button class="ico" data-open title="Apri la giornata">✎</button></div>
   <div class="dvMeta"><span class="zm"><button class="ico" data-zoom="-1" title="Mostra più ore">－</button><button class="ico" data-zoom="1" title="Più dettaglio">＋</button></span>Ordine di Servizio n. ${odsTxt(ds)} · settimana ${isoWeek(dt)}${isHol(ds)?' · 🎉 '+esc(holName(ds)):''}${isWork(x)?` · ${fmtH(rangesH(x.ranges))} ordinarie${x.stra?' + '+fmtH(x.stra)+' straord.':''}${nightH(x)?' · 🌙 '+fmtH(nightH(x)):''}`:''}${showPlan?' · <span style="border-bottom:2px dashed var(--mut)">previsto '+esc(pr)+'</span>':''}</div>
   <div class="dvGrid" id="dvGrid" style="--hp:${hp}px"><div class="inner">${grid}
@@ -1343,8 +1347,8 @@ function renderEmpty(){
  const empty=![...DAYS.values()].some(d=>!d.auto)&&!FS.ok&&!emptyDismissed;
  $('#emptyBanner').innerHTML=!empty?'':`<div class="card" style="border-color:var(--acc);background:var(--accSoft);margin-bottom:10px">
   <b style="font-weight:500;color:var(--tx2)">Nessun dato registrato in questo browser</b>
-  <p class="mut" style="margin-top:4px">I dati sono salvati nel browser in cui li hai inseriti (o nel file registro_servizio.json, se avevi collegato la cartella). Se li avevi già inseriti altrove, recuperali così:</p>
-  <div class="row" style="margin-top:10px">${FS.sup?'<button class="pri" id="ebLink">📁 Collega cartella e carica registro_servizio.json</button>':''}<button id="ebRestore">⬆ Ripristina backup .json</button><button id="ebClose">Inizio da zero</button></div></div>`;
+  <p class="mut" style="margin-top:4px">I dati sono salvati nel browser in cui li hai inseriti (o nel file agenda_ps.json, se avevi collegato la cartella). Se li avevi già inseriti altrove, recuperali così:</p>
+  <div class="row" style="margin-top:10px">${FS.sup?'<button class="pri" id="ebLink">📁 Collega cartella e carica agenda_ps.json</button>':''}<button id="ebRestore">⬆ Ripristina backup .json</button><button id="ebClose">Inizio da zero</button></div></div>`;
  if(!empty)return;
  if($('#ebLink'))$('#ebLink').onclick=()=>FS.h?FS.relink():FS.link();
  $('#ebRestore').onclick=()=>$('#bkFile').click();
@@ -2248,7 +2252,7 @@ $('#saveSet').onclick=async()=>{
 };
 
 /* ===== Backup ===== */
-$('#bkExp').onclick=()=>download(`backup_registro_${TODAY()}.json`,JSON.stringify({v:5,settings:S,days:[...DAYS.values()]},null,1),'application/json');
+$('#bkExp').onclick=()=>download(`backup_agenda_ps_${TODAY()}.json`,JSON.stringify({v:5,settings:S,days:[...DAYS.values()]},null,1),'application/json');
 $('#bkImp').onclick=()=>$('#bkFile').click();
 $('#bkFile').onchange=async e=>{
  try{let j=JSON.parse(await e.target.files[0].text());
