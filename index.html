@@ -672,7 +672,7 @@ button.wide{width:100%;border-radius:10px}
   </div>
   <div class="card" data-vp="tur">
     <h4>📅 Straordinario programmato fisso</h4>
-    <p class="mut">Le ore programmate che si ripetono ogni settimana, anche frazionate (es. 1 ora il lunedì e 2 ore il giovedì), con scadenza facoltativa. Vengono messe in automatico nei giorni di servizio; nel singolo giorno puoi sempre cambiarle o toglierle. Secondo l'ANQ (art. 13) il programmato è volontario, non si fa nei giorni di riposo e deve iniziare almeno 60 minuti dopo il turno ordinario.</p>
+    <p class="mut">Le ore programmate che si ripetono ogni settimana, anche frazionate (es. 1 ora il lunedì e 2 ore il giovedì), con scadenza facoltativa. Vengono messe in automatico nei giorni di servizio; nel singolo giorno puoi sempre cambiarle o toglierle. Secondo l'ANQ 2009 (art. 16) l'adesione è volontaria, non si fa nei giorni di riposo settimanale o di giorno libero e può precedere o seguire subito il turno ordinario; se incide sull'orario dei pasti serve uno stacco di almeno 30 minuti.</p>
     <div id="spList" style="margin-top:10px"></div>
     <button id="addSp">+ Fascia programmata</button>
   </div>
@@ -807,8 +807,10 @@ const spPlanned=ds=>{if(!plannedShift(ds))return'';const w=parse(ds).getDay();re
 const spR=d=>!d||d.status!=='lavoro'?'':(d.spOv?(d.spRanges||''):spPlanned(d.date));
 const spH=d=>rangesH(spR(d));
 function spWarn(d){const w=[],o=parseR(d.ranges),sp=parseR(spR(d));if(!sp.length)return w;
- if(!plannedShift(d.date))w.push('Il programmato non si fa nei giorni di riposo o liberi (ANQ art. 13).');
- if(sp.some(([a,b])=>o.some(([x,y])=>(a>=y&&a-y<60)||(y>a&&x<b)||(b<=x&&x-b<60))))w.push('Tra turno ordinario e straordinario programmato servono almeno 60 minuti (ANQ art. 13).');
+ if(!plannedShift(d.date))w.push('Lo straordinario programmato non si fa nei giorni di riposo settimanale o di giorno libero (ANQ 2009, art. 16).');
+ if(sp.some(([a,b])=>o.some(([x,y])=>x<b&&y>a)))w.push('La fascia programmata si sovrappone al turno ordinario.');
+ const meal=t=>(t>=12*60&&t<=15*60)||(t>=19*60&&t<=21*60);
+ if(sp.some(([a,b])=>o.some(([x,y])=>(a>=y&&a-y<30&&meal(y))||(b<=x&&x-b<30&&meal(b)))))w.push('Se lo stacco cade nell\'orario dei pasti serve un intervallo di almeno 30 minuti (ANQ 2009, art. 16). Senza pasto può seguire subito il turno.');
  return w}
 const nightH=d=>{if(!d||d.status!=='lavoro')return 0;const W=[[0,360],[1320,1800],[2760,3240]];let m=0;[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].forEach(([a,b])=>W.forEach(([x,y])=>m+=Math.max(0,Math.min(b,y)-Math.max(a,x))));return m/60};
 /* fascia continuativa più lunga (per l'esterna servono almeno 3 ore continuative) */
@@ -1899,7 +1901,7 @@ $('#sheet').addEventListener('click',async e=>{
  if(t.closest('#eActAdd'))return actAdd();
  const as=t.closest('[data-actsel]');if(as){E.acts.push({t:as.dataset.actsel,txt:''});renderActs();const ins=$$('#eActs [data-acttxt]');ins[ins.length-1]?.focus();return}
  const ra=t.closest('[data-radd]');if(ra){const k=ra.dataset.radd,all=[...parseR(E.ranges),...parseR(E.seRanges)],r=parseR(E[k]);
-  if(k==='spRanges'){const a=(all.length?Math.max(...all.map(x=>x[1])):14*60)+60;rngSet(k,[E[k],fmtT(a)+'-'+fmtT(a+60)].filter(Boolean).join(', '));return}
+  if(k==='spRanges'){const a=(all.length?Math.max(...all.map(x=>x[1])):14*60);rngSet(k,[E[k],fmtT(a)+'-'+fmtT(a+60)].filter(Boolean).join(', '));return}
   let a;if(k==='ranges'&&r.length)a=Math.max(...r.map(x=>x[1]))+30;else if(k==='ranges')a=(parseR(plannedRanges(E.date))[0]||[540])[0];else a=all.length?Math.max(...all.map(x=>x[1])):14*60;
   const b=a+(k==='ranges'&&!r.length?360:k==='ranges'?180:60);rngSet(k,[E[k],fmtT(a)+'-'+fmtT(b)].filter(Boolean).join(', '));return}
  const rd=t.closest('[data-rdel]');if(rd){const[k,i]=rd.dataset.rdel.split('|');const r=parseR(E[k]);r.splice(+i,1);rngSet(k,r.map(([a,b])=>fmtT(a)+'-'+fmtT(b)).join(', '));return}
