@@ -116,7 +116,7 @@ main{padding:12px;max-width:1500px;margin:0 auto}
 .chip{padding:6px 12px;border-radius:8px;border:1px solid var(--line);font-size:13px;cursor:pointer;user-select:none;font-weight:500;color:var(--tx)}
 .chip:hover{background:var(--hov)}
 .chip.on{background:var(--accSoft);border-color:transparent;color:var(--acc)}
-.chip.on::before{content:"✓ "}
+.chip.on{box-shadow:inset 0 0 0 1.5px var(--acc)}.chip.col.on{box-shadow:inset 0 0 0 1.5px var(--c)}
 .chip.col.on{background:color-mix(in srgb,var(--c) 20%,var(--surf));color:var(--tx2)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:20px;overflow:hidden}
 .seg button{border:0;border-radius:0;min-width:70px;border-right:1px solid var(--line)}
@@ -350,7 +350,7 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .absgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 20px 8px}
 .absgrid button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 2px;border-radius:10px;min-width:0;border-left:4px solid var(--c)}
 .absgrid button b{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.absgrid small{font-size:10.5px;color:var(--mut)}
-.absgrid button.on{background:var(--c);color:#fff;border-color:var(--c)}.absgrid button.on small{color:#fff;opacity:.85}
+.absgrid button.on{background:var(--c);color:#fff;border-color:var(--c)}.absgrid button.on small{color:#fff;opacity:.85}.absgrid small.plus{font-weight:600;opacity:1!important}
 .durrow{display:flex;gap:8px;align-items:center;padding:0 20px 4px}.durrow input{flex:1;width:auto;min-width:0}.durrow button{flex:none}
 .pbox{margin:0 20px 8px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 7%,var(--surf))}.pbox>b{font-weight:500;color:var(--tx2)}
 .pcard{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:10px}
@@ -358,6 +358,8 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .pch b{font-weight:500;color:var(--tx2)}
 .pseg{display:flex;margin-top:8px}.pseg button{flex:1;min-width:0;padding:7px 4px;font-size:12.5px}
 .pbody{margin-top:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}.pbody .possel{width:100%}
+.actrow2{display:flex;gap:8px;align-items:center;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 8%,var(--surf));border-radius:0 10px 10px 0;padding:6px 6px 6px 10px;margin-bottom:6px}
+.actrow2 b{font-weight:500;font-size:13px;white-space:nowrap;color:var(--tx2)}.actrow2 input{flex:1;min-width:0;width:auto;padding:6px 8px}.actrow2 .ico{width:30px;height:30px;font-size:14px;flex:none}
 .addbox{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px}
 button.wide{width:100%;border-radius:10px}
 .tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:7px 2px 6px;font-size:11.5px;min-width:0}.tabs button i{font-style:normal;font-size:17px;line-height:1.2}
@@ -383,7 +385,7 @@ button.wide{width:100%;border-radius:10px}
 .indgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .modal.drawer .foot{position:static;padding:10px 16px;border-top:1px solid var(--line);margin:0;align-items:center}
 .modal.drawer .foot .mut{font-size:11.5px}
-@media(max-width:700px){.modal.drawer .sheet{max-width:none;height:100%;border-radius:0}.g2,.indgrid{grid-template-columns:1fr 1fr}.dtitle{font-size:18px}.modal.drawer .foot .mut{display:none}}
+@media(max-width:700px){.modal.drawer .sheet{max-width:none;height:100%;border-radius:0}.g2,.indgrid{grid-template-columns:1fr 1fr}.dtitle{font-size:18px}.modal.drawer .foot .mut{display:block;font-size:11px}}
 @media(max-width:420px){.g2{grid-template-columns:1fr}}
 /* tab generiche (riepilogo, impostazioni) */
 .vtabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:12px;position:sticky;top:60px;background:var(--bg);padding:8px 0;z-index:5}
@@ -883,7 +885,7 @@ function extras(d){
   if(d.p104h)r.push([col('flamingo'),'Perm. 104 '+fmtH(d.p104h)+PS('p104Pos')]);
   if(d.rec)r.push([C.pm,'Recupero '+fmtH(d.rec)]);
   if(d.studioh)r.push([col('blueberry'),'Perm. studio '+fmtH(d.studioh)+PS('studioPos')]);
-  if(d.op)r.push([C.ext,'Ordine pubblico '+(d.op==='fuori'?'fuori sede':'in sede')]);
+  if(d.op)r.push([C.ext,'Ordine pubblico '+(d.op==='fuori'?'fuori sede':'in sede')+(d.opNote?' ('+d.opNote+')':'')]);
   S.ind.forEach(i=>{if(i.rec!=='no')return;const v=indVal(d,i);if(v)r.push([C.ind,i.name+(v===true?'':': '+v)])});
  }
  (d.acts||[]).forEach(a=>r.push([actCol(a.t),(a.from?a.from+' ':'')+a.t+(a.txt?': '+a.txt:'')]));
@@ -980,7 +982,7 @@ function cellEvents(x){
   if(x.p104h)ln.push([col('flamingo'),'104 '+fmtH(x.p104h)]);
   if(x.rec)ln.push([C.pm,'Recupero '+fmtH(x.rec)]);
   if(x.studioh)ln.push([col('blueberry'),'Studio '+fmtH(x.studioh)]);
-  if(x.op)ln.push([C.ext,'🛡 OP '+(x.op==='fuori'?'fuori sede':'in sede')]);
+  if(x.op)ln.push([C.ext,'🛡 OP '+(x.op==='fuori'?'fuori sede':'in sede')+(x.opNote?': '+x.opNote:'')]);
   S.ind.forEach(i=>{if(i.rec==='no'&&indVal(x,i))ln.push([C.ind,i.name])});
   (x.acts||[]).forEach(a=>ln.push([actCol(a.t),(a.from?a.from+' ':'')+ico(a.t)+' '+a.t+(a.txt?': '+a.txt:'')]));
   if(x.tags?.length)ln.push([C.tag,x.tags.map(t=>ico(t)+' '+t).join(', ')]);
@@ -1141,7 +1143,7 @@ document.addEventListener('click',e=>{
  if(k==='se'){if(!isWork(E))setStatus('lavoro');showTab('ora');const st=h??(parseR(E.ranges).length?Math.max(...parseR(E.ranges).map(x=>x[1]))/60:14);const a=Math.floor(st*60),r=fmtT(a)+'-'+fmtT(a+60);
   E.seRanges=[E.seRanges,r].filter(Boolean).join(', ');$('#eSE').value=E.seRanges;syncModal();dayChanged();setTimeout(()=>$('#eSE').focus(),80)}
  if(k==='perq'){if(!isWork(E))setStatus('lavoro');showTab('att');const c=[...$$('#eTags .chip')].find(c=>/perquisiz/i.test(c.dataset.v||''));if(c&&!c.classList.contains('on'))c.click();else perqAsk(true);if(h!=null&&$('#perqStart')){$('#perqStart').value=pad(h)+':00';perqPrev()}}
- if(k==='act'){if(!isWork(E))setStatus('lavoro');showTab('uff');setTimeout(()=>{$('#eActTxt').value=h!=null?pad(h)+':00 – ':'';$('#eActTxt').focus()},80)}
+ if(k==='act'){if(!isWork(E))setStatus('lavoro');showTab('uff')}
  if(k==='note'){showTab('att');setTimeout(()=>$('#eNote').focus(),80)}
 });
 $('#dayView').addEventListener('click',e=>{
@@ -1280,7 +1282,7 @@ const stepper=(f,label,max,hint='',pos='')=>`<div><div class="t">${label}</div><
 function openDay(ds){
  if(MODE==='day'&&E&&$('#modal').classList.contains('open')&&E.date!==ds)flushDay();
  MODE='day';
- E=structuredClone(dayOf(ds)); delete E._default; E.ind=E.ind||{}; E.acts=E.acts||[]; E.calNote=E.calNote||''; E.calColor=E.calColor||''; E.pb=+E.pb||0; E.sind=+E.sind||0; E.p104h=+E.p104h||0; E.pbPos=E.pbPos||'out'; E.sindPos=E.sindPos||'out'; E.p104Pos=E.p104Pos||'out'; E.studioh=+E.studioh||0; E.studioPos=E.studioPos||'out'; E.op=E.op||''; E.rec=+E.rec||0; E.trn=E.trn||[];
+ E=structuredClone(dayOf(ds)); delete E._default; E.ind=E.ind||{}; E.acts=E.acts||[]; E.calNote=E.calNote||''; E.calColor=E.calColor||''; E.pb=+E.pb||0; E.sind=+E.sind||0; E.p104h=+E.p104h||0; E.pbPos=E.pbPos||'out'; E.sindPos=E.sindPos||'out'; E.p104Pos=E.p104Pos||'out'; E.studioh=+E.studioh||0; E.studioPos=E.studioPos||'out'; E.op=E.op||''; E.opNote=E.opNote||''; E.rec=+E.rec||0; E.trn=E.trn||[];
  const ps=shiftById(plannedShift(ds))||null, rs=shiftById(rotShift(ds)), hol=isHol(ds), dayInd=S.ind.filter(i=>i.rec!=='month'&&!/^ordine pubblico$/i.test(i.name)), y=+ds.slice(0,4), u=usage(y), a=allowFor(y), L=pbLedger(), TD=trnDates(y);
  const stKeys=Object.keys(STATI).filter(k=>k!=='festivo');
  $('#sheet').innerHTML=`
@@ -1315,8 +1317,7 @@ function openDay(ds){
   <div class="wkonly">
    <div class="chips" id="eTags"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span>${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
    <div id="ePerq"></div>
-   <div class="sect"><span>🛡 Ordine pubblico</span></div>
-   <div class="chips" id="eOp"><span class="chip col ${E.op==='sede'?'on':''}" style="--c:${C.ext}" data-op="sede">🛡 OP in sede</span><span class="chip col ${E.op==='fuori'?'on':''}" style="--c:${C.ext}" data-op="fuori">🛡 OP fuori sede</span></div>
+   <div id="eOpBox"></div>
   </div>
   <div class="sect"><span>📝 Nota</span></div><textarea id="eNote" style="min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
   ${dayInd.length?`<div class="wkonly"><div class="sect"><span>💶 Altre indennità</span></div><div class="indgrid">`+dayInd.map(i=>{const v=indVal({...E,status:'lavoro'},i),tag=i.rec==='day'?' <span class="mut s">(ricorrente)</span>':'';
@@ -1328,11 +1329,11 @@ function openDay(ds){
   <div class="sect" style="margin-top:0"><span>📌 Attività d'ufficio di oggi</span></div>
   <div id="eActs"></div>
   <div class="addbox">
-   <div class="mut s" style="margin-bottom:6px">Tocca il tipo di attività</div>
-   <div class="chips" id="eActChips">${S.actTypes.map(t=>`<span class="chip col ${t===ACTSEL?'on':''}" style="--c:${actCol(t)}" data-actsel="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
-   <input id="eActTxt" style="margin-top:8px" placeholder="RGNR, nominativo, reperto…">
-   <div class="row" style="margin-top:8px;flex-wrap:nowrap"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eActTo" value="${ds}" min="${ds}" style="flex:1;width:auto;min-width:0"><button class="pri" id="eActAdd" style="flex:none">＋ Aggiungi</button></div>
-   <div class="mut s" id="eActInfo" style="margin-top:4px">Solo questo giorno</div></div>
+   <div class="mut s" style="margin-bottom:6px">Tocca per aggiungere un'attività a oggi</div>
+   <div class="chips" id="eActChips">${S.actTypes.map(t=>`<span class="chip col" style="--c:${actCol(t)}" data-actsel="${esc(t)}">＋ ${ico(t)} ${esc(t)}</span>`).join('')}</div></div>
+  <div class="addbox" id="eActRange" style="margin-top:10px">
+   <div class="row" style="flex-wrap:nowrap"><span class="mut s" style="flex:none">Ripeti le attività di oggi fino al</span><input type="date" id="eActTo" value="${ds}" min="${ds}" style="flex:1;width:auto;min-width:0"></div>
+   <div class="row" style="margin-top:6px"><span class="mut s grow" id="eActInfo">Solo questo giorno</span><button id="eActAdd" hidden>Applica</button></div></div>
  </div>
  <div class="pane" data-pane="trn">
   ${S.trainings.length?`<p class="mut s" style="margin:0 0 8px">Tocca il tipo di giornata svolta: l'orario diventa ${esc(S.rules.trnRanges)}, senza buono pasto né cambio turno.</p>
@@ -1348,8 +1349,8 @@ function openDay(ds){
   <div class="palpick" id="ePal"><i class="none ${!E.calColor?'on':''}" data-pal="" title="Nessun colore">✕</i>${Object.keys(PAL).map(k=>`<i style="--c:${PAL[k]}" class="${E.calColor===k?'on':''}" data-pal="${k}" title="${PALN[k]}"></i>`).join('')}</div>
  </div>
  </div>
- <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Fatto</button></div>`;
- dayTab='ora'; ACTSEL=''; absOpen=ABS.includes(E.status); renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato automaticamente':'Le modifiche si salvano da sole';
+ <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Chiudi</button></div>`;
+ dayTab='ora'; ACTSEL=''; absOpen=ABS.includes(E.status); renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato':'Si salva da solo';
 }
 let dayTab='ora', absOpen=false, ACTSEL='';
 const PERM=[
@@ -1374,10 +1375,10 @@ function renderType(){
  const k=absOpen||ABS.includes(E.status)?'abs':isWork(E)?'lavoro':'riposo';
  $$('#eType [data-ty]').forEach(b=>b.classList.toggle('on',b.dataset.ty===k));
  const box=$('#eAbs');if(k!=='abs'){box.innerHTML='';return}
- const y=+E.date.slice(0,4),u=usage(y,new Map([[E.date,E]])),a=allowFor(y),sel=absSel(),P=permOf(sel),hourly=P&&isWork(E);
+ const y=+E.date.slice(0,4),u=usage(y,new Map([[E.date,{...blank(E.date,'riposo')}]])),a=allowFor(y),sel=absSel(),P=permOf(sel),hourly=P&&isWork(E);
  const cnt=x=>x in ALLBL&&x!=='studio'?`<small>${num(u[x])}/${num(a[x])}</small>`:x==='p104'?`<small>${fmtH(p104MonthH(E.date.slice(0,7),new Map([[E.date,E]])))}/${fmtH(p104QuotaH(y))} mese</small>`:x==='sangue'?`<small>${u.sangue} nel ${y}</small>`:x==='permesso'?`<small>brevi ${fmtH(u.pb)}/${fmtH(a.pb)}</small>`:x==='psind'?`<small>${fmtH(u.sind)} anno</small>`:x==='studio'?`<small>${fmtH(u.studio)}/${fmtH(a.studio)}</small>`:x==='esami'?`<small>${u.esami} gg (in CS)</small>`:x==='citazione'?`<small>${u.citazione} nel ${y}</small>`:'';
  const dur=`<div class="durrow"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eAbsTo" value="${E._to||E.date}" min="${E.date}"><button class="pri" id="eAbsApply" ${(E._to||E.date)>E.date?'':'hidden'}>Applica</button></div><div class="mut s" id="eAbsInfo" style="margin:2px 20px 6px"></div>`;
- box.innerHTML=`<div class="mut s" style="margin:0 20px 6px">${sel?'Tipo di assenza':'Scegli il tipo di assenza'}</div><div class="absgrid">${ABS.map(x=>`<button data-ab="${x}" class="${sel===x?'on':''}" style="--c:${col(STCOL[x])}"><b>${esc(SHORT[x])}</b>${cnt(x)}</button>`).join('')}</div>
+ box.innerHTML=`<div class="mut s" style="margin:0 20px 6px">${sel?'Tipo di assenza · i numeri sono quelli già usati nell\'anno, senza oggi':'Scegli il tipo di assenza'}</div><div class="absgrid">${ABS.map(x=>`<button data-ab="${x}" class="${sel===x?'on':''}" style="--c:${col(STCOL[x])}"><b>${esc(SHORT[x])}</b>${cnt(x)}${sel===x&&!hourly?'<small class="plus">+ oggi</small>':''}</button>`).join('')}</div>
  ${P?`<div class="pbox" style="--c:${col(STCOL[P.st])}"><b>${P.ic} ${P.lab}</b>
    <div class="seg pseg" data-pk="${P.k}"><button data-pmo="d" class="${hourly?'':'on'}">Giornata intera</button><button data-pmo="h" class="${hourly?'on':''}">${P.hl||'A ore'}</button></div>
    ${hourly?`<div class="pbody"><div class="row" style="gap:10px"><div class="stepper" data-f="${P.h}" data-max="${P.max}"><button data-s="-1">−</button><output>${fmtH(E[P.h])}</output><button data-s="1">+</button></div><span class="mut s">nel turno ${esc(E.ranges||'')}</span></div>${P.pos?posSel(P.pos):''}</div>`:''}
@@ -1397,19 +1398,25 @@ async function absApply(){const to=$('#eAbsTo').value,t=E.status;await flushDay(
  if(busy.length&&!confirm(`${busy.length} giorni hanno già attività registrate e verranno sovrascritti. Continuare?`))return;
  if(ov.size){await DB.putMany([...ov.values()]);ov.forEach((r,k)=>DAYS.set(k,r))}
  refreshBg();toast(`${STATI[t]}: ${ov.size+1} giorni`);renderType()}
-function actInfo(){const to=$('#eActTo')?.value,el=$('#eActInfo');if(!el)return;
+function actInfo(){const to=$('#eActTo')?.value,el=$('#eActInfo');if(!el)return;$('#eActAdd').hidden=!(to>E.date);
  if(!to||to<=E.date){el.textContent='Solo questo giorno';return}
- const n=[];eachDay(E.date,to,ds=>{if(ds===E.date||isWork(dayOf(ds)))n.push(ds)});el.textContent=`${n.length} giorni (solo quelli di servizio) fino al ${itD(to)}`}
-async function actAdd(){if(!ACTSEL)return toast('Scegli prima il tipo di attività');const t=ACTSEL,txt=$('#eActTxt').value.trim(),to=$('#eActTo').value;
- if(!txt&&!confirm('Aggiungere senza descrizione?'))return;
- E.acts.push({t,txt});$('#eActTxt').value='';renderActs();
- if(to&&to>E.date){await flushDay();const out=[];
-  eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.acts=[...(d.acts||[]),{t,txt}];d.updated=new Date().toISOString();out.push(d)});
-  if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}
-  $('#eActTo').value=E.date;actInfo();refreshBg();toast(`${t}: ${out.length+1} giorni`)}
- else dayChanged()}
+ const n=[];eachDay(E.date,to,ds=>{if(ds!==E.date&&isWork(dayOf(ds)))n.push(ds)});el.textContent=`Copia su altri ${n.length} giorni di servizio`;$('#eActAdd').textContent=`Copia su ${n.length} giorni`}
+function renderOp(){const b=$('#eOpBox');if(!b)return;const on=!!E.op;
+ b.innerHTML=`<div class="pbox" style="--c:${C.ext};margin:12px 0 0;${on?'':'background:none'}"><div class="row" style="justify-content:space-between"><b>🛡 Ordine pubblico</b><div class="seg" style="flex:none"><button data-opon="0" class="${on?'':'on'}">No</button><button data-opon="1" class="${on?'on':''}">Sì</button></div></div>
+ ${on?`<div class="seg pseg"><button data-op="sede" class="${E.op==='sede'?'on':''}">In sede</button><button data-op="fuori" class="${E.op==='fuori'?'on':''}">Fuori sede</button></div>
+ <input id="eOpNote" style="margin-top:8px" placeholder="Servizio / luogo (es. stadio, manifestazione)" value="${esc(E.opNote||'')}">
+ <div class="row" style="margin-top:8px;flex-wrap:nowrap"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eOpTo" value="${E.date}" min="${E.date}" style="flex:1;width:auto;min-width:0"><button id="eOpApply" hidden>Applica</button></div>
+ <div class="mut s" style="margin-top:4px">Nel riepilogo i giorni in sede e fuori sede sono contati a parte.</div>`:''}</div>`}
+async function opApply(){const to=$('#eOpTo').value;if(!to||to<=E.date)return;await flushDay();const out=[];
+ eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.op=E.op;d.opNote=E.opNote||'';d.updated=new Date().toISOString();out.push(d)});
+ if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}refreshBg();toast(`Ordine pubblico: ${out.length+1} giorni`);$('#eOpTo').value=E.date;$('#eOpApply').hidden=true}
+async function actAdd(){const to=$('#eActTo').value;if(!to||to<=E.date||!E.acts.length)return;await flushDay();const out=[],add=E.acts.map(a=>({t:a.t,txt:a.txt}));
+ eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.acts=[...(d.acts||[]),...add];d.updated=new Date().toISOString();out.push(d)});
+ if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}
+ $('#eActTo').value=E.date;actInfo();refreshBg();toast(`Attività copiate su ${out.length} giorni`)}
 function showTab(k){dayTab=k;$$('#eTabs [data-tab]').forEach(b=>b.classList.toggle('on',b.dataset.tab===k));$$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane===k))}
-function renderActs(){$('#eActs').innerHTML=E.acts.map((a,i)=>`<div class="row actrow"><span class="b" style="--c:${actCol(a.t)}">${ico(a.t)} ${esc(a.t)}</span><span class="grow">${esc(a.txt)||'<span class="mut">—</span>'}</span><button class="ico" style="width:30px;height:30px;font-size:14px" data-actdel="${i}">✕</button></div>`).join('')||'<p class="mut s">Nessuna attività registrata per questo giorno.</p>'}
+function renderActs(){$('#eActs').innerHTML=E.acts.map((a,i)=>`<div class="actrow2" style="--c:${actCol(a.t)}"><b>${ico(a.t)} ${esc(a.t)}</b><input data-acttxt="${i}" value="${esc(a.txt||'')}" placeholder="RGNR, nominativo, reperto…"><button class="ico" data-actdel="${i}" title="Rimuovi">✕</button></div>`).join('')||'<p class="mut s">Nessuna attività registrata per questo giorno.</p>';
+ if($('#eActRange'))$('#eActRange').style.display=E.acts.length?'':'none'}
 /* scelta rapida orari perquisizione */
 const fmtT=m=>{m=((m%1440)+1440)%1440;return pad(Math.floor(m/60))+':'+pad(m%60)};
 /* sposta tutte le fasce (incluso il rientro) in modo che il turno inizi a startMin */
@@ -1444,7 +1451,7 @@ function syncModal(){
  $('#ePrev').style.display=w&&!absOpen?'':'none';
  if(lite){$$('#sheet .pane').forEach(p=>p.classList.toggle('on',p.dataset.pane==='att'&&!(absOpen&&w)))}
  else showTab(dayTab);
- renderType();
+ renderType(); renderOp();
  if($('#eHol'))$('#eHol').innerHTML=`🎉 <b>${esc(holName(E.date))}</b> · giorno festivo`+(w?' — <b>lavorato</b>: risulta come <i>Servizio festivo</i>':` <button data-holwork>Ho lavorato</button>`);
  if(!w)return;
  const trn=E.trn.length>0;
@@ -1709,8 +1716,10 @@ $('#sheet').addEventListener('click',async e=>{
  if(t.closest('[data-perq]')){perqAsk(false);return}
  const pal=t.closest('[data-pal]');if(pal){E.calColor=pal.dataset.pal;$$('#ePal i').forEach(i=>i.classList.toggle('on',i===pal));return}
  if(t.closest('#eActAdd'))return actAdd();
- const as=t.closest('[data-actsel]');if(as){ACTSEL=ACTSEL===as.dataset.actsel?'':as.dataset.actsel;$$('#eActChips .chip').forEach(c=>c.classList.toggle('on',c.dataset.actsel===ACTSEL));if(ACTSEL)$('#eActTxt').focus();return}
- const op=t.closest('[data-op]');if(op){E.op=E.op===op.dataset.op?'':op.dataset.op;$$('#eOp .chip').forEach(c=>c.classList.toggle('on',c.dataset.op===E.op));return}
+ const as=t.closest('[data-actsel]');if(as){E.acts.push({t:as.dataset.actsel,txt:''});renderActs();const ins=$$('#eActs [data-acttxt]');ins[ins.length-1]?.focus();return}
+ const oo=t.closest('[data-opon]');if(oo){E.op=oo.dataset.opon==='1'?(E.op||'sede'):'';renderOp();return}
+ const op=t.closest('[data-op]');if(op){E.op=op.dataset.op;renderOp();return}
+ if(t.closest('#eOpApply'))return opApply();
  if(t.closest('[data-opentrn]')){await flushDay();return openTrn(+E.date.slice(0,4))}
  const ad=t.closest('[data-actdel]');if(ad){E.acts.splice(+ad.dataset.actdel,1);renderActs();return}
  const bl=t.closest('[data-bulk]');if(bl){e.preventDefault();return openBulk(bl.dataset.bulk,E.date)}
@@ -1740,13 +1749,14 @@ $('#sheet').addEventListener('change',e=>{
  if(e.target.id==='perqPause')return perqPrev();
  if(e.target.id==='eAbsTo'){E._to=e.target.value;return absInfo()}
  if(e.target.id==='eActTo')return actInfo();
+ if(e.target.id==='eOpTo'){const b=$('#eOpApply'),v=e.target.value;b.hidden=!(v>E.date);if(v>E.date){let n=0;eachDay(E.date,v,ds=>{if(ds===E.date||isWork(dayOf(ds)))n++});b.textContent=`Applica a ${n} giorni`}return}
  if(e.target.id==='eReqChk'){E.richiesta=e.target.checked;syncModal();return}
  if(e.target.id==='eCambio'){E.cambio=e.target.checked;syncModal();return}
  if(e.target.id==='eShift'){E.shiftId=e.target.value;const sh=shiftById(E.shiftId);
   if(sh){E.ranges=sh.ranges;$('#eRanges').value=E.ranges}
   syncModal()}
 });
-$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();if(e.target.id==='eRanges'){E.ranges=e.target.value.trim();syncModal()}if(e.target.id==='eSE'){E.seRanges=e.target.value.trim();if(!E.seRanges){E.stra=0;$('[data-f=stra] output').textContent=fmtH(0)}syncModal()}});
+$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.dataset.acttxt!=null){E.acts[+e.target.dataset.acttxt].txt=e.target.value;return}if(e.target.id==='eOpNote'){E.opNote=e.target.value;return}if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();if(e.target.id==='eRanges'){E.ranges=e.target.value.trim();syncModal()}if(e.target.id==='eSE'){E.seRanges=e.target.value.trim();if(!E.seRanges){E.stra=0;$('[data-f=stra] output').textContent=fmtH(0)}syncModal()}});
 /* ===== Salvataggio automatico della giornata ===== */
 let dayTimer=null, daySnap='';
 const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;delete c._to;delete c._pk;return JSON.stringify(c)};
@@ -1756,24 +1766,23 @@ async function flushDay(){
  collectDay(); const sn=snapDay(); if(sn===daySnap)return;
  daySnap=sn; delete E.auto; E.updated=new Date().toISOString();
  const rec=structuredClone(E); delete rec._to; delete rec._pk; await DB.put(rec); DAYS.set(rec.date,rec);
- if($('#eSaved'))$('#eSaved').textContent='✓ Salvato alle '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+ if($('#eSaved'))$('#eSaved').textContent='✓ Salvato '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
  refreshBg();
 }
 async function closeModal(){if(MODE==='day')await flushDay();$('#modal').classList.remove('open','drawer');$('#popmenu').classList.remove('open');if(MODE==='day')refresh()}
 $('#sheet').addEventListener('click',()=>{if(MODE==='day')setTimeout(dayChanged,0)});
 $('#sheet').addEventListener('change',()=>{if(MODE==='day')setTimeout(dayChanged,0)});
 $('#sheet').addEventListener('input',()=>{if(MODE==='day')dayChanged()});
-$('#sheet').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='eActTxt'){e.preventDefault();$('#eActAdd').click()}});
 function collectDay(){
  if(!$('#eNote'))return;
  E.cambio=$('#eCambio').checked; E.cambioNote=$('#eCambioNote').value.trim(); E.calNote=$('#eCalNote').value.trim();
- E.note=$('#eNote').value.trim();
+ E.note=$('#eNote').value.trim(); if($('#eOpNote'))E.opNote=$('#eOpNote').value.trim();
  E.ranges=$('#eRanges').value.trim(); E.seRanges=$('#eSE').value.trim();
  if(E.seRanges&&parseR(E.seRanges).length)E.stra=rangesH(E.seRanges);
  if(E.trn.length){E.buono=0;E.cambio=false}else if(!E.buonoMan)E.buono=calcBuono(E,shiftById(E.shiftId));
  E.ctAuto=autoCT(E);
  E.ind={}; $$('#sheet [data-ind]').forEach(i=>{E.ind[i.dataset.ind]=i.type==='checkbox'?i.checked:i.type==='number'?(i.value===''?'':+i.value):i.value.trim()});
- if(!isWork(E)){Object.assign(E,{studioh:0,op:'',p104h:0,buono:0,stra:0,esterna:false,fdv:false,richiesta:false,tags:[],ind:{},pb:0,sind:0,rec:0,trn:[],shiftId:'',ranges:'',seRanges:'',ctAuto:false,buonoMan:false})}
+ if(!isWork(E)){Object.assign(E,{studioh:0,op:'',opNote:'',p104h:0,buono:0,stra:0,esterna:false,fdv:false,richiesta:false,tags:[],ind:{},pb:0,sind:0,rec:0,trn:[],shiftId:'',ranges:'',seRanges:'',ctAuto:false,buonoMan:false})}
 }
 async function saveDay(){await flushDay();$('#modal').classList.remove('open','drawer');refresh()}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
@@ -2088,11 +2097,11 @@ $('#cbRestore').onclick=()=>$('#bkFile').click();
 $('#cbDays').onchange=async()=>{S.bkDays=+$('#cbDays').value;T.bkDays=S.bkDays;await DB.setMeta('settings',S);cbUi();refreshBg()};
 
 /* ===== PWA: installazione, offline, aggiornamenti ===== */
-let installEvt=null, swReg=null;
+let installEvt=null, swReg=null, silentSW=false;
 const curVer=()=>APP_VERSION.startsWith('__')?'locale':'v'+APP_VERSION;
 async function remoteVer(){try{const t=await (await fetch(location.pathname+'?v='+Date.now(),{cache:'no-store'})).text();const m=t.match(/APP_VERSION='([^']+)'/);return m&&!m[1].startsWith('__')?m[1]:null}catch{return null}}
 async function doUpdate(){if(MODE==='day')await flushDay();$('#banOk')&&($('#banOk').textContent='Aggiorno…');if(swReg?.waiting)swReg.waiting.postMessage('skipWaiting');else location.reload()}
-async function updBanner(v){v=v||await remoteVer();banner('upd','🔄 Aggiornamento disponibile'+(v?': v'+v:''),'Ora hai la '+curVer()+'. Tocca Aggiorna: i tuoi dati restano dove sono.','Aggiorna ora',doUpdate)}
+async function updBanner(v){v=v||await remoteVer();if(!v||v===APP_VERSION)return;banner('upd','🔄 È uscita la versione v'+v,'Stai usando la '+curVer()+'. Aggiorna per passare alla v'+v+': i tuoi dati restano dove sono.','Aggiorna ora',doUpdate)}
 async function checkUpdates(btn){const o=btn?.textContent;if(btn){btn.disabled=true;btn.textContent='Verifico…'}
  try{if(swReg)await swReg.update().catch(()=>{});const v=await remoteVer();
   if(!v)toast('Impossibile verificare: sei offline o in versione locale');
@@ -2111,9 +2120,9 @@ if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){
  navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(reg=>{swReg=reg;
   reg.update();document.addEventListener('visibilitychange',()=>{if(!document.hidden)reg.update()});
   reg.addEventListener('updatefound',()=>{const nw=reg.installing;nw?.addEventListener('statechange',()=>{
-   if(nw.state==='installed'&&navigator.serviceWorker.controller)updBanner()})});
+   if(nw.state==='installed'&&navigator.serviceWorker.controller)remoteVer().then(v=>{if(v&&v!==APP_VERSION)updBanner(v);else{silentSW=true;nw.postMessage('skipWaiting')}})})});
  }).catch(()=>{});
- let reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!reloaded){reloaded=true;location.reload()}});
+ let reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(silentSW){silentSW=false;return}if(!reloaded){reloaded=true;location.reload()}});
 }
 
 /* ===== Tema chiaro/scuro ===== */
