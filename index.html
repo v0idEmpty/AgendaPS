@@ -371,6 +371,10 @@ body.qsopen #dvGrid{padding-bottom:260px}
 .pch b{font-weight:500;color:var(--tx2)}
 .pseg{display:flex;margin-top:8px}.pseg button{flex:1;min-width:0;padding:7px 4px;font-size:12.5px}
 .pbody{margin-top:10px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}.pbody .possel{width:100%}
+.rged{display:flex;flex-direction:column;gap:6px}.rgrow{display:flex;align-items:center;gap:6px;background:var(--surf2);border-radius:10px;padding:6px 6px 6px 10px}
+.rged.se .rgrow{background:color-mix(in srgb,var(--c,#f6bf26) 14%,var(--surf))}
+.rgrow input{width:auto;flex:1;min-width:0;padding:6px 6px;font-variant-numeric:tabular-nums}.rgl{font-size:12px;color:var(--mut);width:58px;flex:none}.rgh{font-size:12px;color:var(--tx2);width:38px;text-align:right;flex:none}
+.rgrow .ico{width:30px;height:30px;font-size:14px;flex:none}.rgadd{border:1px dashed var(--line);border-radius:10px;padding:8px;color:var(--acc);background:none;font-size:13px}
 .actrow2{display:flex;gap:8px;align-items:center;border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 8%,var(--surf));border-radius:0 10px 10px 0;padding:6px 6px 6px 10px;margin-bottom:6px}
 .actrow2 b{font-weight:500;font-size:13px;white-space:nowrap;color:var(--tx2)}.actrow2 input{flex:1;min-width:0;width:auto;padding:6px 8px}.actrow2 .ico{width:30px;height:30px;font-size:14px;flex:none}
 .addbox{border:1px dashed var(--line);border-radius:12px;padding:10px;margin-top:8px}
@@ -1153,9 +1157,9 @@ document.addEventListener('click',e=>{
  m.classList.remove('open'); const ds=m.dataset.ds, h=m.dataset.h===''?null:+m.dataset.h, k=it.dataset.sl;
  if(k==='abs')return openRange(ds);
  openDay(ds);
- if(k==='ora'){showTab('ora');setTimeout(()=>$('#eRanges').focus(),80)}
+ if(k==='ora'){showTab('ora')}
  if(k==='se'){if(!isWork(E))setStatus('lavoro');showTab('ora');const st=h??(parseR(E.ranges).length?Math.max(...parseR(E.ranges).map(x=>x[1]))/60:14);const a=Math.floor(st*60),r=fmtT(a)+'-'+fmtT(a+60);
-  E.seRanges=[E.seRanges,r].filter(Boolean).join(', ');$('#eSE').value=E.seRanges;syncModal();dayChanged();setTimeout(()=>$('#eSE').focus(),80)}
+  rngSet('seRanges',[E.seRanges,r].filter(Boolean).join(', '));dayChanged()}
  if(k==='perq'){if(!isWork(E))setStatus('lavoro');showTab('att');const c=[...$$('#eTags .chip')].find(c=>/perquisiz/i.test(c.dataset.v||''));if(c&&!c.classList.contains('on'))c.click();else perqAsk(true);if(h!=null&&$('#perqStart')){$('#perqStart').value=pad(h)+':00';perqPrev()}}
  if(k==='act'){if(!isWork(E))setStatus('lavoro');showTab('uff')}
  if(k==='note'){showTab('att');setTimeout(()=>$('#eNote').focus(),80)}
@@ -1314,11 +1318,10 @@ function openDay(ds){
  <div class="pane" data-pane="ora">
   <div class="g2">
    <label><span class="mut s">Turno</span><select id="eShift">${S.shifts.map(s=>`<option value="${s.id}" ${E.shiftId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}<option value="" ${!E.shiftId?'selected':''}>Personalizzato</option></select></label>
-   <label><span class="mut s">Orario effettivo</span><input id="eRanges" placeholder="06:00-12:00" value="${esc(E.ranges)}"></label>
-   <label><span class="mut s">Straordinario emergente (SE)</span><input id="eSE" placeholder="12:00-19:00" value="${esc(E.seRanges||'')}"></label>
    <label><span class="mut s">Buono pasto <span id="eBAuto"></span></span><div class="seg" id="eBuono" style="display:flex">${[0,1,2].map(n=>`<button data-v="${n}" class="${E.buono===n?'on':''}" style="flex:1">${['No','1','Doppio'][n]}</button>`).join('')}</div></label>
   </div>
-  <div class="steps" style="margin-top:10px">${stepper('stra','Straordinario (ore)',24,'oppure scrivi la fascia SE qui sopra')}</div>
+  <div class="sect"><span>🕐 Orario effettivo</span></div><div id="rg_ranges" class="rged"></div>
+  <div class="sect"><span>⏱ Straordinario emergente (SE)</span><span class="mut s" id="eSEtot"></span></div><div id="rg_seRanges" class="rged se"></div>
   <p class="mut s" id="eOre" style="margin-top:6px"></p>
   <div id="eReq"></div>
   <div class="ctbox">
@@ -1329,15 +1332,11 @@ function openDay(ds){
  </div>
  <div class="pane" data-pane="att">
   <div class="wkonly">
-   <div class="chips" id="eTags"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span>${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
+   <div class="chips" id="eTags"><span class="chip col ${E.esterna?'on':''}" style="--c:${C.ext}" data-ext>🚓 Servizio esterno</span><span class="chip col ${E.fdv?'on':''}" style="--c:${C.fdv}" data-fdv>🧾 Foglio di viaggio</span>${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}<span class="chip col ${E.op?'on':''}" style="--c:${C.ext}" data-opchip>🛡 Ordine pubblico</span>${dayInd.map(i=>`<span class="chip col" style="--c:${C.ind}" data-indc="${i.id}">${/missione/i.test(i.name)?'🚗':'💶'} ${esc(i.name.replace(/\s*\(.*\)$/,''))}</span>`).join('')}</div>
    <div id="ePerq"></div>
-   <div id="eOpBox"></div>
+   <div id="eOpBox"></div><div id="eIndBox"></div>
   </div>
   <div class="sect"><span>📝 Nota</span></div><textarea id="eNote" style="min-height:70px" placeholder="Descrizione: luogo, procedimento, colleghi, esito…">${esc(E.note)}</textarea>
-  ${dayInd.length?`<div class="wkonly"><div class="sect"><span>💶 Altre indennità</span></div><div class="indgrid">`+dayInd.map(i=>{const v=indVal({...E,status:'lavoro'},i),tag=i.rec==='day'?' <span class="mut s">(ricorrente)</span>':'';
-    return i.type==='check'
-    ?`<label class="tgl"><input type="checkbox" data-ind="${i.id}" ${v?'checked':''}> ${esc(i.name)}${tag}</label>`
-    :`<label><span class="mut s">${esc(i.name)}${tag}</span><input data-ind="${i.id}" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal"':''} value="${esc(v??'')}"></label>`}).join('')+'</div><button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica un\'indennità a più giorni</button></div>':''}
  </div>
  <div class="pane" data-pane="uff">
   <div class="sect" style="margin-top:0"><span>📌 Attività d'ufficio di oggi</span></div>
@@ -1364,7 +1363,7 @@ function openDay(ds){
  </div>
  </div>
  <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Chiudi</button></div>`;
- dayTab='ora'; ACTSEL=''; absOpen=ABS.includes(E.status); renderActs(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato':'Si salva da solo';
+ dayTab='ora'; ACTSEL=''; indOn={}; absOpen=ABS.includes(E.status); renderActs(); rngAll(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato':'Si salva da solo';
 }
 let dayTab='ora', absOpen=false, ACTSEL='';
 const PERM=[
@@ -1381,7 +1380,14 @@ function renderPerm(){const box=$('#ePerm');if(!box)return;
   ${m==='h'?`<div class="pbody"><div class="stepper" data-f="${P.h}" data-max="${P.max}"><button data-s="-1">−</button><output>${fmtH(E[P.h])}</output><button data-s="1">+</button></div>${P.pos?posSel(P.pos):''}</div>`:''}
   <div class="mut s" style="margin-top:6px">${P.hint()}</div></div>`}).join('');
 }
-function restoreShift(){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh&&!E.ranges){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;$('#eRanges').value=sh.ranges}}
+function rngEd(k){const box=$('#rg_'+k);if(!box)return;const r=parseR(E[k]||'');
+ box.innerHTML=r.map(([a,b],i)=>`<div class="rgrow"><span class="rgl">${k==='ranges'?(i?'Rientro':'Turno'):(i+1)+'ª fascia'}</span><input type="time" data-rk="${k}" data-ri="${i}" data-re="a" value="${fmtT(a)}"><span class="mut">→</span><input type="time" data-rk="${k}" data-ri="${i}" data-re="b" value="${fmtT(b)}"><span class="rgh">${fmtH((b-a)/60)}</span><button class="ico" data-rdel="${k}|${i}" title="Rimuovi">✕</button></div>`).join('')
+  +`<button class="rgadd" data-radd="${k}">＋ ${k==='ranges'?(r.length?'Aggiungi rientro':'Aggiungi orario'):r.length?'Aggiungi un altro straordinario':'Aggiungi straordinario'}</button>`;
+ if(k==='seRanges'&&$('#eSEtot'))$('#eSEtot').textContent=r.length?'Totale '+fmtH(rangesH(E.seRanges)):''}
+function rngRead(k){return [...$$(`#rg_${k} .rgrow`)].map(row=>{const[a,b]=row.querySelectorAll('input');return a.value&&b.value?a.value+'-'+b.value:''}).filter(Boolean).join(', ')}
+function rngSet(k,v,re=true){E[k]=v;if(k==='seRanges')E.stra=rangesH(v);else{const m=S.shifts.find(x=>x.ranges===v);E.shiftId=m?m.id:'';if($('#eShift'))$('#eShift').value=E.shiftId;E.buonoMan=false}if(re)rngEd(k);syncModal()}
+function rngAll(){rngEd('ranges');rngEd('seRanges')}
+function restoreShift(){const sh=shiftById(plannedShift(E.date)||rotShift(E.date))||S.shifts[0];if(sh&&!E.ranges){E.shiftId=sh.id;E.ranges=sh.ranges;$('#eShift').value=sh.id;rngEd('ranges')}}
 function setStatus(v){E.status=v==='riposo'&&isHol(E.date)?'festivo':v;if(v==='lavoro'){restoreShift();if(!['ora','att','uff','trn','eti'].includes(dayTab))dayTab='ora'}absOpen=ABS.includes(E.status);syncModal()}
 const permOf=st=>PERM.find(P=>P.st===st);
 function absSel(){if(ABS.includes(E.status))return E.status;if(isWork(E)){const P=PERM.find(P=>P.k===E._pk)||PERM.find(P=>+E[P.h]>0);if(P)return P.st}return ''}
@@ -1415,12 +1421,19 @@ async function absApply(){const to=$('#eAbsTo').value,t=E.status;await flushDay(
 function actInfo(){const to=$('#eActTo')?.value,el=$('#eActInfo');if(!el)return;$('#eActAdd').hidden=!(to>E.date);
  if(!to||to<=E.date){el.textContent='Solo questo giorno';return}
  const n=[];eachDay(E.date,to,ds=>{if(ds!==E.date&&isWork(dayOf(ds)))n.push(ds)});el.textContent=`Copia su altri ${n.length} giorni di servizio`;$('#eActAdd').textContent=`Copia su ${n.length} giorni`}
-function renderOp(){const b=$('#eOpBox');if(!b)return;const on=!!E.op;
- b.innerHTML=`<div class="pbox" style="--c:${C.ext};margin:12px 0 0;${on?'':'background:none'}"><div class="row" style="justify-content:space-between"><b>🛡 Ordine pubblico</b><div class="seg" style="flex:none"><button data-opon="0" class="${on?'':'on'}">No</button><button data-opon="1" class="${on?'on':''}">Sì</button></div></div>
+function renderOp(){const b=$('#eOpBox');if(!b)return;const on=!!E.op;$$('[data-opchip]').forEach(c=>c.classList.toggle('on',on));
+ b.innerHTML=!on?'':`<div class="pbox" style="--c:${C.ext};margin:12px 0 0"><b>🛡 Ordine pubblico</b>
  ${on?`<div class="seg pseg"><button data-op="sede" class="${E.op==='sede'?'on':''}">In sede</button><button data-op="fuori" class="${E.op==='fuori'?'on':''}">Fuori sede</button></div>
  <input id="eOpNote" style="margin-top:8px" placeholder="Servizio / luogo (es. stadio, manifestazione)" value="${esc(E.opNote||'')}">
  <div class="row" style="margin-top:8px;flex-wrap:nowrap"><span class="mut s" style="flex:none">Fino al</span><input type="date" id="eOpTo" value="${E.date}" min="${E.date}" style="flex:1;width:auto;min-width:0"><button id="eOpApply" hidden>Applica</button></div>
- <div class="mut s" style="margin-top:4px">Nel riepilogo i giorni in sede e fuori sede sono contati a parte.</div>`:''}</div>`}
+ <div class="mut s" style="margin-top:4px">Nel riepilogo i giorni in sede e fuori sede sono contati a parte.</div>`:''}</div>`;renderInd()}
+let indOn={};
+function renderInd(){const b=$('#eIndBox');if(!b)return;const L=S.ind.filter(i=>i.rec!=='month'&&!/^ordine pubblico$/i.test(i.name));
+ L.forEach(i=>{const v=indVal({...E,status:'lavoro'},i);$$(`[data-indc="${i.id}"]`).forEach(c=>c.classList.toggle('on',!!v||!!indOn[i.id]))});
+ b.innerHTML=L.filter(i=>i.type!=='check'&&(indVal({...E,status:'lavoro'},i)||indOn[i.id])).map(i=>{const v=indVal({...E,status:'lavoro'},i);
+  return `<div class="pbox" style="--c:${C.ind};margin:12px 0 0"><b>${/missione/i.test(i.name)?'🚗':'💶'} ${esc(i.name)}</b>
+  <input data-ind="${i.id}" style="margin-top:8px" ${i.type==='num'?'type="number" step="0.5" inputmode="decimal" placeholder="Valore"':'placeholder="Dettagli"'} value="${esc(v===true?'':v??'')}">
+  <button class="wide" data-bulk="ind" style="margin-top:8px">📅 Applica a più giorni</button></div>`}).join('')}
 async function opApply(){const to=$('#eOpTo').value;if(!to||to<=E.date)return;await flushDay();const out=[];
  eachDay(E.date,to,ds=>{if(ds===E.date)return;const d=structuredClone(dayOf(ds));if(!isWork(d))return;delete d._default;delete d.auto;d.op=E.op;d.opNote=E.opNote||'';d.updated=new Date().toISOString();out.push(d)});
  if(out.length){await DB.putMany(out);out.forEach(d=>DAYS.set(d.date,d))}refreshBg();toast(`Ordine pubblico: ${out.length+1} giorni`);$('#eOpTo').value=E.date;$('#eOpApply').hidden=true}
@@ -1469,7 +1482,7 @@ function syncModal(){
  if($('#eHol'))$('#eHol').innerHTML=`🎉 <b>${esc(holName(E.date))}</b> · giorno festivo`+(w?' — <b>lavorato</b>: risulta come <i>Servizio festivo</i>':` <button data-holwork>Ho lavorato</button>`);
  if(!w)return;
  const trn=E.trn.length>0;
- if(E.seRanges&&parseR(E.seRanges).length){E.stra=rangesH(E.seRanges);$('[data-f=stra] output').textContent=fmtH(E.stra)}
+ if(E.seRanges&&parseR(E.seRanges).length)E.stra=rangesH(E.seRanges);
  if(trn)E.buono=0; else if(!E.buonoMan)E.buono=calcBuono(E,shiftById(E.shiftId));
  $$('#eBuono button').forEach(b=>{b.classList.toggle('on',+b.dataset.v===E.buono);b.disabled=trn});
  $('#eBAuto').innerHTML=trn?'· <span style="color:var(--warn)">non spettante (aggiornamento)</span>':E.buonoMan?'· impostato a mano <a href="#" data-bauto style="color:var(--acc)">↺ automatico</a>':'· automatico';
@@ -1712,7 +1725,7 @@ $('#sheet').addEventListener('click',async e=>{
  if(pm){const P=PERM.find(x=>x.k===pm.closest('.pseg').dataset.pk),m=pm.dataset.pmo;
   if(m==='d'){E[P.h]=0;delete E._pk;setStatus(P.st);return}
   PERM.forEach(Q=>{if(Q!==P)E[Q.h]=0});E[P.h]=+E[P.h]||1;E._pk=P.k;if(!isWork(E))setStatus('lavoro');absOpen=true;syncModal();return}
- const tg=t.closest('#eTags .chip');
+ const tg=t.closest('#eTags .chip:not([data-opchip]):not([data-indc])');
  if(tg&&tg.hasAttribute('data-ext')){E.esterna=!E.esterna;tg.classList.toggle('on');syncModal();return}
  if(tg){const v=tg.dataset.v,on=!E.tags.includes(v);E.tags=on?[...E.tags,v]:E.tags.filter(x=>x!==v);tg.classList.toggle('on');
   if(/^perquisiz/i.test(v))perqAsk(on);return}
@@ -1723,15 +1736,21 @@ $('#sheet').addEventListener('click',async e=>{
  const ex=t.closest('[data-ext]');if(ex){E.esterna=!E.esterna;ex.classList.toggle('on');syncModal();return}
  const ps=t.closest('[data-perqset]');if(ps){$('#perqStart').value=ps.dataset.perqset;perqPrev();return}
  const fv=t.closest('#perqFdv [data-fv]');if(fv){$$('#perqFdv button').forEach(b=>b.classList.toggle('on',b===fv));if(fv.dataset.fv==='1')$('#perqExt').checked=true;return}
- if(t.closest('[data-perqok]')){const r=shiftRanges(perqBase(),toMin($('#perqStart').value));if(r){E.ranges=r;E.shiftId='';E.buonoMan=false;$('#eRanges').value=r;$('#eShift').value='';
-   const gp=$('#perqPause')?.checked?gapsOf(r):'';if(gp){E.seRanges=[gp,E.seRanges].filter(Boolean).join(', ');$('#eSE').value=E.seRanges}
+ if(t.closest('[data-perqok]')){const r=shiftRanges(perqBase(),toMin($('#perqStart').value));if(r){E.ranges=r;E.shiftId='';E.buonoMan=false;$('#eShift').value='';
+   const gp=$('#perqPause')?.checked?gapsOf(r):'';if(gp){E.seRanges=[gp,E.seRanges].filter(Boolean).join(', ');E.stra=rangesH(E.seRanges)}rngAll();
    E.fdv=$('#perqFdv .on')?.dataset.fv==='1';E.esterna=$('#perqExt').checked||E.fdv;
    $('[data-ext]').classList.toggle('on',E.esterna);$('[data-fdv]').classList.toggle('on',E.fdv);syncModal()}perqAsk(false);return}
  if(t.closest('[data-perq]')){perqAsk(false);return}
  const pal=t.closest('[data-pal]');if(pal){E.calColor=pal.dataset.pal;$$('#ePal i').forEach(i=>i.classList.toggle('on',i===pal));return}
  if(t.closest('#eActAdd'))return actAdd();
  const as=t.closest('[data-actsel]');if(as){E.acts.push({t:as.dataset.actsel,txt:''});renderActs();const ins=$$('#eActs [data-acttxt]');ins[ins.length-1]?.focus();return}
- const oo=t.closest('[data-opon]');if(oo){E.op=oo.dataset.opon==='1'?(E.op||'sede'):'';renderOp();return}
+ const ra=t.closest('[data-radd]');if(ra){const k=ra.dataset.radd,all=[...parseR(E.ranges),...parseR(E.seRanges)],r=parseR(E[k]);
+  let a;if(k==='ranges'&&r.length)a=Math.max(...r.map(x=>x[1]))+30;else if(k==='ranges')a=(parseR(plannedRanges(E.date))[0]||[540])[0];else a=all.length?Math.max(...all.map(x=>x[1])):14*60;
+  const b=a+(k==='ranges'&&!r.length?360:k==='ranges'?180:60);rngSet(k,[E[k],fmtT(a)+'-'+fmtT(b)].filter(Boolean).join(', '));return}
+ const rd=t.closest('[data-rdel]');if(rd){const[k,i]=rd.dataset.rdel.split('|');const r=parseR(E[k]);r.splice(+i,1);rngSet(k,r.map(([a,b])=>fmtT(a)+'-'+fmtT(b)).join(', '));return}
+ if(t.closest('[data-opchip]')){E.op=E.op?'':'sede';renderOp();return}
+ const ic=t.closest('[data-indc]');if(ic){const id=ic.dataset.indc,i=S.ind.find(x=>x.id===id),v=indVal({...E,status:'lavoro'},i),on=!!v||!!indOn[id];E.ind=E.ind||{};
+  if(on){E.ind[id]=i.type==='check'?false:'';delete indOn[id]}else if(i.type==='check')E.ind[id]=true;else indOn[id]=1;renderInd();$('#eIndBox [data-ind]')?.focus();return}
  const op=t.closest('[data-op]');if(op){E.op=op.dataset.op;renderOp();return}
  if(t.closest('#eOpApply'))return opApply();
  if(t.closest('[data-opentrn]')){await flushDay();return openTrn(+E.date.slice(0,4))}
@@ -1739,16 +1758,16 @@ $('#sheet').addEventListener('click',async e=>{
  const bl=t.closest('[data-bulk]');if(bl){e.preventDefault();return openBulk(bl.dataset.bulk,E.date)}
  const tr=t.closest('[data-pane=trn] .chip[data-v]');
  if(tr){const v=tr.dataset.v,was=E.trn.length;E.trn=E.trn.includes(v)?E.trn.filter(x=>x!==v):[...E.trn,v];tr.classList.toggle('on');
-  if(!was&&E.trn.length){E.ranges=S.rules.trnRanges;E.shiftId='';E.buonoMan=false;$('#eRanges').value=E.ranges;$('#eShift').value=''}
+  if(!was&&E.trn.length){E.ranges=S.rules.trnRanges;E.shiftId='';E.buonoMan=false;rngEd('ranges');$('#eShift').value=''}
   if(was&&!E.trn.length&&E.ranges===S.rules.trnRanges){const sh=shiftById(plannedShift(E.date))||shiftById(rotShift(E.date));
-   if(sh){E.shiftId=sh.id;E.ranges=sh.ranges}else E.ranges='';E.buonoMan=false;$('#eRanges').value=E.ranges;$('#eShift').value=E.shiftId||''}
+   if(sh){E.shiftId=sh.id;E.ranges=sh.ranges}else E.ranges='';E.buonoMan=false;rngEd('ranges');$('#eShift').value=E.shiftId||''}
   syncModal();return}
  const cs=t.closest('#eCtSeg [data-ct]');if(cs){E.ctType=cs.dataset.ct;syncModal();return}
  if(t.closest('[data-bauto]')){e.preventDefault();E.buonoMan=false;syncModal();return}
  const bu=t.closest('#eBuono button');
  if(bu){E.buono=+bu.dataset.v;E.buonoMan=true;syncModal();return}
  const sp=t.closest('[data-s]');
- if(sp){const box=sp.closest('.stepper'),f=box.dataset.f,mx=+box.dataset.max;if(f==='stra'&&E.seRanges){E.seRanges='';$('#eSE').value=''}
+ if(sp){const box=sp.closest('.stepper'),f=box.dataset.f,mx=+box.dataset.max;
   E[f]=Math.min(mx,Math.max(0,Math.round((E[f]+0.5*sp.dataset.s)*2)/2));box.querySelector('output').textContent=fmtH(E[f]);syncModal();return}
  if(t.closest('[data-reset]')){if(!confirm('Svuotare la giornata? Resterà solo l\'orario di servizio previsto.'))return;clearTimeout(dayTimer);await DB.del(E.date);DAYS.delete(E.date);if(E.date<TODAY())await freezePast();refreshBg();openDay(E.date);toast('Giornata svuotata');return}
  if(t.closest('[data-save]'))return saveDay();
@@ -1763,14 +1782,15 @@ $('#sheet').addEventListener('change',e=>{
  if(e.target.id==='perqPause')return perqPrev();
  if(e.target.id==='eAbsTo'){E._to=e.target.value;return absInfo()}
  if(e.target.id==='eActTo')return actInfo();
+ if(e.target.dataset.rk){const k=e.target.dataset.rk;rngSet(k,rngRead(k));return}
  if(e.target.id==='eOpTo'){const b=$('#eOpApply'),v=e.target.value;b.hidden=!(v>E.date);if(v>E.date){let n=0;eachDay(E.date,v,ds=>{if(ds===E.date||isWork(dayOf(ds)))n++});b.textContent=`Applica a ${n} giorni`}return}
  if(e.target.id==='eReqChk'){E.richiesta=e.target.checked;syncModal();return}
  if(e.target.id==='eCambio'){E.cambio=e.target.checked;syncModal();return}
  if(e.target.id==='eShift'){E.shiftId=e.target.value;const sh=shiftById(E.shiftId);
-  if(sh){E.ranges=sh.ranges;$('#eRanges').value=E.ranges}
+  if(sh){E.ranges=sh.ranges;E.buonoMan=false;rngEd('ranges')}
   syncModal()}
 });
-$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.dataset.acttxt!=null){E.acts[+e.target.dataset.acttxt].txt=e.target.value;return}if(e.target.id==='eOpNote'){E.opNote=e.target.value;return}if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();if(e.target.id==='eRanges'){E.ranges=e.target.value.trim();syncModal()}if(e.target.id==='eSE'){E.seRanges=e.target.value.trim();if(!E.seRanges){E.stra=0;$('[data-f=stra] output').textContent=fmtH(0)}syncModal()}});
+$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.dataset.acttxt!=null){E.acts[+e.target.dataset.acttxt].txt=e.target.value;return}if(e.target.id==='eOpNote'){E.opNote=e.target.value;return}if(e.target.dataset.ind){E.ind=E.ind||{};E.ind[e.target.dataset.ind]=e.target.type==='number'?(e.target.value===''?'':+e.target.value):e.target.value.trim();return}if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();});
 /* ===== Salvataggio automatico della giornata ===== */
 let dayTimer=null, daySnap='';
 const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;delete c._to;delete c._pk;return JSON.stringify(c)};
@@ -1791,11 +1811,9 @@ function collectDay(){
  if(!$('#eNote'))return;
  E.cambio=$('#eCambio').checked; E.cambioNote=$('#eCambioNote').value.trim(); E.calNote=$('#eCalNote').value.trim();
  E.note=$('#eNote').value.trim(); if($('#eOpNote'))E.opNote=$('#eOpNote').value.trim();
- E.ranges=$('#eRanges').value.trim(); E.seRanges=$('#eSE').value.trim();
  if(E.seRanges&&parseR(E.seRanges).length)E.stra=rangesH(E.seRanges);
  if(E.trn.length){E.buono=0;E.cambio=false}else if(!E.buonoMan)E.buono=calcBuono(E,shiftById(E.shiftId));
  E.ctAuto=autoCT(E);
- E.ind={}; $$('#sheet [data-ind]').forEach(i=>{E.ind[i.dataset.ind]=i.type==='checkbox'?i.checked:i.type==='number'?(i.value===''?'':+i.value):i.value.trim()});
  if(!isWork(E)){Object.assign(E,{studioh:0,op:'',opNote:'',p104h:0,buono:0,stra:0,esterna:false,fdv:false,richiesta:false,tags:[],ind:{},pb:0,sind:0,rec:0,trn:[],shiftId:'',ranges:'',seRanges:'',ctAuto:false,buonoMan:false})}
 }
 async function saveDay(){await flushDay();$('#modal').classList.remove('open','drawer');refresh()}
