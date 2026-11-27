@@ -758,7 +758,7 @@ button.wide{width:100%;border-radius:10px}
     <button id="addSp">+ Fascia programmata</button>
   </div>
   <div class="card" data-vp="att">
-    <p class="mut s" style="margin:0 0 10px">Liste caricate dalla specialità scelta in <b>Profilo</b>; puoi modificarle liberamente.</p>
+    <div class="row" style="margin:0 0 10px;flex-wrap:nowrap;align-items:center"><p class="mut s grow" style="margin:0">Liste caricate dalla specialità scelta in <b>Profilo</b>; puoi modificarle liberamente.</p><button id="ledReset" style="flex:none;font-size:13px">↺ Ripristina</button></div>
     <h4>Attività rapide</h4><p class="mut">Le spunte di "Cosa hai fatto". Tocca un nome per rinominarlo, ↑ per spostarlo, ✕ per toglierlo.</p>
     <textarea id="tagsIn" hidden></textarea><div class="led" data-led="tagsIn"></div>
     <h4 style="margin-top:14px">Registro attività</h4><p class="mut">Le voci del Registro attività, con descrizione libera, per giorno o su più giorni.</p>
@@ -882,7 +882,7 @@ function spWarn(d){const w=[],o=parseR(d.ranges),sp=parseR(spR(d));if(!sp.length
 const nightH=d=>{if(!d||d.status!=='lavoro')return 0;const W=[[0,360],[1320,1800],[2760,3240]];let m=0;[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].forEach(([a,b])=>W.forEach(([x,y])=>m+=Math.max(0,Math.min(b,y)-Math.max(a,x))));return m/60};
 /* fascia continuativa più lunga (per l'esterna servono almeno 3 ore continuative) */
 const longestCont=d=>{const r=[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].sort((a,b)=>a[0]-b[0]);let best=0,cs=null,ce=null;r.forEach(([a,b])=>{if(cs===null||a>ce){cs=a;ce=b}else ce=Math.max(ce,b);best=Math.max(best,ce-cs)});return best/60};
-const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄','vigilanza poste':'📮','monitoraggio':'🖥️','telelaser':'📡','autovelox':'📸','controllo officine':'🔧','deleghe di indagine':'📂','esecuzione provvedimenti':'📜','vigilanza':'👮','sala operativa':'🎛️','coordinamento':'🧭','registro eventi':'📒','tutela':'🛡️','ordinanze':'📜','pratiche':'📁','protocollo':'📥','rassegna stampa':'📰','manutenzione':'🔧','magazzino':'📦','mezzi':'🚙','sportello':'🪟','misure di prevenzione':'⚖️','ammonimento':'☝️','foglio di via':'📜','controllo sorvegliati':'👁️','permessi di soggiorno':'🪪','espulsione':'✈️','licenze':'📜','armi':'🔫','controllo esercizi':'🏪','stadio':'🏟️','controllo del territorio':'🚓','vigilanza obiettivi':'🏛️','addestramento':'🎯','intervento':'🚨','supporto operativo':'🤝','bonifica':'🧯','intervento ordigno':'💣','brillamento':'💥','ricerca stupefacenti':'🐕','ricerca esplosivi':'🐕','ricerca persone':'🔦','pattuglia a cavallo':'🐎','rappresentanza':'🎖️','pattugliamento costiero':'🚤','ricerca subacquea':'🤿','soccorso':'🛟','controllo diportisti':'⛵','missione di volo':'🚁','ricognizione':'🛰️','analisi forensi':'💻','notifiche':'📨','accertamenti':'🔎','centralino':'☎️','convegni':'🎤','fotosegnalamento':'🖐️','rilievi dattiloscopici':'🖐️','repertamento':'🧪','fotografia giudiziaria':'📷','relazione tecnica':'📑','pedinamento':'👣','appostamento':'👀','intervento 113':'🚨','controllo persone':'🪪','controllo documenti':'🪪','posto di controllo':'🚧','rilievo incidente':'💥','manifestazione':'📣','informativa':'📄','controllo frontiera':'🛂','respingimento':'⛔','accompagnamento':'🚐','scorta treni':'🚆','vigilanza stazione':'🚉','speed marathon':'🏎️','alcohol & drugs':'🍷','seatbelt':'🔒','focus on the road':'📵','truck & bus':'🚛','two-wheelers':'🏍️','safety days':'🦺','stragi del sabato sera':'🌙','taxi e ncc':'🚕','adr merci pericolose':'☣️','animali vivi':'🐄','pneumatici':'🛞','trasporto eccezionale':'🚚','gite sicure':'🚌','cabotaggio':'🌍','rifiuti e ambiente':'♻️'};
+const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄','vigilanza poste':'📮','monitoraggio':'🖥️','sottocopertura':'🕶️','telelaser':'📡','autovelox':'📸','controllo officine':'🔧','deleghe di indagine':'📂','esecuzione provvedimenti':'📜','vigilanza':'👮','sala operativa':'🎛️','coordinamento':'🧭','registro eventi':'📒','tutela':'🛡️','ordinanze':'📜','pratiche':'📁','protocollo':'📥','rassegna stampa':'📰','manutenzione':'🔧','magazzino':'📦','mezzi':'🚙','sportello':'🪟','misure di prevenzione':'⚖️','ammonimento':'☝️','foglio di via':'📜','controllo sorvegliati':'👁️','permessi di soggiorno':'🪪','espulsione':'✈️','licenze':'📜','armi':'🔫','controllo esercizi':'🏪','stadio':'🏟️','controllo del territorio':'🚓','vigilanza obiettivi':'🏛️','addestramento':'🎯','intervento':'🚨','supporto operativo':'🤝','bonifica':'🧯','intervento ordigno':'💣','brillamento':'💥','ricerca stupefacenti':'🐕','ricerca esplosivi':'🐕','ricerca persone':'🔦','pattuglia a cavallo':'🐎','rappresentanza':'🎖️','pattugliamento costiero':'🚤','ricerca subacquea':'🤿','soccorso':'🛟','controllo diportisti':'⛵','missione di volo':'🚁','ricognizione':'🛰️','analisi forensi':'💻','notifiche':'📨','accertamenti':'🔎','centralino':'☎️','convegni':'🎤','fotosegnalamento':'🖐️','rilievi dattiloscopici':'🖐️','repertamento':'🧪','fotografia giudiziaria':'📷','relazione tecnica':'📑','pedinamento':'👣','appostamento':'👀','intervento 113':'🚨','controllo persone':'🪪','controllo documenti':'🪪','posto di controllo':'🚧','rilievo incidente':'💥','manifestazione':'📣','informativa':'📄','controllo frontiera':'🛂','respingimento':'⛔','accompagnamento':'🚐','scorta treni':'🚆','vigilanza stazione':'🚉','speed marathon':'🏎️','alcohol & drugs':'🍷','seatbelt':'🔒','focus on the road':'📵','truck & bus':'🚛','two-wheelers':'🏍️','safety days':'🦺','stragi del sabato sera':'🌙','taxi e ncc':'🚕','adr merci pericolose':'☣️','animali vivi':'🐄','pneumatici':'🛞','trasporto eccezionale':'🚚','gite sicure':'🚌','cabotaggio':'🌍','rifiuti e ambiente':'♻️'};
 const ico=n=>ICONS[(n||'').toLowerCase().trim()]||(/perquis/i.test(n)?'🚪':/analis/i.test(n)?'💻':/udienz|tribunal/i.test(n)?'⚖️':'•');
 const odsTxt=ds=>`${odsN(ds)}/${ds.slice(0,4)}`;
 const odsN=ds=>{const d=parse(ds);return Math.round((d-new Date(d.getFullYear(),0,1))/864e5)+1};
@@ -969,7 +969,7 @@ const REPARTI={
  immigrazione:{g:'Questura e Commissariati',n:'Ufficio Immigrazione',tags:['Uscita'],acts:['Permessi di soggiorno','Sportello','Fotosegnalamento','Espulsione','Accompagnamento','Controllo documenti','Fascicoli']},
  pasi:{g:'Questura e Commissariati',n:'Divisione PASI',tags:['Uscita','Notifica'],acts:['Licenze','Armi','Controllo esercizi','Sportello','Notifiche','Fascicoli']},
  scientifica:{g:'Questura e Commissariati',n:'Polizia Scientifica',tags:['Uscita','Reperibilità'],acts:['Sopralluogo','Fotosegnalamento','Rilievi dattiloscopici','Repertamento','Fotografia giudiziaria','Analisi forensi','Relazione tecnica','Udienza']},
- postale:{g:'Specialità',n:'Polizia Postale',tags:['Perquisizione','Uscita'],acts:['Vigilanza Poste','Monitoraggio','360 c.p.p.','Analisi forensi','Interrogatorio','SIT','Notifiche','Accertamenti','Sopralluogo','Centralino','Convegni','Fascicoli','Udienza']},
+ postale:{g:'Specialità',n:'Polizia Postale',tags:['Perquisizione','Uscita'],acts:['Vigilanza Poste','Monitoraggio','Sottocopertura','360 c.p.p.','Analisi forensi','Interrogatorio','SIT','Notifiche','Accertamenti','Sopralluogo','Centralino','Convegni','Fascicoli','Udienza']},
  stradale:{g:'Specialità',n:'Polizia Stradale',tags:['Pattuglia','Posto di controllo','Rilievo incidente','Scorta','Uscita'],acts:['Telelaser','Autovelox','Controllo officine','Speed Marathon','Alcohol & Drugs','Seatbelt','Focus on the Road','Truck & Bus','Two-Wheelers','Safety Days','Stragi del sabato sera','Taxi e NCC','ADR merci pericolose','Animali vivi','Pneumatici','Trasporto eccezionale','Gite sicure','Cabotaggio','Rifiuti e ambiente','Fascicoli','Udienza']},
  ferroviaria:{g:'Specialità',n:'Polizia Ferroviaria',tags:['Pattuglia','Uscita'],acts:['Scorta treni','Vigilanza stazione','Controllo persone','Denuncia','Fascicoli','Udienza']},
  frontiera:{g:'Specialità',n:'Polizia di Frontiera',tags:['Pattuglia','Uscita'],acts:['Controllo frontiera','Controllo documenti','Respingimento','Accompagnamento','Fascicoli','Udienza']},
@@ -997,7 +997,7 @@ const TRNDEF=()=>[{id:'tiro',name:'Addestramento al tiro',short:'Tiro',group:'ad
  {id:'gen',name:'E-learning',short:'E-learning',group:'agg',quota:3,color:'peacock'},
  {id:'sett',name:'Add./agg. tematiche di settore',short:'Temat. sett.',group:'agg',quota:3,color:'grape'}];
 function defaults(){const t=TODAY();return{
- v:5, since:t, absOn:{pb:true,recupero:true,riposo_comp:true}, v13:true, v14:true, v15:true, v16:true, rules:{...RULDEF}, header:'', festLoc:'', userName:'', actTypes:[...ACTDEF], v7:true, allow:{[new Date().getFullYear()]:{...ALDEF}}, trainings:TRNDEF(), trnGroups:TRNGRP(), v6:true,
+ v:5, since:t, absOn:{pb:true,recupero:true,riposo_comp:true}, v13:true, v14:true, v15:true, v16:true, v17:true, rules:{...RULDEF}, header:'', festLoc:'', userName:'', actTypes:[...ACTDEF], v7:true, allow:{[new Date().getFullYear()]:{...ALDEF}}, trainings:TRNDEF(), trnGroups:TRNGRP(), v6:true,
  shifts:[{id:'A',name:'8-14',ranges:'08:00-14:00',buono:false,short:'8-14',color:'peacock'},
          {id:'B',name:'8-14 + rientro',ranges:'08:00-14:00, 14:30-17:30',buono:true,short:'8-14+R',color:'sage'}],
  plans:[{id:uid(),from:iso(monday(new Date())),anchor:iso(monday(new Date())),weeks:1,rotation:[['A','B','A','B','A',null,null]]}],
@@ -1014,6 +1014,7 @@ function migrate(s){
  s.trainings=s.trainings||TRNDEF(); s.trnGroups=s.trnGroups||TRNGRP();
  if(!s.v6){const D=TRNDEF();s.trainings.forEach(t=>{const d=D.find(x=>x.id===t.id);if(d&&!t.group){t.group=d.group;t.quota=d.quota;t.short=d.short}});
   D.forEach(d=>{if(!s.trainings.some(t=>t.id===d.id))s.trainings.push(d)});s.v6=true}
+ if(!s.v17){if(s.reparto==='postale'&&!(s.actTypes||[]).some(x=>/^sottocopert/i.test(x))){const i=(s.actTypes||[]).findIndex(x=>/^monitoragg/i.test(x));s.actTypes.splice(i>=0?i+1:0,0,'Sottocopertura')}s.v17=true}
  if(!s.v16){if(s.reparto==='stradale')['Controllo officine','Autovelox','Telelaser'].forEach(x=>{if(!(s.actTypes||[]).some(y=>y.toLowerCase()===x.toLowerCase()))s.actTypes.unshift(x)});s.v16=true}
  if(!s.v15){if(s.reparto==='postale'&&!(s.actTypes||[]).some(x=>/^monitoragg/i.test(x)))s.actTypes.splice(1,0,'Monitoraggio');s.v15=true}
  if(!s.v14){if(!(s.actTypes||[]).some(x=>/^udienz/i.test(x)))s.actTypes=[...(s.actTypes||[]),'Udienza'];if(s.absOn)delete s.absOn.citazione;s.v14=true}
@@ -2422,6 +2423,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-lup],[data
  else{const n=box.querySelector('[data-lnew]').value.replace(/\s*,\s*/g,' ').trim();if(!n)return;if(a.some(x=>x.toLowerCase()===n.toLowerCase()))return toast('Già presente');a.push(n)}
  ledW(id,a);ledR(box);setDirty=true;if(b.dataset.ladd)box.querySelector('[data-lnew]').focus()});
 let setDirty=false;
+document.addEventListener('click',e=>{if(!e.target.closest('#ledReset'))return;const k=$('#repSel').value||T.reparto||'gen',r=REPARTI[k];
+ if(!confirm(`Ripristinare gli elenchi predefiniti di ${r.n}?\nLe voci aggiunte o rinominate andranno perse (le giornate registrate non cambiano).`))return;
+ $('#tagsIn').value=r.tags.join(', ');$('#actIn').value=r.acts.join(', ');ledAll();setDirty=true;toast('Elenchi ripristinati · ricordati di salvare')});
 ['input','change','click'].forEach(ev=>$('#v-set').addEventListener(ev,e=>{const c=e.target.closest('[data-vp]');if(c&&c.dataset.vp!=='dat'&&!e.target.closest('#saveSet')&&(ev!=='click'||e.target.closest('button,[data-abson],.sw,.swatch,input[type=checkbox]')))setDirty=true},true));
 function renderSet(){
  $('#repSel').innerHTML='<option value="">— Scegli la tua specialità —</option>'+[...new Set(Object.values(REPARTI).map(r=>r.g))].map(g=>`<optgroup label="${g}">`+Object.entries(REPARTI).filter(([,r])=>r.g===g).map(([k,r])=>`<option value="${k}" ${T.reparto===k?'selected':''}>${r.n}</option>`).join('')+'</optgroup>').join('');
@@ -2524,7 +2528,7 @@ $('#saveSet').onclick=async()=>{
 };
 
 /* ===== Backup ===== */
-$('#bkExp').onclick=()=>download(`backup_agenda_ps_${TODAY()}.json`,JSON.stringify({v:5,settings:S,days:[...DAYS.values()]},null,1),'application/json');
+$('#bkExp').onclick=()=>download(`backup_agenda_ps_${TODAY()}.json`,JSON.stringify({v:5,settings:S,theme:document.documentElement.dataset.theme,days:[...DAYS.values()]},null,1),'application/json');
 $('#bkImp').onclick=()=>$('#bkFile').click();
 $('#bkFile').onchange=async e=>{
  try{let j=JSON.parse(await e.target.files[0].text());
@@ -2533,7 +2537,7 @@ $('#bkFile').onchange=async e=>{
    if(!ok)return alert('Password errata.');j=ok}
   if(!j.settings||!Array.isArray(j.days))throw 0;
   if(!confirm(`Ripristinare ${j.days.length} giornate? I dati attuali verranno sostituiti.`))return;
-  await DB.clear();await DB.putMany(j.days);S=migrate(j.settings);await DB.setMeta('settings',S);await load();toast('Backup ripristinato')}
+  await DB.clear();await DB.putMany(j.days);S=migrate(j.settings);await DB.setMeta('settings',S);if(j.theme){applyTheme(j.theme);DB.setMeta('theme',j.theme)}await load();T=structuredClone(S);setDirty=false;refresh();toast('Backup ripristinato: giornate, impostazioni e personalizzazioni')}
  catch{alert('File di backup non valido')} e.target.value='';
 };
 $('#wipe').onclick=async()=>{if(confirm('Cancellare TUTTE le giornate? (le impostazioni restano)')&&confirm('Sicuro? Operazione irreversibile.')){await DB.clear();DAYS.clear();S.since=TODAY();await DB.setMeta('settings',S);refresh()}};
@@ -2575,7 +2579,7 @@ async function makeCloudBackup(){
  let pw=await DB.getMeta('cbPw');
  if(!pw){pw=await askPassword({title:'Password per il backup cifrato',confirm:true,remember:true}); if(pw==null)return; if(pwRemember)await DB.setMeta('cbPw',pw)}
  toast('Cifratura in corso…');
- const env=await encryptBackup({v:5,settings:S,days:[...DAYS.values()]},pw);
+ const env=await encryptBackup({v:5,settings:S,theme:document.documentElement.dataset.theme,days:[...DAYS.values()]},pw);
  const name=`agenda_ps_${TODAY()}.rsbak.json`, blob=new Blob([JSON.stringify(env)],{type:'application/json'}), file=new File([blob],name,{type:'application/json'});
  let shared=false;
  if(navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'Backup Agenda PS',text:'Backup cifrato Agenda PS'});shared=true}catch(e){if(e.name==='AbortError')return}}
