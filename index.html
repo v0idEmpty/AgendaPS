@@ -682,6 +682,8 @@ button.wide{width:100%;border-radius:10px}
     <h4>Profilo e intestazione report</h4>
     <div class="row"><label class="grow"><span class="mut s">Il tuo nome (e qualifica)</span><input id="userName" placeholder="Es. Ass. Capo Nome Cognome"></label>
     <label class="grow"><span class="mut s">Intestazione report</span><input id="hdr" placeholder="Es. Ufficio / Reparto"></label></div>
+    <label style="display:block;margin-top:12px"><span class="mut s">Specialità / reparto</span><select id="repSel"></select></label>
+    <p class="mut s" style="margin-top:6px">Carica le attività tipiche del tuo reparto in <b>Attività</b>. Puoi sempre modificarle.</p>
   </div>
   <div class="card" data-vp="spe">
     <h4>Spettanze annuali</h4>
@@ -755,8 +757,7 @@ button.wide{width:100%;border-radius:10px}
     <button id="addSp">+ Fascia programmata</button>
   </div>
   <div class="card" data-vp="att">
-    <h4>Reparto</h4><p class="mut">Scegli la specialità per caricare le attività tipiche. Dopo puoi modificarle liberamente qui sotto.</p>
-    <select id="repSel" style="margin:8px 0 14px"></select>
+    <p class="mut s" style="margin:0 0 10px">Liste caricate dalla specialità scelta in <b>Profilo</b>; puoi modificarle liberamente.</p>
     <h4>Attività rapide</h4><p class="mut">Le spunte di "Cosa ho fatto", separate da virgola.</p>
     <textarea id="tagsIn" style="min-height:60px;margin-top:8px"></textarea>
     <h4 style="margin-top:14px">Attività da registrare singolarmente</h4><p class="mut">Tipi con descrizione libera, per giorno o su più giorni (es. 360 c.p.p., SIT, Interrogatorio, Analisi dispositivi). Separati da virgola.</p>
@@ -880,7 +881,7 @@ function spWarn(d){const w=[],o=parseR(d.ranges),sp=parseR(spR(d));if(!sp.length
 const nightH=d=>{if(!d||d.status!=='lavoro')return 0;const W=[[0,360],[1320,1800],[2760,3240]];let m=0;[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].forEach(([a,b])=>W.forEach(([x,y])=>m+=Math.max(0,Math.min(b,y)-Math.max(a,x))));return m/60};
 /* fascia continuativa più lunga (per l'esterna servono almeno 3 ore continuative) */
 const longestCont=d=>{const r=[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].sort((a,b)=>a[0]-b[0]);let best=0,cs=null,ce=null;r.forEach(([a,b])=>{if(cs===null||a>ce){cs=a;ce=b}else ce=Math.max(ce,b);best=Math.max(best,ce-cs)});return best/60};
-const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄','vigilanza poste':'📮','monitoraggio':'🖥️','analisi forensi':'💻','notifiche':'📨','accertamenti':'🔎','centralino':'☎️','convegni':'🎤','fotosegnalamento':'🖐️','rilievi dattiloscopici':'🖐️','repertamento':'🧪','fotografia giudiziaria':'📷','relazione tecnica':'📑','pedinamento':'👣','appostamento':'👀','intervento 113':'🚨','controllo persone':'🪪','controllo documenti':'🪪','posto di controllo':'🚧','rilievo incidente':'💥','manifestazione':'📣','informativa':'📄','controllo frontiera':'🛂','respingimento':'⛔','accompagnamento':'🚐','scorta treni':'🚆','vigilanza stazione':'🚉','speed marathon':'🏎️','alcohol & drugs':'🍷','seatbelt':'🔒','focus on the road':'📵','truck & bus':'🚛','two-wheelers':'🏍️','safety days':'🦺','stragi del sabato sera':'🌙','taxi e ncc':'🚕','adr merci pericolose':'☣️','animali vivi':'🐄','pneumatici':'🛞','trasporto eccezionale':'🚚','gite sicure':'🚌','cabotaggio':'🌍','rifiuti e ambiente':'♻️'};
+const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄','vigilanza poste':'📮','monitoraggio':'🖥️','sportello':'🪟','misure di prevenzione':'⚖️','ammonimento':'☝️','foglio di via':'📜','controllo sorvegliati':'👁️','permessi di soggiorno':'🪪','espulsione':'✈️','licenze':'📜','armi':'🔫','controllo esercizi':'🏪','stadio':'🏟️','controllo del territorio':'🚓','vigilanza obiettivi':'🏛️','addestramento':'🎯','intervento':'🚨','supporto operativo':'🤝','bonifica':'🧯','intervento ordigno':'💣','brillamento':'💥','ricerca stupefacenti':'🐕','ricerca esplosivi':'🐕','ricerca persone':'🔦','pattuglia a cavallo':'🐎','rappresentanza':'🎖️','pattugliamento costiero':'🚤','ricerca subacquea':'🤿','soccorso':'🛟','controllo diportisti':'⛵','missione di volo':'🚁','ricognizione':'🛰️','analisi forensi':'💻','notifiche':'📨','accertamenti':'🔎','centralino':'☎️','convegni':'🎤','fotosegnalamento':'🖐️','rilievi dattiloscopici':'🖐️','repertamento':'🧪','fotografia giudiziaria':'📷','relazione tecnica':'📑','pedinamento':'👣','appostamento':'👀','intervento 113':'🚨','controllo persone':'🪪','controllo documenti':'🪪','posto di controllo':'🚧','rilievo incidente':'💥','manifestazione':'📣','informativa':'📄','controllo frontiera':'🛂','respingimento':'⛔','accompagnamento':'🚐','scorta treni':'🚆','vigilanza stazione':'🚉','speed marathon':'🏎️','alcohol & drugs':'🍷','seatbelt':'🔒','focus on the road':'📵','truck & bus':'🚛','two-wheelers':'🏍️','safety days':'🦺','stragi del sabato sera':'🌙','taxi e ncc':'🚕','adr merci pericolose':'☣️','animali vivi':'🐄','pneumatici':'🛞','trasporto eccezionale':'🚚','gite sicure':'🚌','cabotaggio':'🌍','rifiuti e ambiente':'♻️'};
 const ico=n=>ICONS[(n||'').toLowerCase().trim()]||(/perquis/i.test(n)?'🚪':/analis/i.test(n)?'💻':/udienz|tribunal/i.test(n)?'⚖️':'•');
 const odsTxt=ds=>`${odsN(ds)}/${ds.slice(0,4)}`;
 const odsN=ds=>{const d=parse(ds);return Math.round((d-new Date(d.getFullYear(),0,1))/864e5)+1};
@@ -958,15 +959,27 @@ async function reload(){const raw=await DB.getMeta('settings');S=migrate(raw);aw
 /* ===== Impostazioni ===== */
 const RULDEF={ctMin:2,lunch:'15:00',dinner:'20:00',trnRanges:'08:00-14:00',perqStart:'06:00',p104hDay:6};
 const REPARTI={
- gen:{n:'Generico',tags:['Perquisizione','Pattuglia','Sopralluogo','Notifica','Uscita'],acts:['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi','Fascicoli','Udienza']},
- postale:{n:'Polizia Postale',tags:['Perquisizione','Uscita'],acts:['Vigilanza Poste','Monitoraggio','360 c.p.p.','Analisi forensi','Interrogatorio','SIT','Notifiche','Accertamenti','Sopralluogo','Centralino','Convegni','Fascicoli','Udienza']},
- stradale:{n:'Polizia Stradale',tags:['Pattuglia','Posto di controllo','Rilievo incidente','Scorta','Uscita'],acts:['Speed Marathon','Alcohol & Drugs','Seatbelt','Focus on the Road','Truck & Bus','Two-Wheelers','Safety Days','Stragi del sabato sera','Taxi e NCC','ADR merci pericolose','Animali vivi','Pneumatici','Trasporto eccezionale','Gite sicure','Cabotaggio','Rifiuti e ambiente','Fascicoli','Udienza']},
- scientifica:{n:'Polizia Scientifica',tags:['Uscita','Reperibilità'],acts:['Sopralluogo','Fotosegnalamento','Rilievi dattiloscopici','Repertamento','Fotografia giudiziaria','Analisi forensi','Relazione tecnica','Udienza']},
- mobile:{n:'Squadra Mobile',tags:['Perquisizione','Pattuglia','Appostamento','Uscita'],acts:['Arresto','360 c.p.p.','SIT','Interrogatorio','Intercettazioni','Pedinamento','Notifiche','Fascicoli','Udienza']},
- volanti:{n:'Volanti (UPGSP)',tags:['Pattuglia','Posto di controllo','Uscita'],acts:['Intervento 113','Arresto','Denuncia','Controllo persone','Notifiche','Fascicoli','Udienza']},
- digos:{n:'DIGOS',tags:['Uscita','Pattuglia'],acts:['Servizio O.P.','Manifestazione','Informativa','SIT','Notifiche','Fascicoli','Udienza']},
- frontiera:{n:'Polizia di Frontiera',tags:['Pattuglia','Uscita'],acts:['Controllo frontiera','Controllo documenti','Respingimento','Accompagnamento','Fascicoli','Udienza']},
- ferroviaria:{n:'Polizia Ferroviaria',tags:['Pattuglia','Uscita'],acts:['Scorta treni','Vigilanza stazione','Controllo persone','Denuncia','Fascicoli','Udienza']}};
+ gen:{g:'Questura e Commissariati',n:'Questura · ufficio',tags:['Perquisizione','Pattuglia','Sopralluogo','Notifica','Uscita'],acts:['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi','Fascicoli','Udienza']},
+ commissariato:{g:'Questura e Commissariati',n:'Commissariato',tags:['Pattuglia','Notifica','Uscita'],acts:['Denuncia','Sportello','Controllo persone','Notifiche','SIT','Fascicoli','Udienza']},
+ volanti:{g:'Questura e Commissariati',n:'Volanti (UPGSP)',tags:['Pattuglia','Posto di controllo','Uscita'],acts:['Intervento 113','Arresto','Denuncia','Controllo persone','Notifiche','Fascicoli','Udienza']},
+ mobile:{g:'Questura e Commissariati',n:'Squadra Mobile',tags:['Perquisizione','Pattuglia','Appostamento','Uscita'],acts:['Arresto','360 c.p.p.','SIT','Interrogatorio','Intercettazioni','Pedinamento','Notifiche','Fascicoli','Udienza']},
+ digos:{g:'Questura e Commissariati',n:'DIGOS',tags:['Uscita','Pattuglia'],acts:['Servizio O.P.','Manifestazione','Informativa','SIT','Notifiche','Fascicoli','Udienza']},
+ anticrimine:{g:'Questura e Commissariati',n:'Divisione Anticrimine',tags:['Notifica','Uscita'],acts:['Misure di prevenzione','Ammonimento','Foglio di via','Controllo sorvegliati','Informativa','Fascicoli','Udienza']},
+ immigrazione:{g:'Questura e Commissariati',n:'Ufficio Immigrazione',tags:['Uscita'],acts:['Permessi di soggiorno','Sportello','Fotosegnalamento','Espulsione','Accompagnamento','Controllo documenti','Fascicoli']},
+ pasi:{g:'Questura e Commissariati',n:'Divisione PASI',tags:['Uscita','Notifica'],acts:['Licenze','Armi','Controllo esercizi','Sportello','Notifiche','Fascicoli']},
+ scientifica:{g:'Questura e Commissariati',n:'Polizia Scientifica',tags:['Uscita','Reperibilità'],acts:['Sopralluogo','Fotosegnalamento','Rilievi dattiloscopici','Repertamento','Fotografia giudiziaria','Analisi forensi','Relazione tecnica','Udienza']},
+ postale:{g:'Specialità',n:'Polizia Postale',tags:['Perquisizione','Uscita'],acts:['Vigilanza Poste','Monitoraggio','360 c.p.p.','Analisi forensi','Interrogatorio','SIT','Notifiche','Accertamenti','Sopralluogo','Centralino','Convegni','Fascicoli','Udienza']},
+ stradale:{g:'Specialità',n:'Polizia Stradale',tags:['Pattuglia','Posto di controllo','Rilievo incidente','Scorta','Uscita'],acts:['Speed Marathon','Alcohol & Drugs','Seatbelt','Focus on the Road','Truck & Bus','Two-Wheelers','Safety Days','Stragi del sabato sera','Taxi e NCC','ADR merci pericolose','Animali vivi','Pneumatici','Trasporto eccezionale','Gite sicure','Cabotaggio','Rifiuti e ambiente','Fascicoli','Udienza']},
+ ferroviaria:{g:'Specialità',n:'Polizia Ferroviaria',tags:['Pattuglia','Uscita'],acts:['Scorta treni','Vigilanza stazione','Controllo persone','Denuncia','Fascicoli','Udienza']},
+ frontiera:{g:'Specialità',n:'Polizia di Frontiera',tags:['Pattuglia','Uscita'],acts:['Controllo frontiera','Controllo documenti','Respingimento','Accompagnamento','Fascicoli','Udienza']},
+ repmobile:{g:'Reparti',n:'Reparto Mobile',tags:['Pattuglia','Uscita'],acts:['Servizio O.P.','Stadio','Manifestazione','Controllo del territorio','Vigilanza obiettivi','Scorta','Addestramento']},
+ rpc:{g:'Reparti',n:'Reparto Prevenzione Crimine',tags:['Pattuglia','Perquisizione','Uscita'],acts:['Controllo del territorio','Posto di controllo','Controllo persone','Arresto','Denuncia','Fascicoli']},
+ speciali:{g:'Reparti',n:'Reparti Speciali (NOCS · UOPI)',tags:['Uscita'],acts:['Intervento','Supporto operativo','Scorta','Vigilanza obiettivi','Servizio O.P.','Addestramento']},
+ artificieri:{g:'Reparti',n:'Artificieri',tags:['Uscita','Reperibilità'],acts:['Bonifica','Intervento ordigno','Brillamento','Sopralluogo','Relazione tecnica','Addestramento','Udienza']},
+ cinofili:{g:'Reparti',n:'Cinofili',tags:['Pattuglia','Uscita'],acts:['Ricerca stupefacenti','Ricerca esplosivi','Ricerca persone','Bonifica','Servizio O.P.','Addestramento']},
+ cavallo:{g:'Reparti',n:'Polizia a Cavallo',tags:['Pattuglia','Uscita'],acts:['Pattuglia a cavallo','Servizio O.P.','Rappresentanza','Addestramento']},
+ nautica:{g:'Reparti',n:'Squadre Nautiche · Sommozzatori',tags:['Pattuglia','Uscita'],acts:['Pattugliamento costiero','Ricerca subacquea','Soccorso','Controllo diportisti','Addestramento','Relazione tecnica']},
+ volo:{g:'Reparti',n:'Reparto Volo',tags:['Uscita'],acts:['Missione di volo','Ricognizione','Soccorso','Ricerca persone','Addestramento']}};
 const ACTDEF=['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi','Fascicoli','Udienza'];
 const ACTCOL=['blueberry','sage','tangerine','grape','peacock','flamingo','basil','lavender'];
 const TRNGRP=()=>[{id:'add',name:'Addestramento',quota:6},{id:'agg',name:'Aggiornamento professionale',quota:6}];
@@ -1667,8 +1680,8 @@ function openDay(ds){
   <div class="palpick" id="ePal"><i class="none ${!E.calColor?'on':''}" data-pal="" title="Nessun colore">✕</i>${Object.keys(PAL).map(k=>`<i style="--c:${PAL[k]}" class="${E.calColor===k?'on':''}" data-pal="${k}" title="${PALN[k]}"></i>`).join('')}</div>
  </div>
  </div>
- <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="mut s grow" id="eSaved" style="text-align:center"></span><button class="pri" data-x>Chiudi</button></div>`;
- dayTab='ora'; ACTSEL=''; indOn={}; absOpen=ABS.includes(E.status); renderActs(); rngAll(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay(); $('#eSaved').textContent=DAYS.has(ds)&&!E.auto?'✓ Salvato':'Si salva da solo';
+ <div class="foot"><button class="danger" data-reset title="Cancella tutto ciò che hai inserito e lascia solo l'orario di servizio">🗑 Svuota giornata</button><span class="grow"></span><button data-cancel>Annulla</button><button class="pri" data-save id="eSave" disabled>Salva</button></div>`;
+ dayTab='ora'; ACTSEL=''; indOn={}; absOpen=ABS.includes(E.status); renderActs(); rngAll(); syncModal(); $('#modal').classList.add('open','drawer'); collectDay(); daySnap=snapDay();
 }
 let dayTab='ora', absOpen=false, ACTSEL='';
 const PERM=[
@@ -2100,6 +2113,7 @@ $('#sheet').addEventListener('click',async e=>{
   E[f]=Math.min(mx,Math.max(0,Math.round(((+E[f]||0)+0.5*sp.dataset.s)*2)/2));box.querySelector('output').textContent=fmtH(E[f]);if(f==='rcConv')renderRC();syncModal();return}
  if(t.closest('[data-reset]')){if(!confirm('Svuotare la giornata? Resterà solo l\'orario di servizio previsto.'))return;clearTimeout(dayTimer);await DB.del(E.date);DAYS.delete(E.date);if(E.date<TODAY())await freezePast();refreshBg();openDay(E.date);toast('Giornata svuotata');return}
  if(t.closest('[data-save]'))return saveDay();
+ if(t.closest('[data-cancel]'))return closeModal(true);
 });
 $('#sheet').addEventListener('change',e=>{
  if(MODE==='range')return rangePreview();
@@ -2127,16 +2141,16 @@ $('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(M
 /* ===== Salvataggio automatico della giornata ===== */
 let dayTimer=null, daySnap='';
 const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;delete c._to;delete c._pk;return JSON.stringify(c)};
-function dayChanged(){if(MODE!=='day'||!$('#modal').classList.contains('open'))return;clearTimeout(dayTimer);dayTimer=setTimeout(()=>flushDay(),450)}
+function dayChanged(){if(MODE!=='day'||!$('#modal').classList.contains('open'))return;const b=$('#eSave');if(!b)return;collectDay();b.disabled=snapDay()===daySnap}
 async function flushDay(){
  clearTimeout(dayTimer); if(MODE!=='day'||!E)return;
  collectDay(); const sn=snapDay(); if(sn===daySnap)return;
  daySnap=sn; delete E.auto; E.updated=new Date().toISOString();
  const rec=structuredClone(E); delete rec._to; delete rec._pk; await DB.put(rec); DAYS.set(rec.date,rec);
- if($('#eSaved'))$('#eSaved').textContent='✓ Salvato '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+ if($('#eSave'))$('#eSave').disabled=true;
  refreshBg();
 }
-async function closeModal(){if(MODE==='day')await flushDay();$('#modal').classList.remove('open','drawer');$('#popmenu').classList.remove('open');if(MODE==='day')refresh()}
+async function closeModal(force){if(MODE==='day'&&E&&!force&&$('#eSave')){collectDay();if(snapDay()!==daySnap&&confirm('Hai modifiche non salvate.\n\nOK = Salva · Annulla = esci senza salvare'))await flushDay()}$('#modal').classList.remove('open','drawer');$('#popmenu').classList.remove('open');if(MODE==='day')refresh()}
 $('#sheet').addEventListener('click',()=>{if(MODE==='day')setTimeout(dayChanged,0)});
 $('#sheet').addEventListener('change',()=>{if(MODE==='day')setTimeout(dayChanged,0)});
 $('#sheet').addEventListener('input',()=>{if(MODE==='day')dayChanged()});
@@ -2149,7 +2163,7 @@ function collectDay(){
  E.ctAuto=autoCT(E);
  if(!isWork(E)){Object.assign(E,{rcConv:0,spRanges:'',spOv:false,studioh:0,op:'',opNote:'',p104h:0,buono:0,stra:0,esterna:false,fdv:false,richiesta:false,tags:[],ind:{},pb:0,sind:0,rec:0,trn:[],shiftId:'',ranges:'',seRanges:'',ctAuto:false,buonoMan:false})}
 }
-async function saveDay(){await flushDay();$('#modal').classList.remove('open','drawer');refresh()}
+async function saveDay(){await flushDay();$('#modal').classList.remove('open','drawer');refresh();toast('Giornata salvata')}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&MODE==='welcome'&&$('#modal').classList.contains('open'))welcomeSave();if(e.key==='Escape')closeModal()});
 
@@ -2386,7 +2400,7 @@ document.addEventListener('change',e=>{if(e.target.id!=='repSel')return;const r=
  if(!confirm(`Caricare le attività tipiche di ${r.n}?\nSostituiscono gli elenchi attuali (le giornate già registrate non cambiano). Poi premi Salva.`)){e.target.value=T.reparto||'';return}
  $('#tagsIn').value=r.tags.join(', ');$('#actIn').value=r.acts.join(', ');['#tagsIn','#actIn'].forEach(q=>$(q).dispatchEvent(new Event('input',{bubbles:true})));toast('Attività caricate · ricordati di salvare')});
 function renderSet(){
- $('#repSel').innerHTML='<option value="">— Scegli la tua specialità —</option>'+Object.entries(REPARTI).map(([k,r])=>`<option value="${k}" ${T.reparto===k?'selected':''}>${r.n}</option>`).join('');
+ $('#repSel').innerHTML='<option value="">— Scegli la tua specialità —</option>'+[...new Set(Object.values(REPARTI).map(r=>r.g))].map(g=>`<optgroup label="${g}">`+Object.entries(REPARTI).filter(([,r])=>r.g===g).map(([k,r])=>`<option value="${k}" ${T.reparto===k?'selected':''}>${r.n}</option>`).join('')+'</optgroup>').join('');
  $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; $('#trnRgBox').innerHTML=trg(T.rules.trnRanges,'id="ru_trnRanges"',1); Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
  const cy=new Date().getFullYear();
  $('#alYear').innerHTML=Array.from({length:Math.max(cy+10,alYear)-Math.min(cy-10,alYear)+1},(_,i)=>Math.min(cy-10,alYear)+i).map(y=>`<option ${y===alYear?'selected':''}>${y}</option>`).join('');
