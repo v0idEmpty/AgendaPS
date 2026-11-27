@@ -755,6 +755,8 @@ button.wide{width:100%;border-radius:10px}
     <button id="addSp">+ Fascia programmata</button>
   </div>
   <div class="card" data-vp="att">
+    <h4>Reparto</h4><p class="mut">Scegli la specialità per caricare le attività tipiche. Dopo puoi modificarle liberamente qui sotto.</p>
+    <select id="repSel" style="margin:8px 0 14px"></select>
     <h4>Attività rapide</h4><p class="mut">Le spunte di "Cosa ho fatto", separate da virgola.</p>
     <textarea id="tagsIn" style="min-height:60px;margin-top:8px"></textarea>
     <h4 style="margin-top:14px">Attività da registrare singolarmente</h4><p class="mut">Tipi con descrizione libera, per giorno o su più giorni (es. 360 c.p.p., SIT, Interrogatorio, Analisi dispositivi). Separati da virgola.</p>
@@ -878,7 +880,7 @@ function spWarn(d){const w=[],o=parseR(d.ranges),sp=parseR(spR(d));if(!sp.length
 const nightH=d=>{if(!d||d.status!=='lavoro')return 0;const W=[[0,360],[1320,1800],[2760,3240]];let m=0;[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].forEach(([a,b])=>W.forEach(([x,y])=>m+=Math.max(0,Math.min(b,y)-Math.max(a,x))));return m/60};
 /* fascia continuativa più lunga (per l'esterna servono almeno 3 ore continuative) */
 const longestCont=d=>{const r=[...parseR(d.ranges),...parseR(d.seRanges),...parseR(spR(d))].sort((a,b)=>a[0]-b[0]);let best=0,cs=null,ce=null;r.forEach(([a,b])=>{if(cs===null||a>ce){cs=a;ce=b}else ce=Math.max(ce,b);best=Math.max(best,ce-cs)});return best/60};
-const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄'};
+const ICONS={'pattuglia':'🚔','uscita':'🚶','fascicoli':'🗂️','ufficio':'🏢','perquisizione':'🚪','analisi forense':'💻','notifica':'📨','udienza':'⚖️','sopralluogo':'📍','interrogatorio':'🗣️','trasferta':'🚗','formazione':'🎓','reperibilità':'📟','360 c.p.p.':'🔬','sit':'📝','analisi dispositivi':'📱','servizio esterno':'🚓','foglio di viaggio':'🧾','ordine pubblico':'🛡️','indagini':'🕵️','arresto':'🚨','scorta':'🚘','intercettazioni':'🎧','sequestro':'📦','denuncia':'📄','vigilanza poste':'📮','monitoraggio':'🖥️','analisi forensi':'💻','notifiche':'📨','accertamenti':'🔎','centralino':'☎️','convegni':'🎤','fotosegnalamento':'🖐️','rilievi dattiloscopici':'🖐️','repertamento':'🧪','fotografia giudiziaria':'📷','relazione tecnica':'📑','pedinamento':'👣','appostamento':'👀','intervento 113':'🚨','controllo persone':'🪪','controllo documenti':'🪪','posto di controllo':'🚧','rilievo incidente':'💥','manifestazione':'📣','informativa':'📄','controllo frontiera':'🛂','respingimento':'⛔','accompagnamento':'🚐','scorta treni':'🚆','vigilanza stazione':'🚉','speed marathon':'🏎️','alcohol & drugs':'🍷','seatbelt':'🔒','focus on the road':'📵','truck & bus':'🚛','two-wheelers':'🏍️','safety days':'🦺','stragi del sabato sera':'🌙','taxi e ncc':'🚕','adr merci pericolose':'☣️','animali vivi':'🐄','pneumatici':'🛞','trasporto eccezionale':'🚚','gite sicure':'🚌','cabotaggio':'🌍','rifiuti e ambiente':'♻️'};
 const ico=n=>ICONS[(n||'').toLowerCase().trim()]||(/perquis/i.test(n)?'🚪':/analis/i.test(n)?'💻':/udienz|tribunal/i.test(n)?'⚖️':'•');
 const odsTxt=ds=>`${odsN(ds)}/${ds.slice(0,4)}`;
 const odsN=ds=>{const d=parse(ds);return Math.round((d-new Date(d.getFullYear(),0,1))/864e5)+1};
@@ -955,6 +957,16 @@ async function reload(){const raw=await DB.getMeta('settings');S=migrate(raw);aw
 
 /* ===== Impostazioni ===== */
 const RULDEF={ctMin:2,lunch:'15:00',dinner:'20:00',trnRanges:'08:00-14:00',perqStart:'06:00',p104hDay:6};
+const REPARTI={
+ gen:{n:'Generico',tags:['Perquisizione','Pattuglia','Sopralluogo','Notifica','Uscita'],acts:['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi','Fascicoli','Udienza']},
+ postale:{n:'Polizia Postale',tags:['Perquisizione','Uscita'],acts:['Vigilanza Poste','Monitoraggio','360 c.p.p.','Analisi forensi','Interrogatorio','SIT','Notifiche','Accertamenti','Sopralluogo','Centralino','Convegni','Fascicoli','Udienza']},
+ stradale:{n:'Polizia Stradale',tags:['Pattuglia','Posto di controllo','Rilievo incidente','Scorta','Uscita'],acts:['Speed Marathon','Alcohol & Drugs','Seatbelt','Focus on the Road','Truck & Bus','Two-Wheelers','Safety Days','Stragi del sabato sera','Taxi e NCC','ADR merci pericolose','Animali vivi','Pneumatici','Trasporto eccezionale','Gite sicure','Cabotaggio','Rifiuti e ambiente','Fascicoli','Udienza']},
+ scientifica:{n:'Polizia Scientifica',tags:['Uscita','Reperibilità'],acts:['Sopralluogo','Fotosegnalamento','Rilievi dattiloscopici','Repertamento','Fotografia giudiziaria','Analisi forensi','Relazione tecnica','Udienza']},
+ mobile:{n:'Squadra Mobile',tags:['Perquisizione','Pattuglia','Appostamento','Uscita'],acts:['Arresto','360 c.p.p.','SIT','Interrogatorio','Intercettazioni','Pedinamento','Notifiche','Fascicoli','Udienza']},
+ volanti:{n:'Volanti (UPGSP)',tags:['Pattuglia','Posto di controllo','Uscita'],acts:['Intervento 113','Arresto','Denuncia','Controllo persone','Notifiche','Fascicoli','Udienza']},
+ digos:{n:'DIGOS',tags:['Uscita','Pattuglia'],acts:['Servizio O.P.','Manifestazione','Informativa','SIT','Notifiche','Fascicoli','Udienza']},
+ frontiera:{n:'Polizia di Frontiera',tags:['Pattuglia','Uscita'],acts:['Controllo frontiera','Controllo documenti','Respingimento','Accompagnamento','Fascicoli','Udienza']},
+ ferroviaria:{n:'Polizia Ferroviaria',tags:['Pattuglia','Uscita'],acts:['Scorta treni','Vigilanza stazione','Controllo persone','Denuncia','Fascicoli','Udienza']}};
 const ACTDEF=['360 c.p.p.','SIT','Interrogatorio','Analisi dispositivi','Fascicoli','Udienza'];
 const ACTCOL=['blueberry','sage','tangerine','grape','peacock','flamingo','basil','lavender'];
 const TRNGRP=()=>[{id:'add',name:'Addestramento',quota:6},{id:'agg',name:'Aggiornamento professionale',quota:6}];
@@ -964,7 +976,7 @@ const TRNDEF=()=>[{id:'tiro',name:'Addestramento al tiro',short:'Tiro',group:'ad
  {id:'gen',name:'E-learning',short:'E-learning',group:'agg',quota:3,color:'peacock'},
  {id:'sett',name:'Add./agg. tematiche di settore',short:'Temat. sett.',group:'agg',quota:3,color:'grape'}];
 function defaults(){const t=TODAY();return{
- v:5, since:t, absOn:{pb:true,recupero:true,riposo_comp:true}, v13:true, v14:true, rules:{...RULDEF}, header:'', festLoc:'', userName:'', actTypes:[...ACTDEF], v7:true, allow:{[new Date().getFullYear()]:{...ALDEF}}, trainings:TRNDEF(), trnGroups:TRNGRP(), v6:true,
+ v:5, since:t, absOn:{pb:true,recupero:true,riposo_comp:true}, v13:true, v14:true, v15:true, rules:{...RULDEF}, header:'', festLoc:'', userName:'', actTypes:[...ACTDEF], v7:true, allow:{[new Date().getFullYear()]:{...ALDEF}}, trainings:TRNDEF(), trnGroups:TRNGRP(), v6:true,
  shifts:[{id:'A',name:'8-14',ranges:'08:00-14:00',buono:false,short:'8-14',color:'peacock'},
          {id:'B',name:'8-14 + rientro',ranges:'08:00-14:00, 14:30-17:30',buono:true,short:'8-14+R',color:'sage'}],
  plans:[{id:uid(),from:iso(monday(new Date())),anchor:iso(monday(new Date())),weeks:1,rotation:[['A','B','A','B','A',null,null]]}],
@@ -981,6 +993,7 @@ function migrate(s){
  s.trainings=s.trainings||TRNDEF(); s.trnGroups=s.trnGroups||TRNGRP();
  if(!s.v6){const D=TRNDEF();s.trainings.forEach(t=>{const d=D.find(x=>x.id===t.id);if(d&&!t.group){t.group=d.group;t.quota=d.quota;t.short=d.short}});
   D.forEach(d=>{if(!s.trainings.some(t=>t.id===d.id))s.trainings.push(d)});s.v6=true}
+ if(!s.v15){if(s.reparto==='postale'&&!(s.actTypes||[]).some(x=>/^monitoragg/i.test(x)))s.actTypes.splice(1,0,'Monitoraggio');s.v15=true}
  if(!s.v14){if(!(s.actTypes||[]).some(x=>/^udienz/i.test(x)))s.actTypes=[...(s.actTypes||[]),'Udienza'];if(s.absOn)delete s.absOn.citazione;s.v14=true}
  if(!s.v13){s.absOn=s.absOn||{pb:true,p104:true,psind:true,studio:true,esami:true,recupero:true,riposo_comp:true,sangue:true,citazione:true,nascita:false,paternita:false,trasferimento:false,matrimonio:false};
   (s.trainings||[]).forEach(t=>{if(t.id==='gen'&&/interesse generale/i.test(t.name)){t.name='E-learning';t.short='E-learning'}});s.v13=true}
@@ -1624,7 +1637,7 @@ function openDay(ds){
    <div class="sect" style="margin-top:0"><span>✔︎ Cosa hai fatto</span><span class="mut s">tocca per segnare</span></div>
    <div class="chips" id="eTags">${S.tags.map(t=>`<span class="chip ${E.tags.includes(t)?'on':''}" data-v="${esc(t)}">${ico(t)} ${esc(t)}</span>`).join('')}</div>
    <div id="ePerq"></div>
-  <div class="sect"><span>📋 Atti registrati</span><span class="mut s">con descrizione</span></div>
+  <div class="sect"><span>🗂 Registro attività</span><span class="mut s">con descrizione</span></div>
   <div class="addbox">
    <div class="mut s" style="margin-bottom:6px">Tocca per aggiungere un'attività a oggi</div>
    <div class="chips" id="eActChips">${S.actTypes.map(t=>`<span class="chip col" style="--c:${actCol(t)}" data-actsel="${esc(t)}">＋ ${ico(t)} ${esc(t)}</span>`).join('')}</div></div>
@@ -2369,7 +2382,11 @@ function renderSp(){$('#spList').innerHTML=(T.spPlan||[]).map((e,i)=>`<div class
  <span class="mut s shl">Fascia oraria</span>${trg(e.ranges,'data-k="ranges"',1)}
  <div class="row" style="margin-top:8px"><label class="grow"><span class="mut s">Dal</span><input type="date" data-k="from" value="${e.from||''}"></label><label class="grow"><span class="mut s">Al (scadenza, facoltativa)</span><input type="date" data-k="to" value="${e.to||''}"></label></div></div>`).join('')||'<p class="mut s">Nessuno straordinario programmato fisso.</p>'}
 const ABSOPT=[['pb','Permesso breve / giornaliero'],['p104','Permessi L.104'],['psind','Permessi sindacali'],['studio','Permesso studio (150 h)'],['esami','Congedo per esami'],['recupero','Recupero ore'],['riposo_comp','Riposo compensativo'],['sangue','Donazione sangue'],['nascita','Nascita figlio (3 gg)'],['paternita','Paternità obbligatoria (10 gg)'],['trasferimento','CS per trasferimento'],['matrimonio','CS per matrimonio (15 gg)']];
+document.addEventListener('change',e=>{if(e.target.id!=='repSel')return;const r=REPARTI[e.target.value];if(!r)return;
+ if(!confirm(`Caricare le attività tipiche di ${r.n}?\nSostituiscono gli elenchi attuali (le giornate già registrate non cambiano). Poi premi Salva.`)){e.target.value=T.reparto||'';return}
+ $('#tagsIn').value=r.tags.join(', ');$('#actIn').value=r.acts.join(', ');['#tagsIn','#actIn'].forEach(q=>$(q).dispatchEvent(new Event('input',{bubbles:true})));toast('Attività caricate · ricordati di salvare')});
 function renderSet(){
+ $('#repSel').innerHTML='<option value="">— Scegli la tua specialità —</option>'+Object.entries(REPARTI).map(([k,r])=>`<option value="${k}" ${T.reparto===k?'selected':''}>${r.n}</option>`).join('');
  $('#hdr').value=T.header; $('#userName').value=T.userName||''; $('#actIn').value=(T.actTypes||[]).join(', '); $('#festLoc').value=T.festLoc||''; $('#trnRgBox').innerHTML=trg(T.rules.trnRanges,'id="ru_trnRanges"',1); Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(el)el.value=T.rules[k]});
  const cy=new Date().getFullYear();
  $('#alYear').innerHTML=Array.from({length:Math.max(cy+10,alYear)-Math.min(cy-10,alYear)+1},(_,i)=>Math.min(cy-10,alYear)+i).map(y=>`<option ${y===alYear?'selected':''}>${y}</option>`).join('');
@@ -2421,7 +2438,7 @@ function renderRot(){
 }
 function readAllow(){T.allow[alYear]=Object.fromEntries(Object.keys(ALDEF).map(k=>[k,Math.max(0,+$('#al_'+k).value||0)]))}
 function readSet(){
- T.header=$('#hdr').value.trim(); T.userName=$('#userName').value.trim(); T.actTypes=$('#actIn').value.split(',').map(t=>t.trim()).filter(Boolean); T.festLoc=$('#festLoc').value.trim(); readAllow();
+ T.reparto=$('#repSel').value; T.header=$('#hdr').value.trim(); T.userName=$('#userName').value.trim(); T.actTypes=$('#actIn').value.split(',').map(t=>t.trim()).filter(Boolean); T.festLoc=$('#festLoc').value.trim(); readAllow();
  Object.keys(RULDEF).forEach(k=>{const el=$('#ru_'+k);if(!el)return;const v=el.value.trim();T.rules[k]=k==='ctMin'||k==='p104hDay'?Math.max(0,+v||0)||RULDEF[k]:(v||RULDEF[k])});
  $$('#trnGrpList .grprow').forEach(r=>{const g=T.trnGroups[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>g[i.dataset.k]=i.dataset.k==='quota'?Math.max(0,+i.value||0):i.value.trim())});
  $$('#trnList .trnrow').forEach(r=>{const t=T.trainings[r.dataset.i];r.querySelectorAll('[data-k]').forEach(i=>t[i.dataset.k]=i.dataset.k==='quota'?Math.max(0,+i.value||0):i.value.trim())});
