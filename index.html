@@ -1195,12 +1195,13 @@ function dayICS(d){const now=new Date().toISOString().replace(/[-:]/g,'').slice(
   parseR(d.seRanges).forEach(([a,b])=>push('Straordinario (SE)',a,b));parseR(spR(d)).forEach(([a,b])=>push('Straordinario programmato',a,b))}
  else push(STATI[d.status],null,null);
  (d.events||[]).filter(e=>e.from).forEach(e=>{const[a,b]=parseR(e.from+'-'+(e.to||e.from))[0]||[];if(a!=null)push(e.title||'Nota',a,b>a?b:a+30)});
- return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Agenda PS//IT','CALSCALE:GREGORIAN','METHOD:PUBLISH',...ev.flat(),'END:VCALENDAR'].map(icsFold).join('\r\n')}
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Agenda PS//IT','CALSCALE:GREGORIAN','METHOD:PUBLISH','X-AGENDAPS:'+b64u(JSON.stringify(dayObj(d))),...ev.flat(),'END:VCALENDAR'].map(icsFold).join('\r\n')}
 const b64u=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const ub64u=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
-function dayLink(d){const ind={};Object.entries(d.ind||{}).forEach(([id,v])=>{const i=S.ind.find(x=>x.id===id);if(i&&v)ind[i.name]=v});
+function dayObj(d){const ind={};Object.entries(d.ind||{}).forEach(([id,v])=>{const i=S.ind.find(x=>x.id===id);if(i&&v)ind[i.name]=v});
  const o={v:1,date:d.date,status:d.status,ranges:d.ranges,seRanges:d.seRanges||'',stra:+d.stra||0,spRanges:spR(d),buono:+d.buono||0,esterna:!!d.esterna,fdv:!!d.fdv,op:d.op||'',opNote:d.opNote||'',tags:d.tags,acts:d.acts||[],trn:(d.trn||[]).map(id=>trnById(id)?.name).filter(Boolean),ind,note:d.note||'',ct:d.ctType||'',ctAuto:!!d.ctAuto};
- return location.origin+location.pathname+'#imp='+b64u(JSON.stringify(o))}
+ return o}
+const dayLink=d=>location.origin+location.pathname+'#imp='+b64u(JSON.stringify(dayObj(d)));
 async function shareDay(ds){if(MODE==='day'&&E&&E.date===ds)await flushDay();const d=dayOf(ds),dt=parse(ds).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
  const txt=`📅 ${dt}\n`+dayDesc(d).join('\n')+`\n\n➕ Apri in Agenda PS: ${dayLink(d)}`;
  const file=new File([dayICS(d)],`agenda_ps_${ds}.ics`,{type:'text/calendar'});
@@ -1209,7 +1210,8 @@ async function shareDay(ds){if(MODE==='day'&&E&&E.date===ds)await flushDay();con
  download(file.name,await file.text(),'text/calendar');try{await navigator.clipboard.writeText(txt);toast('File .ics scaricato e testo copiato')}catch{toast('File .ics scaricato')}}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-share]');if(b){e.stopPropagation();shareDay(b.dataset.share)}},true);
 async function importFromHash(){const m=location.hash.match(/^#imp=([\w-]+)/);if(!m)return;history.replaceState(null,'',location.pathname+location.search);
- let o;try{o=JSON.parse(ub64u(m[1]))}catch{return toast('Link non valido')}if(!o||!o.date||!/^\d{4}-\d{2}-\d{2}$/.test(o.date))return;
+ let o;try{o=JSON.parse(ub64u(m[1]))}catch{return toast('Link non valido')}return importObj(o)}
+async function importObj(o){if(!o||!o.date||!/^\d{4}-\d{2}-\d{2}$/.test(o.date))return toast('Giornata non valida');
  const old=DAYS.get(o.date),busy=old&&!old.auto&&(old.note||old.tags?.length||old.acts?.length||old.seRanges);
  const sum=[`${parse(o.date).toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`,o.status==='lavoro'?'Orario '+(o.ranges||'—'):STATI[o.status]||o.status,o.seRanges&&'SE '+o.seRanges,o.spRanges&&'SP '+o.spRanges,(o.tags||[]).join(', '),(o.acts||[]).map(a=>a.t).join(', '),o.note].filter(Boolean).join('\n');
  if(!confirm(`Aggiungere questa giornata alla tua agenda?\n\n${sum}${busy?'\n\n⚠ Quel giorno hai già dei dati: verranno sostituiti.':''}`))return;
@@ -1220,6 +1222,29 @@ async function importFromHash(){const m=location.hash.match(/^#imp=([\w-]+)/);if
  d.ind={};Object.entries(o.ind||{}).forEach(([n,v])=>{const i=S.ind.find(x=>x.name===n);if(i)d.ind[i.id]=v});
  await DB.put(d);DAYS.set(d.date,d);go('cal');goDay(d.date);toast('Giornata aggiunta')}
 addEventListener('hashchange',()=>importFromHash());
+/* ===== Ricezione da "Condividi" di Android ===== */
+function icsParse(txt){const L=txt.replace(/\r?\n[ \t]/g,'').split(/\r?\n/),out=[];let ev=null,x=null;
+ const val=l=>l.slice(l.indexOf(':')+1),un=t=>t.replace(/\\n/gi,'\n').replace(/\\([,;\\])/g,'$1');
+ const dt=l=>{const v=val(l),m=v.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})\d{0,2}(Z)?)?/);if(!m)return null;
+  if(!m[4])return{date:`${m[1]}-${m[2]}-${m[3]}`,min:null};const d=m[6]?new Date(Date.UTC(+m[1],m[2]-1,+m[3],+m[4],+m[5])):new Date(+m[1],m[2]-1,+m[3],+m[4],+m[5]);return{date:iso(d),min:d.getHours()*60+d.getMinutes()}};
+ for(const l of L){if(/^X-AGENDAPS:/i.test(l))x=val(l);else if(l==='BEGIN:VEVENT')ev={};else if(l==='END:VEVENT'){if(ev&&ev.s)out.push(ev);ev=null}
+  else if(ev){if(/^DTSTART/i.test(l))ev.s=dt(l);else if(/^DTEND/i.test(l))ev.e=dt(l);else if(/^SUMMARY/i.test(l))ev.t=un(val(l));else if(/^DESCRIPTION/i.test(l))ev.d=un(val(l));else if(/^LOCATION/i.test(l))ev.loc=un(val(l))}}
+ return{x,ev:out}}
+async function importForeign(evs){const by=new Map();evs.forEach(e=>{const k=e.s.date;by.has(k)||by.set(k,[]);by.get(k).push(e)});
+ const sum=evs.slice(0,6).map(e=>`• ${itD(e.s.date)} ${e.s.min!=null?fmtT(e.s.min)+(e.e&&e.e.min!=null?'-'+fmtT(e.e.min):''):'(tutto il giorno)'} ${e.t||'Evento'}`).join('\n')+(evs.length>6?`\n… e altri ${evs.length-6}`:'');
+ if(!confirm(`Aggiungere ${evs.length} event${evs.length===1?'o':'i'} come note nel calendario?\n\n${sum}`))return;
+ for(const[ds,L]of by){const d=structuredClone(dayOf(ds));delete d._default;delete d.auto;d.events=d.events||[];
+  L.forEach(e=>{if(e.s.min==null){d.calNote=d.calNote||e.t||'';if(e.d||e.loc)d.note=[d.note,[e.t,e.loc,e.d].filter(Boolean).join(' · ')].filter(Boolean).join('\n')}
+   else d.events.push({title:[e.t||'Evento',e.loc].filter(Boolean).join(' · '),from:fmtT(e.s.min),to:e.e&&e.e.min!=null&&e.e.date===ds?fmtT(e.e.min):fmtT(Math.min(e.s.min+60,1439)),color:'lavender'})});
+  d.updated=new Date().toISOString();await DB.put(d);DAYS.set(ds,d)}
+ const first=[...by.keys()].sort()[0];go('cal');goDay(first);toast(`${evs.length} eventi aggiunti`)}
+async function handleShare(){if(!/[?&]share=1/.test(location.search))return;history.replaceState(null,'',location.pathname);
+ let data=null;try{const c=await caches.open('share-inbox'),r=await c.match('./share-inbox.json');if(r){data=await r.json();await c.delete('./share-inbox.json')}}catch{}
+ if(!data)return toast('Nessun contenuto ricevuto');
+ const all=[data.title,data.text,data.url,...(data.files||[]).map(f=>f.text)].join('\n'),m=all.match(/#imp=([\w-]+)/);
+ if(m){try{return importObj(JSON.parse(ub64u(m[1])))}catch{}}
+ for(const f of data.files||[]){if(/BEGIN:VCALENDAR/i.test(f.text)){const P=icsParse(f.text);if(P.x){try{return importObj(JSON.parse(ub64u(P.x)))}catch{}}if(P.ev.length)return importForeign(P.ev)}}
+ toast('Contenuto non riconosciuto: condividi un file .ics o un link di Agenda PS')}
 function renderCal(){
  $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===calView)); $('#hdrView').textContent={month:'Mese',week:'Settimana',day:'Giorno'}[calView]+' ▾';
  $('#calWrap').hidden=calView!=='month'; $('#dayView').hidden=calView!=='day'; $('#weekView').hidden=calView!=='week';
@@ -2573,7 +2598,7 @@ async function load(){
  if(navigator.storage?.persist)navigator.storage.persist();
  lastCloud=await DB.getMeta('lastCloud')||null;
  await load();
- maybeGate(); gcOpen(); setTimeout(importFromHash,300); if($('#statsOn'))$('#statsOn').checked=statsOn();
+ maybeGate(); gcOpen(); setTimeout(()=>{importFromHash();handleShare()},300); if($('#statsOn'))$('#statsOn').checked=statsOn();
  if(!S.userName)openWelcome();
  else if(!S.secAsked&&!(await DB.getMeta('cbPw')))openSecurity(false);
 })();
