@@ -207,11 +207,11 @@ tr[data-d]:hover td{background:var(--hov)}
 .rot{width:100%;border-collapse:separate;border-spacing:4px}
 .rot td,.rot th{border:0;padding:0}
 .rot select{padding:7px 4px;font-size:12.5px}
-.tdBox{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.tdBox{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
 .tdBox:hover{background:var(--hov)}
 .tdShift{border-left:4px solid var(--c);padding-left:10px}
 .tdShift b{display:block;font-size:17px;font-weight:500;color:var(--tx2)}
-.tdShift span{font-size:12px;color:var(--mut)}
+.tdShift span{display:block;font-size:12px;color:var(--mut);text-transform:capitalize}.tdShift{flex:1;min-width:0}.tdGo{font-style:normal;font-size:20px;color:var(--mut)}#sideToday{padding:0;border:0;background:none}#sideToday .tdBox{background:var(--surf)}
 .adv summary{cursor:pointer;color:var(--acc);font-weight:500;margin-top:6px}
 .plans{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .repHead{display:none}
@@ -276,7 +276,7 @@ header .hamb{display:none;margin-left:-6px}
  body.navopen #navDrawer{transform:none}
  #navDrawer{padding:0 0 28px!important}
  .ndHead{display:flex;flex-direction:column;gap:0;padding:calc(14px + env(safe-area-inset-top)) 16px 12px;background:color-mix(in srgb,var(--acc) 7%,var(--surf));border-bottom:1px solid var(--line)}
- .ndBrand{display:flex;gap:12px;align-items:center}.ndName{display:flex;flex-direction:column;min-width:0}.ndName>div{display:flex;align-items:baseline;gap:8px}.ndName small{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .ndBrand{display:flex;gap:12px;align-items:center}.ndBrand #btnTheme{margin-left:auto;flex:none;font-size:20px}.ndName{flex:1}body:not(.calmode.dvmode) #hdrShare{display:none!important}.ndName{display:flex;flex-direction:column;min-width:0}.ndName>div{display:flex;align-items:baseline;gap:8px}.ndName small{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
  .ndName b{font-size:18px;font-weight:600;color:var(--tx2);letter-spacing:.2px}
  .ndName .ver{font-size:10.5px;padding:1px 7px;border-radius:10px;background:var(--surf);border:1px solid var(--line);color:var(--mut)}
  .ndUser{display:flex!important;align-items:center;gap:10px;width:100%;padding:8px 10px!important;border:1px solid var(--line)!important;border-radius:12px;background:var(--surf)!important;text-align:left}
@@ -578,10 +578,10 @@ button.wide{width:100%;border-radius:10px}
   <button class="ico mobonly" id="hdrToday" title="Oggi"><span class="tdy" id="hdrTodayN"></span></button>
   <button class="mobonly vpill" id="hdrView" title="Cambia vista">Mese ▾</button>
   <div id="vmenu" class="vmenu" hidden><button data-vm="month">▦ Mese</button><button data-vm="week">☰ Settimana</button><button data-vm="day">▤ Giorno</button></div>
-  <button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button>
+  <button class="ico" id="hdrShare" title="Condividi la giornata">📤</button>
 </header>
 <div id="scrim"></div>
-<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><div><b>Agenda PS</b><span class="ver" id="ndVer"></span></div><small id="ndUser"></small></div></div></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
+<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><div><b>Agenda PS</b><span class="ver" id="ndVer"></span></div><small id="ndUser"></small></div><button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button></div></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
 
 <main>
 <!-- CALENDARIO -->
@@ -591,7 +591,6 @@ button.wide{width:100%;border-radius:10px}
     <div class="sideCard todayCard" id="sideToday"></div>
     <div class="sideCard"><h4 id="sbTitle"></h4><div id="sideBal"></div></div>
     <div class="sideCard"><h4 id="stTitle"></h4><div id="sideTrn"></div></div>
-    <div class="sideFoot"><span class="mut s" id="sideVer"></span><button data-chkupd>🔄 Verifica aggiornamenti</button></div>
   </aside>
   <div>
     <div class="greet" id="greet"></div>
@@ -1273,7 +1272,7 @@ async function handleShare(){if(!/[?&]share=1/.test(location.search))return;hist
  toast('Contenuto non riconosciuto: condividi un file .ics o un link di Agenda PS')}
 function renderCal(){
  $$('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.view===calView)); $('#hdrView').textContent={month:'Mese',week:'Settimana',day:'Giorno'}[calView]+' ▾';
- $('#calWrap').hidden=calView!=='month'; $('#dayView').hidden=calView!=='day'; $('#weekView').hidden=calView!=='week';
+ document.body.classList.toggle('dvmode',calView==='day'); $('#calWrap').hidden=calView!=='month'; $('#dayView').hidden=calView!=='day'; $('#weekView').hidden=calView!=='week';
  if(calView==='day')return renderDayView();
  if(calView==='week')return renderWeek();
  const y=cur.getFullYear(),m=cur.getMonth(),today=TODAY();
@@ -1319,6 +1318,7 @@ function dayItems(x){
  return{L,R:R2};
 }
 function renderDayView(keepScroll){
+ $('#hdrShare').dataset.share=dayCur;
  const ds=dayCur, x=dayOf(ds), dt=parse(ds), today=TODAY(), hp=HP();
  $('#mTitle').textContent=dt.toLocaleDateString('it-IT',mqMob.matches?{weekday:'short',day:'numeric',month:'short'}:{weekday:'short',day:'numeric',month:'long',year:'numeric'});
  const {ev,ln}=cellEvents(x), allLn=ln.filter(l=>!l[2]&&!l[3]&&!/^\(.*SE\)$|^Straord\./.test(l[1]));
@@ -1331,7 +1331,7 @@ function renderDayView(keepScroll){
  requestAnimationFrame(()=>$$('#dayView .dvAll .ln').forEach(el=>{const i=el.querySelector('.mqt');if(!i)return;const over=i.scrollWidth-el.clientWidth+16;if(over>20){el.classList.add('mq');el.style.setProperty('--x',-(over+28)+'px');el.style.setProperty('--d',Math.max(6,over/22+3)+'s')}}));
  $('#dayView').innerHTML=`<div class="dvHead"><div class="dvDate"><span>${dt.toLocaleDateString('it-IT',{weekday:'short'})}</span><b class="${ds===today?'t':''}">${dt.getDate()}</b></div>
   <div class="dvAll" data-open>${ev.map(e=>e.ghost?(e.t?`<span class="ev ghost">${esc(e.t)}</span>`:''):`<span class="ev ${e.lt?'lt':''}" style="--c:${e.c}">${esc(e.t)}</span>`).join('')}${allLn.map(([c,t])=>`<span class="ln" style="--c:${c}"><em class="mqt">${esc(t)}</em></span>`).join('')}${note}${!ev.length&&!allLn.length&&!note?'<span class="mut s">Tocca per aprire la giornata</span>':''}</div>
-  <button class="ico" data-share="${ds}" title="Condividi la giornata">📤</button><button class="ico" data-open title="Apri la giornata">✎</button></div>
+  <button class="ico" data-open title="Apri la giornata">✎</button></div>
   <div class="dvMeta"><span class="zm"><button class="ico" data-zoom="-1" title="Mostra più ore">－</button><button class="ico" data-zoom="1" title="Più dettaglio">＋</button></span>Ordine di Servizio n. ${odsTxt(ds)} · settimana ${isoWeek(dt)}${isHol(ds)?' · 🎉 '+esc(holName(ds)):''}${isWork(x)?` · ${fmtH(rangesH(x.ranges))} ordinarie${x.stra?' + '+fmtH(x.stra)+' straord.':''}${nightH(x)?' · 🌙 '+fmtH(nightH(x)):''}`:''}${showPlan?' · <span style="border-bottom:2px dashed var(--mut)">previsto '+esc(pr)+'</span>':''}</div>
   <div class="dvGrid" id="dvGrid" style="--hp:${hp}px"><div class="inner">${grid}
    <div class="night" style="top:0;height:${6*hp}px"></div><div class="night" style="top:${22*hp}px;height:${2*hp}px"></div>
@@ -1496,14 +1496,12 @@ function renderSide(y){
   [[C.buono,'Buono'],[C.stra,'Straordinario'],[C.ext,'Esterna'],[C.pm,'Permessi/recupero'],[C.ind,'Indennità'],[col('basil'),'CO'],[col('tomato'),'CS'],[col('grape'),'937'],[col('flamingo'),'104'],[col('peacock'),'Sindacale']].map(([c,t])=>`<span class="ln" style="--c:${c}"><i></i>${t}</span>`).join('')+
   `<span>Colonna sinistra: numero della settimana</span>`;
 }
-function renderToday(){const t=TODAY(),x=dayOf(t),sh=shiftById(x.shiftId),xs=extras(x),dt=new Date();
- $('#sideToday').innerHTML=`<h4>Oggi · ${dt.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'})}</h4>
- <div class="mut s">Ordine di Servizio n. ${odsTxt(t)} · settimana ${isoWeek(dt)}${isHol(t)?' · 🎉 '+esc(holName(t)):''}</div>
- <div class="tdBox" data-go="${t}">${isWork(x)?`<div class="tdShift" style="--c:${sh?col(sh.color):PAL.graphite}"><b>${esc(x.ranges||'—')}</b><span>${esc(sh?sh.name:'Orario personalizzato')}</span></div>`:`<div class="tdShift" style="--c:${col(STCOL[x.status]||'graphite')}"><b>${esc(STATI[x.status])}</b></div>`}
+function renderToday(){const t=TODAY(),x=dayOf(t),sh=shiftById(x.shiftId),xs=extras(x),dt=new Date(),w=isWork(x);
+ const c=w?(sh?col(sh.color):PAL.graphite):col(STCOL[x.status]||'graphite');
+ $('#sideToday').innerHTML=`<div class="tdBox" data-go="${t}"><div class="tdShift" style="--c:${c}"><span>Oggi · ${dt.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}${isHol(t)?' · 🎉 '+esc(holName(t)):''}</span><b>${esc(w?(x.ranges||'—'):STATI[x.status])}</b></div><i class="tdGo">›</i></div>
   ${xs.length?`<div class="chips" style="margin-top:6px;gap:4px">${xs.map(([c,l])=>`<span class="b" style="--c:${c}">${esc(l)}</span>`).join('')}</div>`:''}
-  ${(x.tags||[]).length?`<div class="mut s" style="margin-top:6px">${esc(x.tags.map(z=>ico(z)+' '+z).join(' · '))}</div>`:''}
-  ${x.note?`<div class="s" style="margin-top:4px">📝 ${esc(x.note)}</div>`:''}
-  <div class="mut s" style="margin-top:6px;color:var(--acc)">Apri la giornata ›</div></div>`}
+  ${(x.tags||[]).length?`<div class="mut s" style="margin-top:4px">${esc(x.tags.map(z=>ico(z)+' '+z).join(' · '))}</div>`:''}
+  ${x.note?`<div class="s" style="margin-top:4px">📝 ${esc(x.note)}</div>`:''}`}
 function renderMini(){
  const y=miniM.getFullYear(),m=miniM.getMonth(),today=TODAY(),cm=cur.getMonth(),cy=cur.getFullYear();
  let h=`<div class="mh"><span>${miniM.toLocaleDateString('it-IT',{month:'long',year:'numeric'})}</span><button class="ico" data-mm="-1">‹</button><button class="ico" data-mm="1">›</button></div><div class="mg">`+DOW.map(d=>`<div class="dw">${d[0]}</div>`).join('');
@@ -2625,7 +2623,7 @@ async function load(){
 }
 (async()=>{
  document.body.classList.add('calmode'); $('#logoDay').textContent=new Date().getDate(); $('#hdrTodayN').textContent=new Date().getDate(); $('#ndDay').textContent=new Date().getDate(); $('#ndVer').textContent=APP_VERSION.startsWith('__')?'dev':'v'+APP_VERSION; $('#hVer').textContent=$('#ndVer').textContent; cur.setDate(1);
- $('#verInfo').textContent='Agenda PS '+verTxt(); $('#sideVer').textContent='Agenda PS '+verTxt(); document.title='Agenda PS'+(APP_VERSION.startsWith('__')?'':' v'+APP_VERSION);
+ $('#verInfo').textContent='Agenda PS '+verTxt(); document.title='Agenda PS'+(APP_VERSION.startsWith('__')?'':' v'+APP_VERSION);
  await DB.open();
  await FS.init();
  const th=await DB.getMeta('theme'); applyTheme(th||document.documentElement.dataset.theme);
