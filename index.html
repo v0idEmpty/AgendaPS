@@ -1139,7 +1139,7 @@ function cellEvents(x){
   if(x.studioh)ln.push([col('blueberry'),'Studio '+fmtH(x.studioh)]);
   S.ind.forEach(i=>{if(i.cal&&i.rec!=='month'){const v=indVal(x,i);if(v)ln.push([C.ind,indIco(i.name)+' '+i.name.replace(/\s*\(.*\)$/,'')+(v===true?'':': '+v)])}});
   if(x.op)ln.push([C.ext,'🛡 OP '+(x.op==='fuori'?'fuori sede':'in sede')+(x.opNote?': '+x.opNote:'')]);
-  S.ind.forEach(i=>{if(i.rec==='no'&&indVal(x,i))ln.push([C.ind,i.name])});
+  S.ind.forEach(i=>{if(i.rec==='no'&&!i.cal&&indVal(x,i))ln.push([C.ind,indIco(i.name)+' '+i.name])});
   (x.acts||[]).forEach(a=>ln.push([actCol(a.t),(a.from?a.from+' ':'')+ico(a.t)+' '+a.t+(a.txt?': '+a.txt:'')]));
   if(x.tags?.length)ln.push([C.tag,x.tags.map(t=>ico(t)+' '+t).join(', ')]);
   if(x.note)ln.push([C.tag,'📝 '+x.note]);
@@ -1603,7 +1603,7 @@ function openDay(ds){
  </div>
  <div class="pane" data-pane="eti">
   <span class="mut s">Nota breve visibile nella casella del calendario</span>
-  <input id="eCalNote" placeholder="Es. Udienza Tribunale CA" value="${esc(E.calNote||'')}">
+  <div class="row" style="flex-wrap:nowrap"><input id="eCalNote" placeholder="Es. Udienza Tribunale CA" value="${esc(E.calNote||'')}" style="flex:1;min-width:0"><button class="ico" data-calclr title="Rimuovi etichetta e colore" ${E.calNote||E.calColor?'':'hidden'}>🗑</button></div>
   <div class="mut s" style="margin-top:12px">Colore della casella</div>
   <div class="palpick" id="ePal"><i class="none ${!E.calColor?'on':''}" data-pal="" title="Nessun colore">✕</i>${Object.keys(PAL).map(k=>`<i style="--c:${PAL[k]}" class="${E.calColor===k?'on':''}" data-pal="${k}" title="${PALN[k]}"></i>`).join('')}</div>
  </div>
@@ -2004,6 +2004,7 @@ $('#sheet').addEventListener('click',async e=>{
    $('[data-ext]').classList.toggle('on',E.esterna);$('[data-fdv]').classList.toggle('on',E.fdv);syncModal()}perqAsk(false);return}
  if(t.closest('[data-perq]')){perqAsk(false);return}
  const pal=t.closest('[data-pal]');if(pal){E.calColor=pal.dataset.pal;$$('#ePal i').forEach(i=>i.classList.toggle('on',i===pal));return}
+ if(t.closest('[data-calclr]')){E.calNote='';E.calColor='';$('#eCalNote').value='';$$('#ePal [data-pal]').forEach(x=>x.classList.toggle('on',x.dataset.pal===''));t.closest('[data-calclr]').hidden=true;dayChanged();toast('Etichetta rimossa');return}
  if(t.closest('#eActAdd'))return actAdd();
  const as=t.closest('[data-actsel]');if(as){E.acts.push({t:as.dataset.actsel,txt:''});renderActs();const ins=$$('#eActs [data-acttxt]');ins[ins.length-1]?.focus();return}
  const ra=t.closest('[data-radd]');if(ra){const k=ra.dataset.radd,all=[...parseR(E.ranges),...parseR(E.seRanges)],r=parseR(E[k]);
@@ -2046,7 +2047,10 @@ $('#sheet').addEventListener('change',e=>{
  if(e.target.id==='perqPause')return perqPrev();
  if(e.target.id==='eAbsTo'){E._to=e.target.value;return absInfo()}
  if(e.target.id==='eActTo')return actInfo();
- if(e.target.dataset.rk){const k=e.target.dataset.rk;rngSet(k,rngRead(k));return}
+ if(e.target.dataset.rk){const k=e.target.dataset.rk,el=e.target;
+  if(el.dataset.re==='a'&&el.value){const old=parseR(E[k]||'')[+el.dataset.ri],dur=old&&old[1]>old[0]?old[1]-old[0]:(k==='ranges'&&+el.dataset.ri===0?360:k==='ranges'?180:60);
+   const [h,m]=el.value.split(':').map(Number),b=Math.min(h*60+m+dur,1439),pair=el.parentElement.querySelector('[data-re="b"]');if(pair)pair.value=fmtT(b)}
+  rngSet(k,rngRead(k));return}
  if(e.target.id==='rcOn'){const tot=(+E.stra||0)+rangesH(E.spOv?E.spRanges:spPlanned(E.date));E.rcConv=e.target.checked?tot:0;renderRC();dayChanged();return}
  if(e.target.id==='eOpTo'){const b=$('#eOpApply'),v=e.target.value;b.hidden=!(v>E.date);if(v>E.date){let n=0;eachDay(E.date,v,ds=>{if(ds===E.date||isWork(dayOf(ds)))n++});b.textContent=`Applica a ${n} giorni`}return}
  if(e.target.id==='eReqChk'){E.richiesta=e.target.checked;syncModal();return}
@@ -2055,7 +2059,7 @@ $('#sheet').addEventListener('change',e=>{
   if(sh){E.ranges=sh.ranges;E.buonoMan=false;rngEd('ranges')}
   syncModal()}
 });
-$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.dataset.acttxt!=null){E.acts[+e.target.dataset.acttxt].txt=e.target.value;return}if(e.target.id==='eOpNote'){E.opNote=e.target.value;return}if(e.target.dataset.ind){E.ind=E.ind||{};E.ind[e.target.dataset.ind]=e.target.type==='number'?(e.target.value===''?'':+e.target.value):e.target.value.trim();return}if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();});
+$('#sheet').addEventListener('input',e=>{if(MODE==='bulk')return bulkPrev();if(MODE!=='day')return;if(e.target.dataset.acttxt!=null){E.acts[+e.target.dataset.acttxt].txt=e.target.value;return}if(e.target.id==='eOpNote'){E.opNote=e.target.value;return}if(e.target.id==='eCalNote'&&$('[data-calclr]'))$('[data-calclr]').hidden=!e.target.value&&!E.calColor;if(e.target.dataset.ind){E.ind=E.ind||{};E.ind[e.target.dataset.ind]=e.target.type==='number'?(e.target.value===''?'':+e.target.value):e.target.value.trim();return}if(e.target.id==='perqStart'||e.target.id==='perqPause')return perqPrev();});
 /* ===== Salvataggio automatico della giornata ===== */
 let dayTimer=null, daySnap='';
 const snapDay=()=>{const c={...E};delete c.updated;delete c.auto;delete c._default;delete c._to;delete c._pk;return JSON.stringify(c)};
@@ -2302,7 +2306,9 @@ const trgRows=(v,max)=>{const r=parseR(v||'');return r.map(([a,b],i)=>`<div clas
 const trg=(v,attrs,max)=>`<div class="trg rged" data-max="${max||0}"><input type="hidden" ${attrs} value="${esc(v||'')}">${trgRows(v,max)}</div>`;
 function trgSync(box){const v=[...box.querySelectorAll('.rgrow')].map(r=>{const[a,b]=r.querySelectorAll('input[type=time]');return a.value&&b.value?a.value+'-'+b.value:''}).filter(Boolean).join(', ');box.querySelector('input[type=hidden]').value=v;return v}
 function trgRedraw(box,v){box.querySelector('input[type=hidden]').value=v;box.querySelectorAll('.rgrow,.rgadd').forEach(x=>x.remove());box.insertAdjacentHTML('beforeend',trgRows(v,+box.dataset.max))}
-document.addEventListener('change',e=>{const box=e.target.closest('.trg');if(box&&e.target.type==='time'){trgRedraw(box,trgSync(box))}});
+document.addEventListener('change',e=>{const box=e.target.closest('.trg');if(box&&e.target.type==='time'){const row=e.target.closest('.rgrow'),ins=row?[...row.querySelectorAll('input[type=time]')]:[];
+  if(ins[0]===e.target&&e.target.value){const i=[...box.querySelectorAll('.rgrow')].indexOf(row),old=parseR(box.querySelector('input[type=hidden]').value)[i],dur=old&&old[1]>old[0]?old[1]-old[0]:(i?180:360);const[h,m]=e.target.value.split(':').map(Number);ins[1].value=fmtT(Math.min(h*60+m+dur,1439))}
+  trgRedraw(box,trgSync(box))}});
 document.addEventListener('click',e=>{const box=e.target.closest('.trg');if(!box)return;
  if(e.target.closest('[data-trgadd]')){const r=parseR(box.querySelector('input[type=hidden]').value);const a=r.length?Math.max(...r.map(x=>x[1]))+30:9*60,b=a+(r.length?180:360);trgRedraw(box,[box.querySelector('input[type=hidden]').value,fmtT(a)+'-'+fmtT(b)].filter(Boolean).join(', '))}
  const d=e.target.closest('[data-trgdel]');if(d){const r=parseR(box.querySelector('input[type=hidden]').value);r.splice(+d.dataset.trgdel,1);trgRedraw(box,r.map(([a,b])=>fmtT(a)+'-'+fmtT(b)).join(', '))}});
