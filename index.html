@@ -211,7 +211,7 @@ tr[data-d]:hover td{background:var(--hov)}
 .tdBox:hover{background:var(--hov)}
 .tdShift{border-left:4px solid var(--c);padding-left:10px}
 .tdShift b{display:block;font-size:17px;font-weight:500;color:var(--tx2)}
-.tdShift span{display:block;font-size:12px;color:var(--mut);text-transform:capitalize}.tdShift{flex:1;min-width:0}.tdGo{font-style:normal;font-size:20px;color:var(--mut)}#sideToday{padding:0;border:0;background:none}#sideToday .tdBox{background:var(--surf)}
+.tdShift span{display:block;font-size:12px;color:var(--mut);text-transform:capitalize}.tdShift{flex:1;min-width:0}.motto{margin-top:8px;padding:8px 12px;border-radius:10px;font-size:13px;line-height:1.35;color:var(--tx2);background:color-mix(in srgb,var(--acc) 9%,var(--surf));border:1px dashed color-mix(in srgb,var(--acc) 35%,transparent)}.tdGo{font-style:normal;font-size:20px;color:var(--mut)}#sideToday{padding:0;border:0;background:none}#sideToday .tdBox{background:var(--surf)}
 .adv summary{cursor:pointer;color:var(--acc);font-weight:500;margin-top:6px}
 .plans{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
 .repHead{display:none}
@@ -489,6 +489,20 @@ button.wide{width:100%;border-radius:10px}
 .pane{display:none}.pane.on{display:block}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g2 label>span{display:block;margin-bottom:3px}
+.oSum{padding:0 2px 8px}.oSum b{display:block;font-size:21px;font-weight:600;color:var(--tx2);font-variant-numeric:tabular-nums}.oSum span{font-size:12.5px;color:var(--mut)}
+.olist{border:1px solid var(--line);border-radius:12px;padding:0 12px;background:var(--surf)}
+.orow+.orow{border-top:1px solid var(--line)}
+.orow>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:13px 0;cursor:pointer;font-size:14.5px;color:var(--tx);-webkit-tap-highlight-color:transparent}
+.orow>summary::-webkit-details-marker{display:none}
+.orow>summary>i{font-style:normal;width:22px;text-align:center;font-size:16px}
+.orow>summary>span{flex:1;min-width:0}
+.orow>summary>em{font-style:normal;font-size:13px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:48%}
+.orow>summary>em:empty::before{content:attr(data-e)}
+.orow>summary>em.wn::after{content:' ⚠';color:var(--warn)}
+.orow>summary::after{content:'›';color:var(--mut);font-size:20px;line-height:1;transition:transform .2s}
+.orow[open]>summary::after{transform:rotate(90deg)}
+.orow[open]>summary{color:var(--acc);font-weight:500}
+.obody{padding:0 0 14px}
 .ctbox{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:10px}
 .sect{display:flex;justify-content:space-between;align-items:center;margin:16px 0 6px;font-size:13px;font-weight:500;color:var(--tx2)}
 .sect a{font-size:12px;color:var(--acc);font-weight:400}
@@ -581,7 +595,7 @@ button.wide{width:100%;border-radius:10px}
   <button class="ico" id="hdrShare" title="Condividi la giornata">📤</button>
 </header>
 <div id="scrim"></div>
-<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><div><b>Agenda PS</b><span class="ver" id="ndVer"></span></div><small id="ndUser"></small></div><button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button></div></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div class="ndLbl">Il tuo anno</div><div id="ndSide"></div></aside>
+<aside id="navDrawer" aria-label="Menu"><div class="ndHead"><div class="ndBrand"><div class="logo"><i></i><b id="ndDay"></b></div><div class="ndName"><div><b>Agenda PS</b><span class="ver" id="ndVer"></span></div><small id="ndUser"></small></div><button class="ico" id="btnTheme" title="Tema chiaro/scuro">🌙</button></div></div><div class="ndLbl">Menu</div><div id="ndNav"></div><div id="ndSide" style="margin-top:4px"></div></aside>
 
 <main>
 <!-- CALENDARIO -->
@@ -1496,12 +1510,21 @@ function renderSide(y){
   [[C.buono,'Buono'],[C.stra,'Straordinario'],[C.ext,'Esterna'],[C.pm,'Permessi/recupero'],[C.ind,'Indennità'],[col('basil'),'CO'],[col('tomato'),'CS'],[col('grape'),'937'],[col('flamingo'),'104'],[col('peacock'),'Sindacale']].map(([c,t])=>`<span class="ln" style="--c:${c}"><i></i>${t}</span>`).join('')+
   `<span>Colonna sinistra: numero della settimana</span>`;
 }
-function renderToday(){const t=TODAY(),x=dayOf(t),sh=shiftById(x.shiftId),xs=extras(x),dt=new Date(),w=isWork(x);
+const MOTTI={
+ fest:['Oggi si festeggia: goditi la giornata 🎉','Giornata di festa, il servizio può aspettare ☀️','Buona festa! Stacca la radio e ricarica le batterie 🔋','Festivo: tempo per chi ami ❤️'],
+ co:['Buone ferie! La pratica più urgente oggi sei tu 🏖️','In ferie: nessun ordine di servizio, solo relax 🌴','Ferie meritate. Il telefono di servizio può riposare 📵','Goditi le ferie, al resto pensiamo dopo ☀️'],
+ cs:['Riguardati: la salute prima di tutto 🍵','Riposo e guarigione, il servizio ti aspetta 💪','Oggi l\'unico compito è stare bene 🌿','Rimettiti presto, con calma 🫶'],
+ fam:['Giornata dedicata alla famiglia 👶','Benvenuto al nuovo arrivato! 🍼','Goditi questi giorni, passano in fretta 💙'],
+ sangue:['Grazie per la tua donazione ❤️ Oggi riposo e tanta acqua 💧']};
+function motto(ds,x){const k=x.status==='co'?'co':x.status==='cs'?'cs':['nascita','paternita'].includes(x.status)?'fam':x.status==='sangue'?'sangue':(isHol(ds)||x.status==='festivo')&&!isWork(x)?'fest':'';
+ if(!k)return'';const a=MOTTI[k],n=[...ds].reduce((t,c)=>t+c.charCodeAt(0),0);return a[n%a.length]}
+function renderToday(){const t=TODAY(),x=dayOf(t),sh=shiftById(x.shiftId),dt=new Date(),w=isWork(x),xs=extras(x).filter(([c,l])=>w||!String(l).includes(STATI[x.status]));
  const c=w?(sh?col(sh.color):PAL.graphite):col(STCOL[x.status]||'graphite');
  $('#sideToday').innerHTML=`<div class="tdBox" data-go="${t}"><div class="tdShift" style="--c:${c}"><span>Oggi · ${dt.toLocaleDateString('it-IT',{weekday:'short',day:'numeric',month:'short'})}${isHol(t)?' · 🎉 '+esc(holName(t)):''}</span><b>${esc(w?(x.ranges||'—'):STATI[x.status])}</b></div><i class="tdGo">›</i></div>
   ${xs.length?`<div class="chips" style="margin-top:6px;gap:4px">${xs.map(([c,l])=>`<span class="b" style="--c:${c}">${esc(l)}</span>`).join('')}</div>`:''}
   ${(x.tags||[]).length?`<div class="mut s" style="margin-top:4px">${esc(x.tags.map(z=>ico(z)+' '+z).join(' · '))}</div>`:''}
-  ${x.note?`<div class="s" style="margin-top:4px">📝 ${esc(x.note)}</div>`:''}`}
+  ${x.note?`<div class="s" style="margin-top:4px">📝 ${esc(x.note)}</div>`:''}
+  ${motto(t,x)?`<div class="motto">${motto(t,x)}</div>`:''}`}
 function renderMini(){
  const y=miniM.getFullYear(),m=miniM.getMonth(),today=TODAY(),cm=cur.getMonth(),cy=cur.getFullYear();
  let h=`<div class="mh"><span>${miniM.toLocaleDateString('it-IT',{month:'long',year:'numeric'})}</span><button class="ico" data-mm="-1">‹</button><button class="ico" data-mm="1">›</button></div><div class="mg">`+DOW.map(d=>`<div class="dw">${d[0]}</div>`).join('');
@@ -1580,21 +1603,21 @@ function openDay(ds){
   <button data-tab="ora" class="wkonly"><i>⏱</i>Orario</button><button data-tab="att" class="wkonly"><i>📌</i>Attività</button><button data-tab="trn" class="wkonly"><i>🎯</i>Aggiorn.</button><button data-tab="ind" class="wkonly"><i>💶</i>Indennità</button><button data-tab="eti" class="wkonly"><i>🏷</i>Etichetta</button></div>
  <div class="panes">
  <div class="pane" data-pane="ora">
-  <div class="g2">
-   <label><span class="mut s">Turno</span><select id="eShift">${S.shifts.map(s=>`<option value="${s.id}" ${E.shiftId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}<option value="" ${!E.shiftId?'selected':''}>Personalizzato</option></select></label>
-   <label><span class="mut s">Buono pasto <span id="eBAuto"></span></span><div class="seg" id="eBuono" style="display:flex">${[0,1,2].map(n=>`<button data-v="${n}" class="${E.buono===n?'on':''}" style="flex:1">${['No','1','Doppio'][n]}</button>`).join('')}</div></label>
-  </div>
-  <div class="sect"><span>🕐 Orario effettivo</span></div><div id="rg_ranges" class="rged"></div>
-  <div class="sect"><span>⏱ Straordinario emergente (SE)</span><span class="mut s" id="eSEtot"></span></div><div id="rg_seRanges" class="rged se"></div>
-  <div id="eRC"></div>
-  <div class="sect"><span>📅 Straordinario programmato (SP)</span><span class="mut s" id="eSPtot"></span></div><div id="rg_spRanges" class="rged sp"></div><div id="eSPwarn"></div>
-  <p class="mut s" id="eOre" style="margin-top:6px"></p>
-  <div id="eReq"></div>
-  <div class="ctbox">
+  <div class="oSum"><span id="eOre"></span></div>
+  <div class="olist">
+  <details class="orow"><summary><i>🕐</i><span>Modifica orario</span><em id="oxOraV"></em></summary><div class="obody">
+   <label><span class="mut s">Turno</span><select id="eShift">${S.shifts.map(s=>`<option value="${s.id}" ${E.shiftId===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}<option value="" ${!E.shiftId?'selected':''}>Personalizzato</option></select></label><div id="rg_ranges" class="rged" style="margin-top:8px"></div></div></details>
+  <details class="orow"><summary><i>⚡</i><span>Straordinario emergente</span><em id="eSEtot" data-e="nessuno"></em></summary><div class="obody"><div id="rg_seRanges" class="rged se"></div></div></details>
+  <details class="orow"><summary><i>📅</i><span>Straordinario programmato</span><em id="eSPtot" data-e="nessuno"></em></summary><div class="obody"><div id="rg_spRanges" class="rged sp"></div><div id="eSPwarn"></div></div></details>
+  <details class="orow"><summary><i>🍽</i><span>Buono pasto</span><em id="oxBuono"></em></summary><div class="obody"><div class="mut s" style="margin-bottom:6px">Buono pasto <span id="eBAuto"></span></div><div class="seg" id="eBuono" style="display:flex">${[0,1,2].map(n=>`<button data-v="${n}" class="${E.buono===n?'on':''}" style="flex:1">${['No','1','Doppio'][n]}</button>`).join('')}</div></div></details>
+  <details class="orow"><summary><i>⇄</i><span>Cambio turno</span><em id="oxCt" data-e="no"></em></summary><div class="obody">
    <label class="row" style="gap:8px;cursor:pointer"><input type="checkbox" id="eCambio" ${E.cambio?'checked':''} style="width:18px;height:18px;accent-color:var(--acc)"> <span>Cambio turno manuale</span> <span class="mut s" id="eAutoCh"></span></label>
    <div id="eCtType" class="row" style="margin-top:8px"><span class="mut s">Variazione disposta</span><div class="seg" id="eCtSeg"><button data-ct="uff">D'ufficio</button><button data-ct="prog">In programmazione</button></div><span class="mut s" id="eCtInfo"></span></div>
    <input id="eCambioNote" style="margin-top:8px" placeholder="Cambio con / motivo (facoltativo)" value="${esc(E.cambioNote)}">
+  </div></details>
   </div>
+  <div id="eRC"></div>
+  <div id="eReq"></div>
  </div>
  <div class="pane" data-pane="att">
   <div class="wkonly">
@@ -1654,7 +1677,7 @@ function rngEd(k){const box=$('#rg_'+k);if(!box)return;const r=parseR(E[k]||'');
   +`<button class="rgadd" data-radd="${k}">＋ ${k==='ranges'?(r.length?'Aggiungi rientro':'Aggiungi orario'):r.length?'Aggiungi un altro straordinario':'Aggiungi straordinario'}</button>`;
  if(k==='seRanges'&&$('#eSEtot'))$('#eSEtot').textContent=r.length?'Totale '+fmtH(rangesH(E.seRanges)):'';
  if(k!=='ranges')renderRC();
- if(k==='spRanges'&&$('#eSPtot')){$('#eSPtot').textContent=(r.length?'Totale '+fmtH(rangesH(E.spRanges)):'')+(!E.spOv&&r.length?' · da programmazione':'');const w=spWarn({...E,spOv:true});$('#eSPwarn').innerHTML=w.map(x=>`<div class="warnbox" style="margin-top:6px">⚠ ${esc(x)}</div>`).join('')}}
+ if(k==='spRanges'&&$('#eSPtot')){$('#eSPtot').textContent=(r.length?'Totale '+fmtH(rangesH(E.spRanges)):'')+(!E.spOv&&r.length?' · da programmazione':'');const w=spWarn({...E,spOv:true});$('#eSPwarn').innerHTML=w.map(x=>`<div class="warnbox" style="margin-top:6px">⚠ ${esc(x)}</div>`).join('')}oraSum()}
 function rngRead(k){return [...$$(`#rg_${k} .rgrow`)].map(row=>{const[a,b]=row.querySelectorAll('input');return a.value&&b.value?a.value+'-'+b.value:''}).filter(Boolean).join(', ')}
 function rngSet(k,v,re=true){E[k]=v;if(k==='spRanges'){E.spOv=true;E.buonoMan=false}else if(k==='seRanges')E.stra=rangesH(v);else{const m=S.shifts.find(x=>x.ranges===v);E.shiftId=m?m.id:'';if($('#eShift'))$('#eShift').value=E.shiftId;E.buonoMan=false}if(re)rngEd(k);syncModal()}
 function renderRC(){const b=$('#eRC');if(!b)return;const tot=(+E.stra||0)+rangesH(E.spOv?E.spRanges:spPlanned(E.date));if(!tot){b.innerHTML='';E.rcConv=0;return}
@@ -1679,10 +1702,10 @@ function renderType(){
    <div class="seg pseg" data-pk="${P.k}"><button data-pmo="d" class="${hourly?'':'on'}">Giornata intera</button><button data-pmo="h" class="${hourly?'on':''}">${P.hl||'A ore'}</button></div>
    ${hourly?`<div class="pbody"><div class="row" style="gap:10px"><div class="stepper" data-f="${P.h}" data-max="${P.max}"><button data-s="-1">−</button><output>${fmtH(E[P.h])}</output><button data-s="1">+</button></div><span class="mut s">nel turno ${esc(E.ranges||'')}</span></div>${P.pos?posSel(P.pos):''}</div>`:''}
    <div class="mut s" style="margin-top:6px">${P.hint()}</div>${hourly?'<div class="mut s" style="margin-top:4px">Orari, straordinario e attività: tocca <b>🏢 Servizio</b>.</div>':''}</div>`:''}
- ${sel&&!hourly?dur:''}`;
+ ${sel&&!hourly&&!SINGLE.includes(sel)?dur:''}${sel==='sangue'?'<div class="mut s" style="margin:2px 20px 6px">Vale solo per questo giorno.</div>':''}`;
  absInfo();
 }
-const ALLDAYS=['cs','nascita','trasferimento','matrimonio'];
+const ALLDAYS=['cs','nascita','trasferimento','matrimonio'],SINGLE=['sangue'];
 function absDays(a,b,t){const out=[];eachDay(a,b,ds=>{if(ALLDAYS.includes(t)||plannedShift(ds))out.push(ds)});return out}
 function absInfo(){const el=$('#eAbsInfo');if(!el)return;const to=$('#eAbsTo').value;
  if(!to||to<=E.date){el.textContent='Solo questo giorno · per un periodo scegli la data di fine';$('#eAbsApply').hidden=true;return}
@@ -1754,6 +1777,10 @@ function perqAsk(show){
 const gapsOf=str=>{const r=parseR(str).sort((a,b)=>a[0]-b[0]),g=[];for(let i=1;i<r.length;i++)if(r[i][0]>r[i-1][1])g.push(fmtT(r[i-1][1])+'-'+fmtT(r[i][0]));return g.join(', ')};
 function perqPrev(){const m=toMin($('#perqStart').value);if(m==null)return;const r=shiftRanges(perqBase(),m),pl=parseR(plannedRanges(E.date)),an=pl.length?(Math.min(...pl.map(x=>x[0]))-m)/60:0,gp=$('#perqPause')?.checked?gapsOf(r):'';
  $('#perqRes').textContent=r+(gp?` + (${gp} SE)`:''); $('#perqCT').textContent=pl.length?(an>=(+S.rules.ctMin||2)?`· anticipo ${fmtH(an)} → C.T. automatico`:`· anticipo ${fmtH(Math.max(0,an))} (C.T. da ${S.rules.ctMin}h)`):''}
+function oraSum(){if(!$('#oxOraV'))return;const sh=shiftById(E.shiftId);
+$('#oxOraV').textContent=sh?sh.name:'Personalizzato';
+ $('#oxBuono').textContent=['No','1','Doppio'][E.buono||0];$('#oxCt').textContent=E.cambio?'sì':'';
+ const w=$('#eSPwarn');$('#eSPtot').classList.toggle('wn',!!(w&&w.innerHTML.trim()))}
 function syncModal(){
  const w=isWork(E);
  $$('#sheet .wkonly').forEach(el=>el.style.display=w?'':'none');
@@ -1795,7 +1822,7 @@ function syncModal(){
  if(lw.length)$('#ePrev').innerHTML+=`<div class="warnbox" style="width:100%;margin:4px 0 0">⚠ ${lw.map(esc).join('<br>')}</div>`;
  $('#eReq').innerHTML=E.stra>4?`<div class="warnbox" style="${E.richiesta?'border-color:var(--ok);color:var(--ok);background:color-mix(in srgb,var(--ok) 10%,var(--surf))':''}">
   ${E.richiesta?'✓':'⚠'} Straordinario di ${fmtH(E.stra)} (oltre 4 ore): ${E.richiesta?'richiesta al dirigente inoltrata.':'<b>ricordati di fare la richiesta al dirigente.</b>'}
-  <label class="row" style="gap:8px;margin-top:6px;cursor:pointer;color:var(--tx)"><input type="checkbox" id="eReqChk" ${E.richiesta?'checked':''} style="width:18px;height:18px"> Richiesta inoltrata</label></div>`:'';
+  <label class="row" style="gap:8px;margin-top:6px;cursor:pointer;color:var(--tx)"><input type="checkbox" id="eReqChk" ${E.richiesta?'checked':''} style="width:18px;height:18px"> Richiesta inoltrata</label></div>`:'';;oraSum()
 }
 
 /* ===== Modale turni semplice ===== */
